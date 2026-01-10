@@ -1,0 +1,208 @@
+\chapter{Literature Review}
+\label{chapter:lit_review}
+
+% Leveldown and levelup commands allow to re-use chapters from the literature review but with different section levels.
+
+\newenvironment{leveldown}% Demote sectional commands
+  {\let\chapter\section
+   \let\section\subsection%
+   \let\subsection\subsubsection%
+   \let\subsubsection\paragraph%
+  }{}
+  
+\newenvironment{levelup}% Promote sectional commands
+  {\let\subparagraph\paragraph%
+   \let\paragraph\subsubsection%
+   \let\subsubsection\subsection%
+   \let\subsection\section%
+   \let\section\chapter
+}{}
+\section{Introduction}
+The purpose of this literature review is to evaluate existing research on individual development plans (IDPs), recommender systems, data collection methods, data preprocessing techniques, deep learning methodologies, and model evaluation metrics. Individual Development Plans have gained increasing attention in organizational and educational contexts as they allow individuals to outline clear, personalized paths for career growth and skill enhancement. We aim to leverage this demand for individual development plans and seek to solve the challenges faced in generating them by making use of deep learning recommender models.
+
+
+\section{Individual Development Plans}
+
+    \begin{tcolorbox}[colback=yellow!10!white,colframe=orange!60!black,title=Guiding Questions]
+    \begin{itemize}
+        \item     \textbf{Definition and purpose of IDPs}
+        \item     \textbf{Importance and benefits in organizational and educational contexts}
+
+        \item  \textbf{Challenges and limitations of current IDP methods}
+
+    \end{itemize}
+
+
+
+
+\begin{itemize}
+    \item How have IDPs evolved over recent years?
+    \item What specific benefits do organizations gain from effectively implementing IDPs?
+    \item What are the common barriers to implementing successful IDPs?
+\end{itemize}
+\end{tcolorbox}
+
+
+\section{Recommender Systems}
+  \begin{tcolorbox}[colback=yellow!10!white,colframe=orange!60!black,title=Guiding Questions]
+  \begin{itemize}
+      \item \textbf{    Overview and types of recommender systems
+}
+    \item \textbf{Algorithms and approaches traditionally used (collaborative filtering, content-based filtering, hybrid systems)}
+    \item \textbf{    Application domains beyond IDPs
+}
+\item What are the primary approaches used in recommender systems, and how do they differ?
+
+\item    What types of recommender systems are most suitable for educational and professional development contexts?
+
+\item     How have recommender systems impacted user experiences in various domains?
+  \end{itemize}
+
+    
+
+
+
+    
+    \end{tcolorbox}
+
+\section{Deep Learning}
+  \begin{tcolorbox}[colback=yellow!10!white,colframe=orange!60!black,title=Guiding Questions]
+  \begin{itemize}
+      \item Fundamentals of deep learning (concepts, advantages, limitations)
+      \item Key architectures: Neural Networks, CNNs, RNNs, Autoencoders, Transformers, Graph Neural Networks (GNNs)
+      \item Deep learning vs. traditional machine learning techniques
+
+      \item How does deep learning differ from traditional machine learning in terms of feature extraction and performance?
+
+      \item What specific deep learning architectures are most relevant to recommender systems?
+  \end{itemize}
+    
+    \end{tcolorbox}
+
+\section{Deep Learning in Recommender Systems}
+\begin{tcolorbox}[colback=yellow!10!white,colframe=orange!60!black,title=Guiding Questions]
+  \begin{itemize}
+    \item Integration of deep learning techniques into recommender systems
+
+    \item Case studies and successful implementations
+
+    \item Comparative analysis with traditional recommender methods
+
+
+    \item What are some successful examples of deep learning-based recommender systems?
+
+    \item How have deep learning techniques improved the performance of recommender systems in real-world applications?
+\end{itemize}
+\end{tcolorbox}
+\section{Data Collection Methods}
+\begin{tcolorbox}[colback=yellow!10!white,colframe=orange!60!black,title=Guiding Questions]
+  \begin{itemize}
+    \item Types of data required for recommender systems (primary vs. secondary)
+
+    \item Techniques and challenges in data collection (e.g., observation, questionnaires, interviews, databases)
+
+    \item Ethical considerations and privacy concerns
+
+
+    \item What methods are typically used to collect data for recommender systems?
+
+    \item How do data quality and relevance affect the performance of recommender models?
+
+    \item What ethical considerations are involved in data collection for IDPs?
+\end{itemize}
+\end{tcolorbox}
+\section{Data Preprocessing}
+\begin{tcolorbox}[colback=yellow!10!white,colframe=orange!60!black,title=Guiding Questions]
+  \begin{itemize}
+    \item Techniques for preprocessing data (cleaning, normalization, missing data imputation, categorical encoding)
+
+    \item Importance of data preprocessing in deep learning
+
+    \item Automated approaches to data preprocessing
+
+
+    \item Why is data preprocessing critical for the success of deep learning models?
+
+    \item Which automated preprocessing techniques have proven most effective in recent studies?
+\end{itemize}
+\end{tcolorbox}
+\section{Model Evaluation Methods}
+\begin{tcolorbox}[colback=yellow!10!white,colframe=orange!60!black,title=Guiding Questions]
+  \begin{itemize}
+    \item Common evaluation metrics for recommender systems (precision, recall, F1-score, accuracy, MAE, RMSE)
+
+    \item Comparative analysis of evaluation metrics
+
+    \item Issues in model evaluation and validation (e.g., bias, variance)
+
+
+    \item Which evaluation metrics are most appropriate for IDP recommender systems and why?
+
+    \item How do various metrics differ in their ability to measure recommender system effectiveness?
+\end{itemize}
+\end{tcolorbox}
+\section{Explainability of Recommender Models}
+\begin{tcolorbox}[colback=yellow!10!white,colframe=orange!60!black,title=Guiding Questions]
+\begin{itemize}
+    \item Importance and need for model explainability
+    \item Introduction to SHAP and LIME frameworks
+    \item Implementation and effectiveness of explainability methods in recommender systems
+  
+    \item How do explainability methods enhance user trust and model transparency?
+    \item What are the specific benefits and limitations of LIME and SHAP methods?
+    \item How have explainability techniques improved user engagement and acceptance in recommender systems?
+\end{itemize}
+\end{tcolorbox}
+\section{Future Research Directions}
+\begin{tcolorbox}[colback=yellow!10!white,colframe=orange!60!black,title=Guiding Questions]
+    \begin{itemize}
+        \item Potential improvements and research gaps
+        \item Emerging trends and technologies (e.g., generative AI, federated learning, ethical AI)
+        \item What emerging trends or technologies could further enhance IDP recommender systems?
+        \item What critical research gaps currently exist in this field, and how can future research address them?
+    \end{itemize}
+\end{tcolorbox}
+
+
+
+\newpage
+\begin{leveldown}
+
+\begin{table}[ht]
+    \centering
+    \caption{Summary of Related Works for the IDP Recommender System Study}
+    \label{tab:lit_review}
+    \begin{tabular}{@{}p{3cm}p{5cm}p{2cm}p{5cm}@{}}
+    \toprule
+    \textbf{Author(s) \& Year} & \textbf{Title} & \textbf{Methodology} & \textbf{Key Findings and Relevance} \\
+    \midrule
+    Vanderford et al. (2018) & Use of IDPs for doctoral trainees & Survey study & IDPs improve self-assessment and career planning; foundational to this study. \\
+    \midrule
+    Sahoo et al. (2019) & Deep learning in health recommender systems & Deep collaborative filtering (RBMs) & Deep learning improves recommendation accuracy; supports choice of deep learning. \\
+    \midrule
+    Mu (2018) & Survey of deep learning recommender systems & Literature review & Validates deep learning as superior for complex recommendation tasks. \\
+    \midrule
+    Li et al. (2024) & Knowledge graph-enhanced recommender systems & Attention and residual networks & Knowledge graphs improve personalization; important for IDP mappings. \\
+    \midrule
+    Chen \& Zhong (2024) & GCN-based course recommendation system & Graph Convolutional Networks (GCNs) & GCNs model complex relationships; informs modelling employee competencies. \\
+    \midrule
+    Ertürkman et al. (2019) & Personalized health management platforms & Collaborative platform development & Personalized plans outperform generic; supports personalizing IDPs. \\
+    \midrule
+    Gulzar et al. (2018) & Personalized course recommender systems & Hybrid recommendation methods & Combining methods improves engagement; supports multi-input IDP systems. \\
+    \midrule
+    Dabak et al. (2022) & Career development for Gen Y and Z & Developmental cycle framework & Adaptive planning needed for evolving careers; supports dynamic IDP updates. \\
+    \midrule
+    Ghaffar et al. (2022) & Impact of personality traits on planning & Empirical study in finance & Personality traits influence decision-making; suggests incorporating traits into IDPs. \\
+    \midrule
+    Wang et al. (2020) & Employee training course recommendations & Bayesian variational network modeling & Career goals improve recommendations; aligns with dynamic IDP needs. \\
+    \midrule
+    Bui et al. (2016) & Text classification from PDFs & Multi-pass sieve technique & Text extraction improves preprocessing; useful for automating employee documents. \\
+    \midrule
+    Viani et al. (2019) & Clinical event extraction with RNNs & Supervised learning & RNNs extract structured info from text; supports skill extraction automation. \\
+    \midrule
+    Lin et al. (2018) & Sparse linear method for recommendation & L0 regularization technique & Improved recommendation precision; useful for refining IDP suggestions. \\
+    \bottomrule
+    \end{tabular}
+\end{table}
+
+\end{leveldown}

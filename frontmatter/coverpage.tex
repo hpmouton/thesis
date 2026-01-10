@@ -1,0 +1,72 @@
+% ____ Artistic Professional Cover Page with Orange and Red Stripes _____
+
+\pagenumbering{roman}
+\thispagestyle{empty}
+
+% Color definitions
+\definecolor{navyblue}{HTML}{003366}
+\definecolor{orangeNUST}{HTML}{F7931E}
+\definecolor{redNUST}{HTML}{C8102E}
+\definecolor{whitecolor}{HTML}{FFFFFF}
+
+\newcommand*{\makecover}{
+\thispagestyle{empty}
+
+\begin{tikzpicture}[remember picture, overlay]
+
+    % Full background white
+    \fill[whitecolor] (current page.south west) rectangle (current page.north east);
+
+    % Orange Stripe: Starting top left going halfway down with angled cut
+    \fill[orangeNUST] 
+        (current page.north west) -- 
+        ([xshift=1.5cm,yshift=-6cm]current page.north west) --
+        ([xshift=0.5cm,yshift=-8cm]current page.north west) --
+        ([yshift=-8cm]current page.north west) -- 
+        (current page.south west) --
+        (current page.north west);
+
+    % Red Stripe: Starting bottom right going up
+    \fill[redNUST]
+        (current page.south east) --
+        ([xshift=-2cm,yshift=2cm]current page.south east) --
+        ([xshift=-1cm,yshift=4cm]current page.south east) --
+        ([yshift=4cm]current page.south east) --
+        (current page.north east) --
+        (current page.south east);
+
+    % University Logo at top center
+    \node[anchor=north, yshift=-1cm] at (current page.north) {
+        \includegraphics[width=0.45\paperwidth]{layout/tudelft/logo.png}
+    };
+
+    % Main Thesis Title (Centered)
+    \node[align=justify, text width=0.8\paperwidth, anchor=north, yshift=-8cm] at (current page.north) {
+        \color{navyblue}
+        \fontsize{12pt}{14pt}\selectfont\bfseries
+        Individual Development Plan  Recommender Model
+        Using Deep Learning
+    };
+
+    % Student Info (Centered)
+    \node[align=justify, text width=0.7\paperwidth, anchor=north, yshift=-14cm] at (current page.north) {
+        \color{black}
+        \Large Master's Thesis \\[0.8cm]
+        \normalsize
+        \textbf{Student:} Hubert Patrick Mouton \\[0.5cm]
+        \textbf{Programme:} Master's in Data Science (RIT912S) \\[0.5cm]
+        \textbf{Supervisor:} Prof. Muyingi, Hippolyte N’sung-Nza \\[0.5cm]
+        \textbf{Date:} \today
+    };
+
+    % Digital Signature Block at Bottom
+    \node[align=center, text width=0.8\paperwidth, anchor=south, yshift=1.5cm] at (current page.south) {
+        \normalsize
+        \textbf{Digital Signature of Supervisor:} \hrulefill \\[0.6cm]
+        \textbf{Digital Signature of Programme Coordinator:} \hrulefill \\[0.6cm]
+        \textbf{Digital Signature of FCI HDC Representative:} \hrulefill
+    };
+
+\end{tikzpicture}
+\newpage
+}

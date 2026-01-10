@@ -1,0 +1,62 @@
+% !TeX program = xelatex
+\documentclass{layout/tudelft-report}
+% Bibliography Sources
+\addbibresource{bibliography/references.bib}
+\addbibresource{bibliography/additional_references.bib}
+
+% Define Notation commands
+\input{notation}
+
+% Nomenclature
+\makenomenclature
+
+\begin{document}
+
+    \frontmatter
+
+    % Thesis Parameters
+    \title{Thesis template}
+    \subtitle{Subtitle to the thesis}
+    \author{Hubert Patrick Mouton}
+    \subject{Thesis Report}
+
+    % Cover Page
+    \makecover
+    % \afterpage{\blankpage}
+    
+    % Title Page
+    % \input{frontmatter/title}
+    
+    % Copyright Page
+    \input{frontmatter/declaration}
+
+    % Make a preface page
+    \input{frontmatter/preface.tex}
+    
+    % TOC, Nomenclature, List of stuff
+    \tableofcontents    
+    \printnomenclature
+    \listoffigures
+    \listoftables
+
+    %% Report
+    \mainmatter
+    \input{nomenclature}
+    \input{mainmatter/chapter-1-introduction}
+    \input{mainmatter/chapter-2-literature-review.tex}
+    \input{mainmatter/chapter-3-theoretical-framework}
+    \input{mainmatter/chapter-4-research-design.tex}
+    \input{mainmatter/chapter-5-implementation}
+    \input{mainmatter/chapter-6-results}
+    \input{mainmatter/chapter-7-conclusion}
+    \input{mainmatter/chapter-8-recommendations}
+
+    % Bibliography with numeric style
+    \printbibliography[title=References]
+    \addcontentsline{toc}{chapter}{References}
+    
+    % __ Appendix ___
+    \appendix
+    \input{appendix/appendix-algorithms}
+    
+\end{document}

@@ -1,0 +1,55 @@
+\nomenclatureentry{AIDP@[{IDP}]\begingroup Intelligent Development Plan\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{ADL@[{DL}]\begingroup Deep Learning\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{AML@[{ML}]\begingroup Machine Learning\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{AANN@[{ANN}]\begingroup Artificial Neural Network\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{ACNN@[{CNN}]\begingroup Convolutional Neural Network\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{ARNN@[{RNN}]\begingroup Recurrent Neural Network\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{ALSTM@[{LSTM}]\begingroup Long Short-Term Memory\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{AGNN@[{GNN}]\begingroup Graph Neural Network\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{AAE@[{AE}]\begingroup Autoencoder\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{APCA@[{PCA}]\begingroup Principal Component Analysis\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{ASHAP@[{SHAP}]\begingroup SHapley Additive exPlanations\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{ALIME@[{LIME}]\begingroup Local Interpretable Model-agnostic Explanations\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{AAUC-ROC@[{AUC-ROC}]\begingroup Area Under the Receiver Operating Characteristic Curve\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{ARMSE@[{RMSE}]\begingroup Root Mean Square Error\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{AMAE@[{MAE}]\begingroup Mean Absolute Error\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{AF1@[{F1}]\begingroup F1-Score\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{ARecall@[{Recall}]\begingroup Recall\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{APrecision@[{Precision}]\begingroup Precision\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{ABias@[{Bias}]\begingroup Bias in AI models\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{ACF@[{CF}]\begingroup Collaborative Filtering\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{AMF@[{MF}]\begingroup Matrix Factorization\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{AIDF@[{IDF}]\begingroup Inverse Document Frequency\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{ANLP@[{NLP}]\begingroup Natural Language Processing\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{AR2@[{R2}]\begingroup R-squared\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{AUCF@[{UCF}]\begingroup User-based Collaborative Filtering\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{AICF@[{ICF}]\begingroup Item-based Collaborative Filtering\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{ARBCF@[{RBCF}]\begingroup Recurrent-Based Collaborative Filtering\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{AA/B Testing@[{A/B Testing}]\begingroup A/B Testing for Model Evaluation\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{ACross Validation@[{Cross Validation}]\begingroup k-Fold Cross Validation\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{AEDA@[{EDA}]\begingroup Exploratory Data Analysis\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{ASVD@[{SVD}]\begingroup Singular Value Decomposition\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{ASGD@[{SGD}]\begingroup Stochastic Gradient Descent\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{AGD@[{GD}]\begingroup Gradient Descent\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{ARL@[{RL}]\begingroup Reinforcement Learning\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{ADRL@[{DRL}]\begingroup Deep Reinforcement Learning\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{S$ \alpha $@[{$ \alpha $}]\begingroup Learning Rate\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{S$ \beta $@[{$ \beta $}]\begingroup Bias Parameter\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{S$ \gamma $@[{$ \gamma $}]\begingroup Discount Factor (for RL)\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{S$ \delta $@[{$ \delta $}]\begingroup TD-Error (Temporal Difference Error)\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{S$ \epsilon $@[{$ \epsilon $}]\begingroup Exploration Rate (in Reinforcement Learning)\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{S$ \eta $@[{$ \eta $}]\begingroup Entropy Temperature (in Model Explainability)\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{S$ \lambda $@[{$ \lambda $}]\begingroup Regularization Parameter (L2)\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{S$ \kappa $@[{$ \kappa $}]\begingroup Huber-Loss Parameter\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{S$ \xi $@[{$ \xi $}]\begingroup Risk-Distortion Parameter (Fairness Measure)\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{S$ \Psi $@[{$ \Psi $}]\begingroup Distortion Risk-Measure (Fairness Metric)\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{S$ t $@[{$ t $}]\begingroup Time-Step (in Reinforcement Learning or Sequential Models)\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{S$ \tau $@[{$ \tau $}]\begingroup Temperature (in Model Interpretability)\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{S$ \mathbf{u}$@[{$ \mathbf{u}$}]\begingroup User Vector (in Collaborative Filtering)\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{S$ \mathbf{i}$@[{$ \mathbf{i}$}]\begingroup Item Vector (in Collaborative Filtering)\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{S$ \mathbf{X}$@[{$ \mathbf{X}$}]\begingroup Input Features (in Neural Networks or Recommender Models)\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{S$ \mathbf{W}$@[{$ \mathbf{W}$}]\begingroup Weights Matrix (in Neural Networks or Collaborative Filtering)\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{S$ \mathbf{R}$@[{$ \mathbf{R}$}]\begingroup Ratings Matrix (in Recommender Systems)\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{S$ \hat{r}_{ui}$@[{$ \hat{r}_{ui}$}]\begingroup Predicted Rating for User $u$ and Item $i$\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{S$ \mathbf{z}$@[{$ \mathbf{z}$}]\begingroup Latent Factor Vector (in Matrix Factorization)\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{S$ \mathbf{y}$@[{$ \mathbf{y}$}]\begingroup Model Output (in supervised learning or regression tasks)\nomeqref {0}|nompageref}{1}

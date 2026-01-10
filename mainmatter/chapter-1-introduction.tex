@@ -1,0 +1,110 @@
+\chapter{Introduction}
+\label{chapter:intro}
+
+\section{Background to the Study}
+
+The study explores the development of Individual Development Plans (IDPs) using a deep learning-based recommender system. IDPs, introduced by the Federation of American Societies for Experimental Biology, offer a structured framework for self-assessment, goal setting, and action planning, particularly for doctoral trainees \cite{vanderford2018cross}. They are crucial for aligning personal growth with organizational goals in today’s complex career landscapes.
+
+Recommender systems, widely used in e-commerce, education, and healthcare, provide personalized suggestions. However, traditional systems often struggle with dynamic user behaviors and lack interpretability \cite{sahoo2019deepreco}. Deep learning enhances these systems by uncovering intricate user-item patterns, enabling stronger personalization and adaptability \cite{mu2018survey, li2024attention}.
+
+Advanced deep learning techniques like attention mechanisms, knowledge graphs, and Graph Convolutional Networks (GCNs) are highly effective for modeling relationships among employee skills, career goals, and resources \cite{li2024attention, chen2024intelligent}. These methods form the basis for building an adaptive IDP recommender system.
+
+\section{Problem Statement}
+Telecom Namibia currently conducts competency assessments manually using Excel templates and email exchanges. This process is inefficient, prone to errors, and lacks real-time insights, thereby hindering timely decision-making. As the organization grows, scalability issues become apparent, necessitating an automated, centralized platform for more efficient and accurate IDP creation.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+
+        % Supervisor side (left)
+        \node[shaded-primary] (supCreate) {Supervisor drafts JCP};
+        \node[shaded-primary, below=of supCreate] (supFinalize) {Supervisor finalises ECP};
+
+        % Employee side (right)
+        \node[block-primary, right=5cm of supCreate] (empReceive) {Employee receives template};
+        \node[block-primary, below=of empReceive] (empFill) {Employee completes template};
+
+        % Senior Manager (center bottom)
+        \node[block-primary, below=1cm of supFinalize] (seniorManager) {Senior Manager evaluates ECP and recommends Development Plan};
+
+        % Horizontal arrows (Supervisor to Employee)
+        \draw[line] (supCreate.east) -- node[midway, above] {Send Template} (empReceive.west);
+        \draw[line] (empFill.west) -- node[midway, below] {Return Completed Template} (supFinalize.east);
+
+        % Vertical arrows
+        \draw[line] (empReceive) -- (empFill);
+
+        % Final vertical arrow to Senior Manager
+        \draw[line] (supFinalize) -- (seniorManager);
+
+    \end{tikzpicture}
+    \caption{Current IDP Creation Process at Telecom Namibia (Interaction View).}
+    \label{fig:idp_process_interaction}
+\end{figure}
+
+\section{Research Aim}
+The aim is to enable access to real-time data,through a platform where management, staff and supervisors may interact through training and skill audit assessments. This would automate workflows associated with individual development plan formulation and implementation.
+
+
+
+\section{Research Questions}
+\textbf{In what ways may deep learning techniques be applied to create a personalized and efficient recommender model that appropriately evaluates employee competencies and suggests chances for customized growth for individual development plans?}
+\ResearchQuestion{1}{Which employee data types, e.g., skills, evaluations, performance reviews, etc, are most crucial to the construction of a well performing deep learning model that generates recommendations for individual development plans? \label{rq:1}}
+
+\ResearchQuestion{2}{How can employee characteristics and past performance data be used to refine deep learning algorithms to produce precise and customized recommendations for development plans? \label{rq:2}}
+
+\ResearchQuestion{3}{In what ways can the use of real-time performance data and feedback enhance the individual growth plan recommendations' adaptability and relevance? \label{rq:3}}
+
+\ResearchQuestion{4}{What is the difference between the accuracy, employee skill development, and organizational productivity of the deep learning-based recommender system for individual development plans and the conventional approaches? \label{rq:4}}
+\section{Research Objectives}
+
+\ResearchObjective{The primary objective of this research is to design an individual development plan recommender model using deep learning.}
+
+\begin{itemize}
+    \item \textbf{RO1:} To compile comprehensive datasets containing employee skills, evaluations, and development history.
+    \item \textbf{RO2:} To design a deep learning model that analyzes skill gaps and generates customized growth plans.
+    \item \textbf{RO3:} To integrate real-time feedback loops to dynamically update employee development recommendations.
+    \item \textbf{RO4:} To evaluate the effectiveness of the proposed system compared to traditional IDP development methods.
+\end{itemize}
+\section{Rationale and Motivation}
+The rapid evolution of employee competencies and organizational objectives makes manual development planning increasingly unsustainable. Automating IDP generation through AI enables scalability, accuracy, and responsiveness. Personally, this project reflects my passion for applying machine learning to real-world human resource development challenges, specifically optimizing organizational talent management systems.
+
+\section{Research Approach Overview}
+The research follows an interpretivist philosophical stance, utilizing an abductive mixed-methods strategy. Data will be collected from surveys, interviews, and organizational records. Analyses will include both thematic qualitative coding and quantitative statistical techniques, supporting the development of a deep learning recommender system.
+
+
+
+
+
+\subsection{Interpretivism as a Research Philosophy}
+Interpretivism emphasizes the individuality of human experiences \cite{irshaidat2019interpretivism, Saunders2012}. Each employee's development needs are influenced by personal, social, and cultural factors \cite{myers2008qualitative}. Interpretivism opposes generalization and instead values subjective interpretations, aligning well with the need for personalized development plans.
+
+\subsection{The Research Approach}
+Following \cite{mantere2013reasoning, hurley2021integrating}, an abductive approach combines inductive and deductive reasoning. \cite{thompson2022guide} provides an 8-step abductive framework, guiding data collection, feature extraction, theme development, theorizing, model implementation, and evaluation through continuous reflection.
+
+\subsection{Research Strategy: Action Research}
+Action Research (AR), particularly Canonical Action Research (CAR) as outlined by \cite{avison1999action, davison2021research}, is adopted. AR fosters collaboration between researcher and participants in an iterative cycle of problem identification, intervention, observation, and reflection—making it highly suitable for information system development like the proposed IDP recommender.
+
+\section{Choice of Methods}
+The study adopts a mixed-methods approach, integrating qualitative insights and quantitative validation \cite{oliveira2021mixed, guetterman2016distinguishes}. Data collection will involve semi-structured interviews and structured questionnaires. Analysis will include thematic coding and statistical modeling, supporting deep learning model training and evaluation.
+
+
+
+\section{The Research Time Horizon}
+A longitudinal design will be employed to monitor participants’ development plans over time. Regular assessments will capture evolving employee competencies and measure the recommender system's long-term effectiveness \cite{kelley2011sample, jung2023longitudinal}. Careful sampling and structured engagement strategies will maintain data integrity and participant involvement.
+
+\section{Expected Deliverables and Contributions}
+\begin{itemize}
+    \item A fully functional deep learning-based IDP recommender model.
+    \item A prototype centralized platform for employee development planning.
+    \item Contributions to the field of AI-driven HR systems and personalized learning pathways.
+\end{itemize}
+
+\section{Structure of the Thesis}
+\begin{itemize}
+    \item \textbf{Chapter 1: Introduction} — Context, problem statement, objectives, and thesis outline.
+    \item \textbf{Chapter 2: Literature Review} — Review of IDPs, recommender systems, and deep learning techniques.
+    \item \textbf{Chapter 3: Methodology} — Research design, model development strategy, and data collection methods.
+    \item \textbf{Chapter 4: Results and Analysis} — Experimental results and system evaluation.
+    \item \textbf{Chapter 5: Discussion and Conclusion} — Findings interpretation, research limitations, and future work.
+\end{itemize}

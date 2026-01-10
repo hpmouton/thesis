@@ -1,0 +1,492 @@
+\chapter{Research Design}
+\label{chapter:rd}
+
+\section{Overview of the Research Design}
+\label{section:research_design_overview}
+
+The research design for this study focuses on the development, training, and evaluation of a deep learning-based recommender system to generate personalized Individual Development Plans (IDPs) for employees. 
+
+The design follows a modular, data-driven approach, where raw employee data undergoes preprocessing, feature engineering, and is subsequently used to train and evaluate several deep learning models. These models are trained independently to predict suitable development plans based on employee skills, evaluations, learning goals, and performance histories.
+
+Four primary deep learning models are considered: Neural Collaborative Filtering (NCF), Recurrent Neural Networks (RNN), Graph Neural Networks (GNN), and Transformer-based architectures. Each model is trained, validated, and evaluated independently using consistent data splits and evaluation metrics. The goal is not to ensemble or aggregate model outputs, but rather to identify the model that offers the best predictive performance according to established evaluation criteria such as Precision, Recall, F1-Score, and AUC-ROC.
+
+The system architecture is organized into five major phases:
+\begin{table}[H]
+\centering
+\caption{Models and Techniques Applied Across Research Phases}
+\label{tab:models_summary}
+\rowcolors{2}{gray!10}{white}
+\begin{tabular}{@{}p{6cm}p{6cm}p{4cm}@{}}
+\toprule
+\textbf{Model/Technique} & \textbf{Purpose} & \textbf{Research Phase} \\
+\midrule
+\rowcolor{blue!10}
+Data Collection and Preprocessing & Collect, clean, normalize employee-related data (skills, feedback, evaluations) & \textbf{Data Collection and Preprocessing} \\
+\midrule
+\rowcolor{cyan!15}
+Principal Component Analysis (PCA) & Reduce feature dimensionality and highlight important employee data patterns & \textbf{Feature Engineering} \\
+\rowcolor{cyan!15}
+Autoencoder & Denoise and compress employee data for feature extraction & \textbf{Feature Engineering} \\
+\rowcolor{cyan!15}
+Clustering (e.g., K-Means) & Group employees based on similar career goals and skill gaps & \textbf{Feature Engineering} \\
+\midrule
+\rowcolor{orange!20}
+Neural Collaborative Filtering (NCF) & Predict personalized skill development plans based on interaction data & \textbf{Model Training} \\
+\rowcolor{orange!20}
+Recurrent Neural Network (RNN) / LSTM & Model sequential employee learning behaviors and engagement history & \textbf{Model Training} \\
+\rowcolor{orange!20}
+Graph Neural Network (GNN) & Model relationships between skills, learning paths, and career objectives via Knowledge Graphs & \textbf{Model Training} \\
+\rowcolor{orange!20}
+Transformer Model (e.g., BERT) & Understand textual employee career goals and aspirations & \textbf{Model Training} \\
+\midrule
+\rowcolor{green!20}
+Precision, Recall, F1-Score, AUC-ROC & Evaluate model effectiveness and recommendation quality & \textbf{Model Evaluation} \\
+\rowcolor{green!20}
+k-Fold Cross-Validation & Validate model robustness and prevent overfitting & \textbf{Model Evaluation} \\
+\rowcolor{green!20}
+Explainability Methods (SHAP, LIME) & Interpret model predictions and detect potential biases & \textbf{Model Evaluation} \\
+\midrule
+\rowcolor{yellow!20}
+Feedback Integration and Deployment Preparation & Use best-performing model to generate IDPs; integrate feedback for retraining & \textbf{Deployment Preparation} \\
+\bottomrule
+\end{tabular}
+
+
+
+\end{table}
+
+
+
+
+This research design ensures both methodological rigour and flexibility, allowing for fair comparison between models and supporting the goal of building an adaptable, scalable, and accurate IDP recommender system.
+
+\section{System Architecture}
+\label{section:system_architecture}
+
+The system architecture for the Individual Development Plan (IDP) Recommender is designed to modularly process employee data, engineer useful features, independently train multiple deep learning models, evaluate their performance, and deploy the best model to generate personalized development plans.
+
+Figure~\ref{fig:idp_system_architecture} illustrates the overall architecture of the system. The flow begins with raw employee data and proceeds through several critical stages: preprocessing, feature engineering, model training, evaluation, and selection. A feedback loop is incorporated to ensure that the model continues to improve over time based on new data and organizational feedback.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[scale=0.7, transform shape,
+        node distance=1.5cm and 2.2cm,
+        inputblock/.style={rectangle, draw, fill=cyan!15, rounded corners, text centered, align=center, minimum height=1.2cm, minimum width=3.2cm},
+        processblock/.style={rectangle, draw, fill=yellow!20, rounded corners, text centered, align=center, minimum height=1.2cm, minimum width=3.2cm},
+        modelblock/.style={rectangle, draw, fill=orange!20, rounded corners, text centered, align=center, minimum height=1.2cm, minimum width=3.2cm},
+        evalblock/.style={rectangle, draw, fill=purple!20, rounded corners, text centered, align=center, minimum height=1.2cm, minimum width=4cm},
+        outputblock/.style={rectangle, draw, fill=green!20, rounded corners, text centered, align=center, minimum height=1.2cm, minimum width=4cm},
+        arrow/.style={thick,->,>=stealth}
+    ]
+
+    % Top process nodes
+    \node[inputblock] (rawdata) {Raw Employee Data};
+    \node[processblock, below=of rawdata] (preprocessing) {Data Cleaning and Preprocessing};
+    \node[processblock, below=of preprocessing] (feature) {Feature Engineering (PCA, Autoencoder, Clustering)};
+    
+    % Model blocks - arranged horizontally
+    \node[modelblock, below left=2cm and 4cm of feature] (ncf) {NCF Model};
+    \node[modelblock, below left=2cm and 0.1cm of feature] (rnn) {RNN Model};
+    \node[modelblock, below right=2cm and 0.1cm of feature] (gnn) {GNN Model};
+    \node[modelblock, below right=2cm and 4cm of feature] (transformer) {Transformer Model};
+
+    % Evaluation node centered
+    \node[evalblock, below=4cm of feature] (evaluation) {Model Evaluation\\ (Precision, Recall, F1-Score, AUC-ROC)};
+    
+    % Output block
+    \node[outputblock, below=of evaluation] (idp) {Select Best Model \\ Generate Personalized IDP};
+
+    % Feedback loop
+    \node[processblock, right=of idp, xshift=1cm] (feedback) {Collect Feedback \\ Update Models};
+
+    % Arrows
+    \draw[arrow] (rawdata) -- (preprocessing);
+    \draw[arrow] (preprocessing) -- (feature);
+
+    \draw[arrow] (feature.south) -- ++(0,-0.5) -| (ncf.north);
+    \draw[arrow] (feature.south) -- ++(0,-0.5) -| (rnn.north);
+    \draw[arrow] (feature.south) -- ++(0,-0.5) -| (gnn.north);
+    \draw[arrow] (feature.south) -- ++(0,-0.5) -| (transformer.north);
+
+    \draw[arrow] (ncf.south) -- (evaluation.north west);
+    \draw[arrow] (rnn.south) -- (evaluation.north west);
+    \draw[arrow] (gnn.south) -- (evaluation.north east);
+    \draw[arrow] (transformer.south) -- (evaluation.north east);
+
+    \draw[arrow] (evaluation) -- (idp);
+    \draw[arrow] (idp) -- (feedback);
+    \draw[arrow, dashed] (feedback.east) -- ++(1cm,0) |- (feature.east);
+
+    \end{tikzpicture}
+    \caption{System Architecture for the Deep Learning-based IDP Recommender. The models (NCF, RNN, GNN, Transformer) are independently trained and evaluated to identify the best-performing model for generating personalized IDPs.}
+    \label{fig:idp_system_architecture}
+\end{figure}
+
+
+The system is composed of the following key modules:
+
+\subsection{Data Collection and Preprocessing}
+Employee data—including skills assessments, performance reviews, career goals, and feedback—is collected from organizational databases and manual sources. This raw data often contains inconsistencies, missing values, and unstructured formats. Therefore, a preprocessing module cleans the data by handling missing entries, standardizing formats, and preparing the inputs for feature engineering.
+
+\subsection{Feature Engineering}
+Feature engineering transforms raw data into structured formats suitable for deep learning models. Dimensionality reduction is performed using Principal Component Analysis (PCA) and Autoencoders to extract the most informative features while minimizing redundancy. Clustering techniques are also applied to group employees by similar career paths and competencies, providing additional categorical features.
+
+\subsection{Model Training}
+Four deep learning models—Neural Collaborative Filtering (NCF), Recurrent Neural Networks (RNN), Graph Neural Networks (GNN), and Transformer-based models—are independently trained using the engineered feature sets. Each model is designed to predict the most appropriate Individual Development Plan recommendations for a given employee profile.
+
+\subsection{Model Evaluation}
+The models are evaluated separately using consistent data splits (training, validation, and testing). Evaluation metrics include Precision, Recall, F1-Score, and AUC-ROC to provide a comprehensive view of each model's predictive performance. The best-performing model based on these metrics is selected for deployment.
+
+\subsection{Deployment and Feedback Integration}
+Once the best model is selected, it is used to generate personalized IDPs for employees. A feedback mechanism is implemented to collect post-recommendation evaluations from employees and supervisors. This feedback is used to update the training dataset and periodically retrain models, ensuring that the system adapts to evolving career development needs within the organization.
+
+\section{Module Descriptions}
+\label{section:module_descriptions}
+
+The system is divided into several specialized modules, each responsible for a key part of the IDP recommendation pipeline. This modular design ensures scalability, maintainability, and clear responsibilities across the system components.
+
+\subsection{Data Preprocessing Module}
+The Data Preprocessing Module is responsible for cleaning and standardizing the raw employee datasets. Key operations performed include:
+\begin{itemize}
+    \item Handling missing data through imputation or removal strategies.
+    \item Standardizing categorical variables (e.g., job titles, departments).
+    \item Normalizing numerical features (e.g., skill ratings, evaluation scores).
+    \item Parsing and cleaning unstructured textual fields, such as career goal descriptions.
+\end{itemize}
+This preprocessing ensures that the data fed into the Feature Engineering Module is consistent and machine-readable.
+
+\subsection{Feature Engineering Module}
+The Feature Engineering Module focuses on enhancing the dataset by extracting relevant features:
+\begin{itemize}
+    \item \textbf{Principal Component Analysis (PCA):} Reduces the dimensionality of numerical data, capturing the most informative features.
+    \item \textbf{Autoencoders:} Learn compact, noise-resistant representations of the original employee feature space.
+    \item \textbf{Clustering (e.g., K-Means):} Groups employees with similar learning styles, skill gaps, or career aspirations, generating new categorical features.
+\end{itemize}
+The output from this module serves as the input for the model training phase.
+
+\subsection{Neural Collaborative Filtering (NCF) Model}
+The NCF Model extends traditional collaborative filtering by using a multi-layer perceptron (MLP) to learn nonlinear user-item interaction patterns. In this context, employees are treated as users and development plans as items. The model predicts the most suitable development plans based on historical training, assessment results, and career progressions.
+
+\begin{algorithm}[H]
+\DontPrintSemicolon
+\caption{Neural Collaborative Filtering (NCF)}
+\label{alg:ncf}
+
+\KwIn{User-item interaction matrix $\mathbf{R}$}
+\KwOut{Predicted user preferences $\hat{\mathbf{R}}$}
+
+\Begin{
+    Initialize embeddings for users and items\;
+    Define neural network $f(\cdot)$ to model interaction between embeddings\;
+    \For{each epoch}{
+        \For{each user-item pair $(u, i)$}{
+            Predict score: $\hat{r}_{ui} = f(\text{embedding}(u), \text{embedding}(i))$\;
+            Compute loss: $L = \text{MSE}(r_{ui}, \hat{r}_{ui})$\;
+            Update model parameters via backpropagation\;
+        }
+    }
+}
+\end{algorithm}
+
+\subsection{Recurrent Neural Network (RNN) Model}
+The RNN Model is designed to capture sequential patterns in employee development histories. Employees' past training sessions, promotions, and evaluations form a temporal sequence, which the RNN learns to model. Long Short-Term Memory (LSTM) cells are used to mitigate the vanishing gradient problem and better capture long-term dependencies in employee progression paths.
+
+\begin{algorithm}[H]
+\DontPrintSemicolon
+\caption{Training and Prediction using Long Short-Term Memory (LSTM) Networks}
+\label{alg:lstm_training}
+
+\KwIn{Sequential employee development data $\mathcal{D} = \{(x_t, y_t)\}_{t=1}^T$}
+\KwOut{Trained LSTM model capable of predicting next development steps}
+
+\Begin{
+    Initialize LSTM parameters (weights, biases) randomly\;
+    Set learning rate $\eta$\;
+    
+    \For{each training epoch}{
+        \For{each employee sequence $(x_1, \ldots, x_T)$ in $\mathcal{D}$}{
+            Initialize hidden state $h_0 = 0$ and cell state $c_0 = 0$\;
+            
+            \For{each time step $t = 1$ to $T$}{
+                Compute input gate:
+                
+                $i_t = \sigma(W_{xi}x_t + W_{hi}h_{t-1} + b_i)$\;
+                
+                Compute forget gate:
+                
+                $f_t = \sigma(W_{xf}x_t + W_{hf}h_{t-1} + b_f)$\;
+                
+                Compute output gate:
+                
+                $o_t = \sigma(W_{xo}x_t + W_{ho}h_{t-1} + b_o)$\;
+                
+                Compute candidate cell state:
+                
+                $\tilde{c}_t = \tanh(W_{xc}x_t + W_{hc}h_{t-1} + b_c)$\;
+                
+                Update cell state:
+                
+                $c_t = f_t \odot c_{t-1} + i_t \odot \tilde{c}_t$\;
+                
+                Update hidden state:
+                
+                $h_t = o_t \odot \tanh(c_t)$\;
+                
+                Compute output prediction:
+                
+                $\hat{y}_t = \sigma(W_{hy}h_t + b_y)$\;
+            }
+            
+            Compute loss $L$ between predicted outputs $\hat{y}_t$ and ground truth $y_t$\;
+            
+            Backpropagate error through time (BPTT) to compute gradients\;
+            
+            Update LSTM parameters using gradient descent:
+            
+            $\theta \leftarrow \theta - \eta \nabla_{\theta} L$
+        }
+    }
+}
+
+\end{algorithm}
+
+\newpage
+\subsection{Graph Neural Network (GNN) Model}
+The GNN Model treats employee competencies, career goals, and development resources as nodes in a graph. Skills are connected based on prerequisite relationships or co-occurrence patterns. The GNN aggregates information from an employee’s local skill neighborhood to predict personalized development plans, effectively leveraging relational data structures.
+
+\begin{algorithm}[H]
+\DontPrintSemicolon
+\caption{Graph Neural Network (GNN) for Skill Recommendation}
+\label{alg:gnn}
+
+\KwIn{Graph $G = (V, E)$ with node features $\mathbf{H}^0$}
+\KwOut{Updated node embeddings $\mathbf{H}^L$}
+
+\Begin{
+    \For{layer $l = 0$ \KwTo $L-1$}{
+        \For{each node $v \in V$}{
+            Aggregate neighbor features:
+            
+            $\mathbf{h}_{\mathcal{N}(v)}^{(l)} = \text{AGGREGATE}^{(l)}(\{\mathbf{h}_u^{(l)}: u \in \mathcal{N}(v)\})$\;
+            
+            Update node representation:
+            
+            $\mathbf{h}_v^{(l+1)} = \sigma\left( \mathbf{W}^{(l)} \cdot \text{CONCAT}(\mathbf{h}_v^{(l)}, \mathbf{h}_{\mathcal{N}(v)}^{(l)}) \right)$\;
+        }
+    }
+}
+\end{algorithm}
+
+\subsection{Transformer Model}
+The Transformer Model is applied particularly to unstructured textual data, such as employee career goals or self-assessments. Utilizing self-attention mechanisms, the Transformer captures long-range dependencies and contextual relationships in the text, allowing the model to generate more contextually relevant development plan recommendations.
+
+\begin{algorithm}[H]
+\DontPrintSemicolon
+\caption{Transformer Encoder for Text Embeddings}
+\label{alg:transformer}
+
+\KwIn{Tokenized text input $X = (x_1, \ldots, x_n)$}
+\KwOut{Contextual embeddings $H = (h_1, \ldots, h_n)$}
+
+\Begin{
+    Embed tokens: $\mathbf{E} = \text{Embedding}(X)$\;
+    Add positional encodings to $\mathbf{E}$\;
+    \For{each layer}{
+        Compute multi-head self-attention:
+
+        $Z = \text{MultiHead}(Q=E, K=E, V=E)$\;
+        
+        Apply feedforward network: 
+        
+        $H = \text{FFN}(Z)$\;
+    }
+}
+\end{algorithm}
+\subsection{Model Evaluation Metrics}
+Each model’s predictions are evaluated using standard classification metrics:
+\begin{itemize}
+    \item \textbf{Precision:} Measures the proportion of recommended development plans that were relevant.
+    \item \textbf{Recall:} Measures the proportion of relevant plans that were correctly recommended.
+    \item \textbf{F1-Score:} The harmonic mean of Precision and Recall, balancing both concerns.
+    \item \textbf{AUC-ROC:} Measures the trade-off between true positive and false positive rates across thresholds.
+\end{itemize}
+These metrics are used to select the best-performing model for deployment.
+
+\section{Experimental Design}
+\label{section:experimental_design}
+
+The experimental design phase establishes the procedures for training, validating, and evaluating the deep learning models developed for the IDP recommender system. Each model—Neural Collaborative Filtering (NCF), Recurrent Neural Network (RNN), Graph Neural Network (GNN), and Transformer—is independently trained and assessed to ensure fair performance comparisons.
+
+\subsection{Dataset Preparation}
+Employee data collected from organizational systems is preprocessed as described in Section~\ref{section:module_descriptions}. After cleaning and feature engineering, the dataset is split into three subsets:
+\begin{itemize}
+    \item \textbf{Training Set (70\%):} Used to train the models by minimizing the loss function.
+    \item \textbf{Validation Set (15\%):} Used for hyperparameter tuning and early stopping to prevent overfitting.
+    \item \textbf{Testing Set (15\%):} Used solely for final performance evaluation.
+\end{itemize}
+
+All data splits are stratified where applicable, ensuring balanced distributions of key employee attributes across the subsets.
+
+\subsection{Cross-Validation Strategy}
+In addition to a fixed train-validation-test split, 5-fold cross-validation is applied during hyperparameter tuning. This involves partitioning the training set into five folds and performing training and validation iteratively to assess the generalization capability of each model.
+
+\subsection{Model Training Details}
+Each deep learning model is trained independently using the prepared training data. The following general settings are applied:
+\begin{itemize}
+    \item \textbf{Optimizer: Adam Optimizer} with an initial learning rate of 0.001.
+    
+    The Adam optimizer updates model parameters based on estimates of first ($m_t$) and second ($v_t$) moments of the gradients:
+    \[
+    \theta_{t+1} = \theta_t - \eta \times \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon}
+    \]
+    where:
+    \begin{itemize}
+        \item $\theta_t$ are the model parameters at time step $t$,
+        \item $\eta$ is the learning rate,
+        \item $\hat{m}_t$ is the bias-corrected first moment estimate (mean of gradients),
+        \item $\hat{v}_t$ is the bias-corrected second moment estimate (uncentered variance of gradients),
+        \item $\epsilon$ is a small constant for numerical stability.
+    \end{itemize}
+
+    \item \textbf{Loss Function: Binary Cross-Entropy (BCE)} for recommendation tasks.
+    
+    The Binary Cross-Entropy loss function is defined as:
+    \[
+    L = - \frac{1}{N} \sum_{i=1}^{N} \left[ y_i \log(\hat{y}_i) + (1 - y_i) \log(1 - \hat{y}_i) \right]
+    \]
+    where:
+    \begin{itemize}
+        \item $N$ is the number of samples,
+        \item $y_i$ is the true label (0 or 1),
+        \item $\hat{y}_i$ is the predicted probability for the positive class.
+    \end{itemize}
+
+    \item \textbf{Batch Size:} 64 samples per batch.
+    
+    During training, the model updates its weights based on the gradient computed from mini-batches of 64 samples, rather than using the entire training dataset at once (stochastic gradient descent).
+
+    \item \textbf{Epochs:} 100, with early stopping after 10 consecutive epochs without validation loss improvement.
+    
+    An epoch is defined as one full pass through the entire training dataset. Early stopping is a regularization technique where training is halted if the model performance on the validation set does not improve for 10 consecutive epochs.
+\end{itemize}
+
+
+Hyperparameters such as learning rate, dropout rate, number of hidden layers, and embedding sizes are fine-tuned based on validation performance during cross-validation.
+
+\subsection{Evaluation Criteria}
+\begin{itemize}
+    \item \textbf{Precision ($P$):} Measures the proportion of correctly recommended development plans among all recommendations made.
+    \[
+    P = \frac{TP}{TP + FP}
+    \]
+    where $TP$ = True Positives and $FP$ = False Positives.
+
+    \item \textbf{Recall ($R$):} Measures the proportion of relevant development plans successfully recommended.
+    \[
+    R = \frac{TP}{TP + FN}
+    \]
+    where $FN$ = False Negatives.
+
+    \item \textbf{F1-Score ($F_1$):} Harmonic mean of Precision and Recall, providing a balance between the two.
+    \[
+    F_1 = 2 \times \frac{P \times R}{P + R}
+    \]
+
+    \item \textbf{AUC-ROC:} Area Under the Receiver Operating Characteristic Curve, measuring the ability of the model to distinguish between classes.
+
+    The AUC-ROC is calculated by plotting the True Positive Rate (TPR) against the False Positive Rate (FPR) at various threshold settings:
+    \[
+    \text{TPR} = \frac{TP}{TP + FN}
+    \quad \text{and} \quad
+    \text{FPR} = \frac{FP}{FP + TN}
+    \]
+    where $TN$ = True Negatives.
+\end{itemize}
+
+
+Each model’s performance is reported on the testing set, and the model achieving the best F1-Score and AUC-ROC is selected for deployment.
+
+\subsection{Software and Hardware Environment}
+The experiments are conducted using the following environments:
+\begin{itemize}
+    \item Programming Language: Julia
+    \item Deep Learning Libraries: Flux, DataFrames, Plots, Statistics
+    \item Hardware: CPU-only training due to Hardware Constraints.
+\end{itemize}
+
+\section{Technical Decisions Justification}
+\label{section:technical_decisions}
+
+This section provides the rationale behind the selection of models, methods, and techniques used in designing the deep learning-based IDP recommender system.
+
+\subsection{Why Deep Learning Approaches?}
+Traditional machine learning algorithms such as decision trees or support vector machines often struggle with high-dimensional, unstructured, and sequential data commonly found in employee development records. Deep learning models offer superior capabilities for:
+\begin{itemize}
+    \item Automatically extracting complex features from large datasets.
+    \item Capturing nonlinear relationships between employee attributes and development paths.
+    \item Handling sequential data (e.g., training histories, performance progressions) through models like RNNs and LSTMs.
+    \item Processing unstructured textual data such as career aspirations using architectures like Transformers.
+\end{itemize}
+Given these advantages, deep learning was chosen to maximize the predictive accuracy and flexibility of the IDP recommender system.
+
+\subsection{Why Neural Collaborative Filtering (NCF)?}
+NCF extends traditional collaborative filtering by replacing dot-product operations with neural networks, enabling the learning of complex user-item interaction patterns. In the context of IDPs:
+\begin{itemize}
+    \item Employees are treated as users and recommended career development options as items.
+    \item NCF can model intricate relationships between employee history and future development needs.
+    \item It improves over matrix factorization methods by introducing non-linearity through hidden layers.
+\end{itemize}
+
+\subsection{Why Recurrent Neural Networks (RNNs)?}
+Career development is inherently sequential—previous training, promotions, and evaluations influence future development plans. RNNs are selected because:
+\begin{itemize}
+    \item They capture temporal dependencies in employee development trajectories.
+    \item Using Long Short-Term Memory (LSTM) cells addresses the vanishing gradient problem, allowing modeling of long-term dependencies.
+    \item Sequential modeling is essential for recommending development paths that logically follow an employee's career history.
+\end{itemize}
+
+\subsection{Why Graph Neural Networks (GNNs)?}
+Skills, roles, and career goals form natural graph structures with prerequisite relationships and interdependencies. GNNs are appropriate because:
+\begin{itemize}
+    \item They capture relational information between skills and learning objectives.
+    \item They allow knowledge propagation across the graph, enhancing recommendations based on employee competencies and career objectives.
+    \item They model interconnected skill frameworks more effectively than flat vector representations.
+\end{itemize}
+
+\subsection{Why Transformer Models?}
+Employee career goals and self-assessments often involve natural language, which is unstructured and complex. Transformers, such as BERT, are ideal because:
+\begin{itemize}
+    \item They leverage self-attention mechanisms to capture contextual relationships within text.
+    \item They handle long-range dependencies without sequential bias, unlike RNNs.
+    \item They have proven superior performance in many natural language processing (NLP) tasks relevant to understanding career aspirations.
+\end{itemize}
+
+\subsection{Why Principal Component Analysis (PCA) and Autoencoders?}
+To reduce redundancy and enhance model training efficiency, dimensionality reduction techniques are applied:
+\begin{itemize}
+    \item \textbf{PCA} projects features into a lower-dimensional space while preserving variance, useful for structured numerical data.
+    \item \textbf{Autoencoders} learn compact, non-linear representations, beneficial when relationships among features are complex.
+\end{itemize}
+Both methods ensure that the input features are more manageable and that models can focus on the most informative aspects of employee data.
+
+\subsection{Why Standard Evaluation Metrics?}
+Metrics like Precision, Recall, F1-Score, and AUC-ROC are chosen because:
+\begin{itemize}
+    \item They provide a comprehensive understanding of model performance.
+    \item Precision and Recall address the correctness and completeness of recommendations.
+    \item F1-Score balances Precision and Recall into a single figure of merit.
+    \item AUC-ROC provides insight into model discrimination capability across decision thresholds.
+\end{itemize}
+
+\section{Summary}
+\label{section:research_design_summary}
+
+This chapter presented the complete research design for developing and evaluating a deep learning-based recommender system for Individual Development Plans (IDPs). 
+
+The design is modular and data-driven, beginning with the collection and preprocessing of employee data, followed by feature engineering using dimensionality reduction and clustering techniques. Four deep learning models—Neural Collaborative Filtering (NCF), Recurrent Neural Network (RNN), Graph Neural Network (GNN), and Transformer—are independently trained and evaluated based on standard metrics such as Precision, Recall, F1-Score, and AUC-ROC.
+
+Each model's architecture, training process, and evaluation strategy were explained in detail, including technical justifications for selecting deep learning approaches over traditional machine learning techniques. The experimental design ensures fair comparison across models through consistent data splitting, cross-validation, and hyperparameter tuning.
+
+The best-performing model will ultimately be deployed within the IDP generation system, supported by a feedback loop for continuous system improvement. 
+
+The next chapter presents the results of the experiments and provides a detailed analysis of the models' performances.
