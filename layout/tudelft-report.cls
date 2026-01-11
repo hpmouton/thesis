@@ -43,7 +43,10 @@
 \RequirePackage{subfig}
 \RequirePackage{pgfplots}
 \RequirePackage{mathrsfs}
+
+% SVG package (transparent warning is harmless and can be ignored)
 \RequirePackage{svg}
+
 \RequirePackage{bigfoot}
 \RequirePackage{fontspec}               % Custom fonts
 \RequirePackage{tcolorbox}
@@ -53,9 +56,16 @@
 \RequirePackage[hidelinks]{hyperref}    % Improved referencing/links
 \RequirePackage[capitalise]{cleveref}
 \RequirePackage[ruled]{algorithm2e}
-\RequirePackage[style=apa6,sortcites=true,sorting=nyt,backend=biber]{biblatex}
+\RequirePackage[style=apa6,sortcites=true,sorting=nyt,backend=bibtex]{biblatex}
 
 % APA 6th edition style is applied via the style=apa6 option above
+
+% Highlight citations with a colored background using biblatex hooks
+\definecolor{citehighlight}{RGB}{255, 255, 180}  % Light yellow highlight
+
+% Use biblatex's built-in hooks for citation highlighting
+\renewcommand{\mkbibnamefamily}[1]{\colorbox{citehighlight}{#1}}
+\renewcommand{\mkbibnamegiven}[1]{\colorbox{citehighlight}{#1}}
 
 
 

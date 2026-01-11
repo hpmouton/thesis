@@ -1,0 +1,61 @@
+
+\begin{thenomenclature} 
+\nomgroup{A}
+  \item [{A/B Testing}]\begingroup A/B Testing for Model Evaluation\nomeqref {0}\nompageref{1}
+  \item [{AE}]\begingroup Autoencoder\nomeqref {0}\nompageref{1}
+  \item [{ANN}]\begingroup Artificial Neural Network\nomeqref {0}\nompageref{1}
+  \item [{AUC-ROC}]\begingroup Area Under the Receiver Operating Characteristic Curve\nomeqref {0}\nompageref{1}
+  \item [{Bias}]\begingroup Bias in AI models\nomeqref {0}\nompageref{1}
+  \item [{CF}]\begingroup Collaborative Filtering\nomeqref {0}\nompageref{1}
+  \item [{CNN}]\begingroup Convolutional Neural Network\nomeqref {0}\nompageref{1}
+  \item [{Cross Validation}]\begingroup k-Fold Cross Validation\nomeqref {0}\nompageref{1}
+  \item [{DL}]\begingroup Deep Learning\nomeqref {0}\nompageref{1}
+  \item [{DRL}]\begingroup Deep Reinforcement Learning\nomeqref {0}\nompageref{1}
+  \item [{EDA}]\begingroup Exploratory Data Analysis\nomeqref {0}\nompageref{1}
+  \item [{F1}]\begingroup F1-Score\nomeqref {0}\nompageref{1}
+  \item [{GD}]\begingroup Gradient Descent\nomeqref {0}\nompageref{1}
+  \item [{GNN}]\begingroup Graph Neural Network\nomeqref {0}\nompageref{1}
+  \item [{ICF}]\begingroup Item-based Collaborative Filtering\nomeqref {0}\nompageref{1}
+  \item [{IDF}]\begingroup Inverse Document Frequency\nomeqref {0}\nompageref{1}
+  \item [{IDP}]\begingroup Intelligent Development Plan\nomeqref {0}\nompageref{1}
+  \item [{LIME}]\begingroup Local Interpretable Model-agnostic Explanations\nomeqref {0}\nompageref{1}
+  \item [{LSTM}]\begingroup Long Short-Term Memory\nomeqref {0}\nompageref{1}
+  \item [{MAE}]\begingroup Mean Absolute Error\nomeqref {0}\nompageref{1}
+  \item [{MF}]\begingroup Matrix Factorization\nomeqref {0}\nompageref{1}
+  \item [{ML}]\begingroup Machine Learning\nomeqref {0}\nompageref{1}
+  \item [{NLP}]\begingroup Natural Language Processing\nomeqref {0}\nompageref{1}
+  \item [{PCA}]\begingroup Principal Component Analysis\nomeqref {0}\nompageref{1}
+  \item [{Precision}]\begingroup Precision\nomeqref {0}\nompageref{1}
+  \item [{R2}]\begingroup R-squared\nomeqref {0}\nompageref{1}
+  \item [{RBCF}]\begingroup Recurrent-Based Collaborative Filtering\nomeqref {0}\nompageref{1}
+  \item [{Recall}]\begingroup Recall\nomeqref {0}\nompageref{1}
+  \item [{RL}]\begingroup Reinforcement Learning\nomeqref {0}\nompageref{1}
+  \item [{RMSE}]\begingroup Root Mean Square Error\nomeqref {0}\nompageref{1}
+  \item [{RNN}]\begingroup Recurrent Neural Network\nomeqref {0}\nompageref{1}
+  \item [{SGD}]\begingroup Stochastic Gradient Descent\nomeqref {0}\nompageref{1}
+  \item [{SHAP}]\begingroup SHapley Additive exPlanations\nomeqref {0}\nompageref{1}
+  \item [{SVD}]\begingroup Singular Value Decomposition\nomeqref {0}\nompageref{1}
+  \item [{UCF}]\begingroup User-based Collaborative Filtering\nomeqref {0}\nompageref{1}
+\nomgroup{S}
+  \item [{$ \alpha $}]\begingroup Learning Rate\nomeqref {0}\nompageref{1}
+  \item [{$ \beta $}]\begingroup Bias Parameter\nomeqref {0}\nompageref{1}
+  \item [{$ \delta $}]\begingroup TD-Error (Temporal Difference Error)\nomeqref {0}\nompageref{1}
+  \item [{$ \epsilon $}]\begingroup Exploration Rate (in Reinforcement Learning)\nomeqref {0}\nompageref{1}
+  \item [{$ \eta $}]\begingroup Entropy Temperature (in Model Explainability)\nomeqref {0}\nompageref{1}
+  \item [{$ \gamma $}]\begingroup Discount Factor (for RL)\nomeqref {0}\nompageref{1}
+  \item [{$ \hat{r}_{ui}$}]\begingroup Predicted Rating for User $u$ and Item $i$\nomeqref {0}\nompageref{1}
+  \item [{$ \kappa $}]\begingroup Huber-Loss Parameter\nomeqref {0}\nompageref{1}
+  \item [{$ \lambda $}]\begingroup Regularization Parameter (L2)\nomeqref {0}\nompageref{1}
+  \item [{$ \mathbf{i}$}]\begingroup Item Vector (in Collaborative Filtering)\nomeqref {0}\nompageref{1}
+  \item [{$ \mathbf{R}$}]\begingroup Ratings Matrix (in Recommender Systems)\nomeqref {0}\nompageref{1}
+  \item [{$ \mathbf{u}$}]\begingroup User Vector (in Collaborative Filtering)\nomeqref {0}\nompageref{1}
+  \item [{$ \mathbf{W}$}]\begingroup Weights Matrix (in Neural Networks or Collaborative Filtering)\nomeqref {0}\nompageref{1}
+  \item [{$ \mathbf{X}$}]\begingroup Input Features (in Neural Networks or Recommender Models)\nomeqref {0}\nompageref{1}
+  \item [{$ \mathbf{y}$}]\begingroup Model Output (in supervised learning or regression tasks)\nomeqref {0}\nompageref{1}
+  \item [{$ \mathbf{z}$}]\begingroup Latent Factor Vector (in Matrix Factorization)\nomeqref {0}\nompageref{1}
+  \item [{$ \Psi $}]\begingroup Distortion Risk-Measure (Fairness Metric)\nomeqref {0}\nompageref{1}
+  \item [{$ \tau $}]\begingroup Temperature (in Model Interpretability)\nomeqref {0}\nompageref{1}
+  \item [{$ \xi $}]\begingroup Risk-Distortion Parameter (Fairness Measure)\nomeqref {0}\nompageref{1}
+  \item [{$ t $}]\begingroup Time-Step (in Reinforcement Learning or Sequential Models)\nomeqref {0}\nompageref{1}
+
+\end{thenomenclature}

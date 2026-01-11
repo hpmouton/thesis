@@ -41,10 +41,11 @@
   >
 ]>
 <requests version="1.0">
-  <internal package="biblatex" priority="9" active="0">
+  <internal package="biblatex" priority="9" active="1">
     <generic>latex</generic>
     <provides type="dynamic">
-      <file>main.bcf</file>
+      <file>main.aux</file>
+      <file>main-blx.bib</file>
     </provides>
     <requires type="dynamic">
       <file>main.bbl</file>
@@ -54,6 +55,7 @@
       <file>apa6.dbx</file>
       <file>blx-unicode.def</file>
       <file>blx-compat.def</file>
+      <file>blx-bibtex.def</file>
       <file>biblatex.def</file>
       <file>standard.bbx</file>
       <file>apa6.bbx</file>
@@ -65,14 +67,15 @@
       <file>english-apa6.lbx</file>
     </requires>
   </internal>
-  <external package="biblatex" priority="5" active="0">
-    <generic>biber</generic>
+  <external package="biblatex" priority="5" active="1">
+    <generic>bibtex</generic>
     <cmdline>
-      <binary>biber</binary>
+      <binary>bibtex</binary>
+      <option>-min-crossrefs 999</option>
       <infile>main</infile>
     </cmdline>
     <input>
-      <file>main.bcf</file>
+      <file>main.aux</file>
     </input>
     <output>
       <file>main.bbl</file>
@@ -81,11 +84,15 @@
       <file>main.bbl</file>
     </provides>
     <requires type="dynamic">
-      <file>main.bcf</file>
+      <file>main.aux</file>
+      <file>main-blx.bib</file>
     </requires>
     <requires type="editable">
       <file>bibliography/references.bib</file>
       <file>bibliography/additional_references.bib</file>
+    </requires>
+    <requires type="static">
+      <file>biblatex.bst</file>
     </requires>
   </external>
 </requests>

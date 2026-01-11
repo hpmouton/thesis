@@ -13,41 +13,42 @@ Four primary deep learning models are considered: Neural Collaborative Filtering
 The system architecture is organized into five major phases:
 \begin{table}[H]
 \centering
+\small
 \caption{Models and Techniques Applied Across Research Phases}
 \label{tab:models_summary}
 \rowcolors{2}{gray!10}{white}
-\begin{tabular}{@{}p{6cm}p{6cm}p{4cm}@{}}
+\begin{tabular}{@{}p{5cm}p{5.5cm}p{3.5cm}@{}}
 \toprule
 \textbf{Model/Technique} & \textbf{Purpose} & \textbf{Research Phase} \\
 \midrule
 \rowcolor{blue!10}
-Data Collection and Preprocessing & Collect, clean, normalize employee-related data (skills, feedback, evaluations) & \textbf{Data Collection and Preprocessing} \\
+Data Collection and Preprocessing & Collect, clean, normalize employee data (skills, feedback, evaluations) & \textbf{Data Collection} \\
 \midrule
 \rowcolor{cyan!15}
-Principal Component Analysis (PCA) & Reduce feature dimensionality and highlight important employee data patterns & \textbf{Feature Engineering} \\
+Principal Component Analysis (PCA) & Reduce feature dimensionality and highlight important patterns & \textbf{Feature Engineering} \\
 \rowcolor{cyan!15}
 Autoencoder & Denoise and compress employee data for feature extraction & \textbf{Feature Engineering} \\
 \rowcolor{cyan!15}
-Clustering (e.g., K-Means) & Group employees based on similar career goals and skill gaps & \textbf{Feature Engineering} \\
+Clustering (e.g., K-Means) & Group employees based on similar goals and skill gaps & \textbf{Feature Engineering} \\
 \midrule
 \rowcolor{orange!20}
-Neural Collaborative Filtering (NCF) & Predict personalized skill development plans based on interaction data & \textbf{Model Training} \\
+Neural Collaborative Filtering (NCF) & Predict personalized skill development plans from interaction data & \textbf{Model Training} \\
 \rowcolor{orange!20}
-Recurrent Neural Network (RNN) / LSTM & Model sequential employee learning behaviors and engagement history & \textbf{Model Training} \\
+RNN / LSTM & Model sequential learning behaviors and engagement history & \textbf{Model Training} \\
 \rowcolor{orange!20}
-Graph Neural Network (GNN) & Model relationships between skills, learning paths, and career objectives via Knowledge Graphs & \textbf{Model Training} \\
+Graph Neural Network (GNN) & Model relationships between skills and career objectives via Knowledge Graphs & \textbf{Model Training} \\
 \rowcolor{orange!20}
-Transformer Model (e.g., BERT) & Understand textual employee career goals and aspirations & \textbf{Model Training} \\
+Transformer Model (BERT) & Understand textual employee career goals and aspirations & \textbf{Model Training} \\
 \midrule
 \rowcolor{green!20}
-Precision, Recall, F1-Score, AUC-ROC & Evaluate model effectiveness and recommendation quality & \textbf{Model Evaluation} \\
+Precision, Recall, F1, AUC-ROC & Evaluate model effectiveness and recommendation quality & \textbf{Model Evaluation} \\
 \rowcolor{green!20}
 k-Fold Cross-Validation & Validate model robustness and prevent overfitting & \textbf{Model Evaluation} \\
 \rowcolor{green!20}
-Explainability Methods (SHAP, LIME) & Interpret model predictions and detect potential biases & \textbf{Model Evaluation} \\
+Explainability (SHAP, LIME) & Interpret model predictions and detect potential biases & \textbf{Model Evaluation} \\
 \midrule
 \rowcolor{yellow!20}
-Feedback Integration and Deployment Preparation & Use best-performing model to generate IDPs; integrate feedback for retraining & \textbf{Deployment Preparation} \\
+Feedback Integration & Use best model to generate IDPs; integrate feedback for retraining & \textbf{Deployment} \\
 \bottomrule
 \end{tabular}
 
