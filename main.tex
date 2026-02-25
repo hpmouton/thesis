@@ -1,8 +1,8 @@
 % !TeX program = xelatex
 \documentclass{layout/tudelft-report}
-% Bibliography Sources
-\addbibresource{bibliography/references.bib}
-\addbibresource{bibliography/additional_references.bib}
+% Bibliography Sources (BibTeX)
+% Use classical BibTeX commands because the environment will run bibtex.
+% Keep both databases listed in the \bibliography command below.
 
 % Define Notation commands
 \input{notation}
@@ -30,14 +30,18 @@
     % Copyright Page
     \input{frontmatter/declaration}
 
+    % Abstract
+    \input{frontmatter/abstract}
+
     % Make a preface page
-    \input{frontmatter/preface.tex}
+    % \input{frontmatter/preface.tex}
     
     % TOC, Nomenclature, List of stuff
     \tableofcontents    
     \printnomenclature
     \listoffigures
     \listoftables
+    \listofmyequations
 
     %% Report
     \mainmatter
@@ -46,17 +50,18 @@
     \input{mainmatter/chapter-2-literature-review.tex}
     \input{mainmatter/chapter-3-theoretical-framework}
     \input{mainmatter/chapter-4-research-design.tex}
-    \input{mainmatter/chapter-5-implementation}
-    \input{mainmatter/chapter-6-results}
+    \input{mainmatter/chapter-5-dataset-new}
+    \input{mainmatter/chapter-6-results-new}
     \input{mainmatter/chapter-7-conclusion}
     \input{mainmatter/chapter-8-recommendations}
 
-    % Bibliography with numeric style
-    \printbibliography[title=References]
+    % Bibliography (BibTeX) - APA 6th Edition Style
+    \bibliographystyle{apacite}
+    \bibliography{bibliography/references,bibliography/additional_references}
     \addcontentsline{toc}{chapter}{References}
     
     % __ Appendix ___
-    \appendix
-    \input{appendix/appendix-algorithms}
+    % \appendix
+    % \input{appendix/appendix-algorithms}
     
 \end{document}

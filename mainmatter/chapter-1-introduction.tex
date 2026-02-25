@@ -1,21 +1,27 @@
 \chapter{Introduction}
 \label{chapter:intro}
 
+% Use full justification for chapter text
+\justifying
+
 \section{Background to the Study}
 
-This study explores the development of Individual Development Plans (IDPs) using a deep learning-based recommender system. IDPs offer a structured framework for self-assessment, goal setting, and action planning, and are important for aligning personal growth with organizational objectives in complex career contexts \parencite{vanderford2018cross}.
+Being able to grow in one's career is an important aspect that individuals consider when making choices such as furthering their education. Some weigh the pros and cons of investing in their studies \textcite{david_ba_eres_99a970a4}. Investments in further education or professional training often involve significant financial cost and uncertainty regarding future returns \textcite{stephen_c__poplaski_4baca635}. For companies, it is a similar problem. While using an individualistic approach to training may improve employee productivity and increase retention, it also has the risk that employees may leave after they have upskilled themselves \textcite{angela_sutan_88b257bc}. On the other hand, minimal investment in development may result in many skill gaps and reduced organisational performance \textcite{esmond_naalu_7803d844}.
 
+For a company looking to invest in their employees, an individual development plan is vital for their development. They would then have access to tailored development plans \textcite{besim_mustafa_0600d17d}. IDPs are intended to identify skill gaps, guide training interventions, and support career progression in a structured manner \textcite{deborah_e__eason_1beca78d}. When this is done effectively, training resources would be allocated effectively, making sure training is aligned with individual needs rather than applying them in a generic manner. Determining the right development actions for an individual is a complex task that often rely on scattered historical data and stale job descriptions \textcite{chao_wang_f11198d9}. In such scenarios, capturing the true individual needs would prove to be difficult.
+
+Telecom Namibia is a local telecommunications company that has this process outlined as follows. The line manager drafts a Job Competency Profile (JCP), this profile contains all the information on what it means to be competent at a specific job. Then the employee rates themselves and the supervisor does a rating as well, creating the Employee Competency Profile (ECP). This describes the employee's delta of their job competency. The supervisor then discusses the way forward, highlighting what training courses to take, development actions, career transitioning, and possible mentorship opportunities. Thus, drafting the Individual Development Plan.  Although this is a well-designed process that follows a systemic framework, it relies heavily on manual analysis and judgment. This leads to scaling, maintainability, and consistency issues.
+
+This process has been digitalized by the creation of TrainEase and the SkillHarbor platform, up until the point of generating an ECP.  However, the subsequent stages of IDP creation remains a manual process. We now look at how can we make use of deep learning techniques to aid the process of IDP creation. This paper documents the process of how we aim to implement a recommender system that would help employees/employers make informed decisions on their development plans. These recommendations would not be set in stone, but the users would have the option to approve or disprove of the recommendation and further improve future recommendations.
+
+This study delves into the use cases of deep learning recommender systems to support the creation of individual development plans. Specifically, it examines how machine learning models can assist in recommending training courses, development actions, career transition possibilities, and mentorship opportunities. By building and integrating these models into the existing platform, we aim to demonstrate how the machine learning can enhance the personalisation of these development plans.
 \section{Choice of Methods}
-The study adopts a mixed-methods approach, integrating qualitative insights and quantitative validation \parencite{oliveira2021mixed, guetterman2016distinguishes}. Data collection will involve semi-structured interviews and structured questionnaires. Analysis will include thematic coding and statistical modeling, supporting deep learning model training and evaluation.
+The study adopts a mixed-methods approach, integrating qualitative insights and quantitative validation \textcite{oliveira2021mixed, guetterman2016distinguishes}. Data collection will involve semi-structured interviews and structured questionnaires. Analysis will include thematic coding and statistical modeling, supporting deep learning model training and evaluation.
 
 
 
 \section{The Research Time Horizon}
-A longitudinal design will be employed to monitor participants' development plans over time. Regular assessments will capture evolving employee competencies and measure the recommender system's long-term effectiveness \parencite{kelley2011sample, jung2023longitudinal}. Careful sampling and structured engagement strategies will maintain data integrity and participant involvement.lores the development of Individual Development Plans (IDPs) using a deep learning-based recommender system. IDPs, introduced by the Federation of American Societies for Experimental Biology, offer a structured framework for self-assessment, goal setting, and action planning, particularly for doctoral trainees \cite{vanderford2018cross}. They are crucial for aligning personal growth with organizational goals in today’s complex career landscapes.
-
-Recommender systems, widely used in e-commerce, education, and healthcare, provide personalized suggestions. However, traditional systems often struggle with dynamic user behaviors and lack interpretability \cite{sahoo2019deepreco}. Deep learning enhances these systems by uncovering intricate user-item patterns, enabling stronger personalization and adaptability \cite{mu2018survey, li2024attention}.
-
-Advanced deep learning techniques like attention mechanisms, knowledge graphs, and Graph Convolutional Networks (GCNs) are highly effective for modeling relationships among employee skills, career goals, and resources \cite{li2024attention, chen2024intelligent}. These methods form the basis for building an adaptive IDP recommender system.
+A longitudinal design will be employed to monitor participants' development plans over time. Regular assessments will capture evolving employee competencies and measure the recommender system's long-term effectiveness \parencite{kelley2011sample, jung2023longitudinal}. Careful sampling and structured engagement strategies will maintain data integrity and participant involvement.
 
 \section{Problem Statement}
 Telecom Namibia currently conducts competency assessments manually using Excel templates and email exchanges. This process is inefficient, prone to errors, and lacks real-time insights, thereby hindering timely decision-making. As the organization grows, scalability issues become apparent, necessitating an automated, centralized platform for more efficient and accurate IDP creation.
@@ -106,9 +112,12 @@ Action Research (AR), particularly Canonical Action Research (CAR) as outlined b
 
 \section{Structure of the Thesis}
 \begin{itemize}
-    \item \textbf{Chapter 1: Introduction} — Context, problem statement, objectives, and thesis outline.
-    \item \textbf{Chapter 2: Literature Review} — Review of IDPs, recommender systems, and deep learning techniques.
-    \item \textbf{Chapter 3: Methodology} — Research design, model development strategy, and data collection methods.
-    \item \textbf{Chapter 4: Results and Analysis} — Experimental results and system evaluation.
-    \item \textbf{Chapter 5: Discussion and Conclusion} — Findings interpretation, research limitations, and future work.
+    \item \textbf{Chapter 1: Introduction} � Context, problem statement, research questions, objectives, and thesis outline.
+    \item \textbf{Chapter 2: Literature Review} � Systematic review of IDPs, recommender systems, deep learning techniques, and related work.
+    \item \textbf{Chapter 3: Theoretical Framework} � Mathematical foundations of recommendation systems, deep learning architectures, and evaluation metrics.
+    \item \textbf{Chapter 4: Research Design} � Research methodology, model selection rationale, and experimental design.
+    \item \textbf{Chapter 5: Implementation} � System architecture, data pipeline, model implementations, and platform integration.
+    \item \textbf{Chapter 6: Results and Evaluation} � Experimental results, model comparisons, and performance analysis.
+    \item \textbf{Chapter 7: Conclusion} � Summary of findings, research contributions, and limitations.
+    \item \textbf{Chapter 8: Recommendations} � Future research directions and practical recommendations.
 \end{itemize}

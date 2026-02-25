@@ -1,0 +1,81 @@
+% Figure 5.3: Project Structure Diagram
+% Compile with: pdflatex fig_5_3_project_structure.tex
+
+\documentclass[border=10pt]{standalone}
+\usepackage{tikz}
+\usetikzlibrary{trees, arrows.meta}
+\usepackage{xcolor}
+
+% Professional academic color palette
+\definecolor{foldergray}{RGB}{119, 136, 153}    % Light slate gray
+\definecolor{filegray}{RGB}{176, 196, 222}      % Light steel blue
+\definecolor{sourcegray}{RGB}{169, 169, 169}    % Dark gray
+\definecolor{modelgray}{RGB}{192, 192, 192}     % Silver
+\definecolor{textdark}{RGB}{33, 33, 33}
+
+\begin{document}
+\begin{tikzpicture}[
+    grow via three points={one child at (0.5,-0.7) and two children at (0.5,-0.7) and (0.5,-1.4)},
+    edge from parent path={(\tikzparentnode.south) |- (\tikzchildnode.west)},
+    folder/.style={draw=textdark, fill=foldergray!20, rounded corners=2pt, font=\small\bfseries\sffamily, line width=0.5pt},
+    file/.style={draw=textdark, fill=filegray!30, rounded corners=2pt, font=\small\sffamily, line width=0.5pt},
+    juliafile/.style={draw=textdark, fill=sourcegray!25, rounded corners=2pt, font=\small\sffamily, line width=0.5pt},
+    bsonfile/.style={draw=textdark, fill=modelgray!30, rounded corners=2pt, font=\small\sffamily, line width=0.5pt},
+]
+
+\node[folder] {idp-recommender/}
+    child { node[folder] {api/}
+        child { node[juliafile] {server.jl} }
+        child { node[juliafile] {course\_recommender\_api.jl} }
+        child { node[folder] {public/} }
+    }
+    child [missing] {}
+    child [missing] {}
+    child [missing] {}
+    child { node[folder] {src/}
+        child { node[juliafile] {CourseRecommender.jl} }
+        child { node[juliafile] {CareerPathPredictor.jl} }
+        child { node[juliafile] {ActionRecommender.jl} }
+        child { node[juliafile] {MentorMatcher.jl} }
+        child { node[juliafile] {models.jl} }
+        child { node[juliafile] {training.jl} }
+        child { node[juliafile] {data.jl} }
+    }
+    child [missing] {}
+    child [missing] {}
+    child [missing] {}
+    child [missing] {}
+    child [missing] {}
+    child [missing] {}
+    child [missing] {}
+    child { node[folder] {models/}
+        child { node[bsonfile] {ncf\_production.bson} }
+        child { node[bsonfile] {lstm\_production.bson} }
+        child { node[bsonfile] {transformer\_production.bson} }
+        child { node[bsonfile] {career\_transition.bson} }
+        child { node[bsonfile] {skill\_course\_ncf.bson} }
+    }
+    child [missing] {}
+    child [missing] {}
+    child [missing] {}
+    child [missing] {}
+    child [missing] {}
+    child { node[folder] {Data/}
+        child { node[file] {Online\_Courses.csv} }
+        child { node[file] {career\_path\_in\_all\_field.csv} }
+        child { node[file] {usa\_job\_posting\_dataset.csv} }
+        child { node[file] {user\_feedback.csv} }
+    }
+    child [missing] {}
+    child [missing] {}
+    child [missing] {}
+    child [missing] {}
+    child { node[folder] {tests/} }
+    child { node[folder] {notebooks/} }
+    child { node[folder] {scripts/} }
+    child { node[folder] {docs/} }
+    child { node[file] {Project.toml} }
+    child { node[file] {Manifest.toml} };
+
+\end{tikzpicture}
+\end{document}

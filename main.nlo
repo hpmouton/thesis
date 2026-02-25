@@ -38,18 +38,4 @@
 \nomenclatureentry{S$ \gamma $@[{$ \gamma $}]\begingroup Discount Factor (for RL)\nomeqref {0}|nompageref}{1}
 \nomenclatureentry{S$ \delta $@[{$ \delta $}]\begingroup TD-Error (Temporal Difference Error)\nomeqref {0}|nompageref}{1}
 \nomenclatureentry{S$ \epsilon $@[{$ \epsilon $}]\begingroup Exploration Rate (in Reinforcement Learning)\nomeqref {0}|nompageref}{1}
-\nomenclatureentry{S$ \eta $@[{$ \eta $}]\begingroup Entropy Temperature (in Model Explainability)\nomeqref {0}|nompageref}{1}
-\nomenclatureentry{S$ \lambda $@[{$ \lambda $}]\begingroup Regularization Parameter (L2)\nomeqref {0}|nompageref}{1}
-\nomenclatureentry{S$ \kappa $@[{$ \kappa $}]\begingroup Huber-Loss Parameter\nomeqref {0}|nompageref}{1}
-\nomenclatureentry{S$ \xi $@[{$ \xi $}]\begingroup Risk-Distortion Parameter (Fairness Measure)\nomeqref {0}|nompageref}{1}
-\nomenclatureentry{S$ \Psi $@[{$ \Psi $}]\begingroup Distortion Risk-Measure (Fairness Metric)\nomeqref {0}|nompageref}{1}
-\nomenclatureentry{S$ t $@[{$ t $}]\begingroup Time-Step (in Reinforcement Learning or Sequential Models)\nomeqref {0}|nompageref}{1}
-\nomenclatureentry{S$ \tau $@[{$ \tau $}]\begingroup Temperature (in Model Interpretability)\nomeqref {0}|nompageref}{1}
-\nomenclatureentry{S$ \mathbf{u}$@[{$ \mathbf{u}$}]\begingroup User Vector (in Collaborative Filtering)\nomeqref {0}|nompageref}{1}
-\nomenclatureentry{S$ \mathbf{i}$@[{$ \mathbf{i}$}]\begingroup Item Vector (in Collaborative Filtering)\nomeqref {0}|nompageref}{1}
-\nomenclatureentry{S$ \mathbf{X}$@[{$ \mathbf{X}$}]\begingroup Input Features (in Neural Networks or Recommender Models)\nomeqref {0}|nompageref}{1}
-\nomenclatureentry{S$ \mathbf{W}$@[{$ \mathbf{W}$}]\begingroup Weights Matrix (in Neural Networks or Collaborative Filtering)\nomeqref {0}|nompageref}{1}
-\nomenclatureentry{S$ \mathbf{R}$@[{$ \mathbf{R}$}]\begingroup Ratings Matrix (in Recommender Systems)\nomeqref {0}|nompageref}{1}
-\nomenclatureentry{S$ \hat{r}_{ui}$@[{$ \hat{r}_{ui}$}]\begingroup Predicted Rating for User $u$ and Item $i$\nomeqref {0}|nompageref}{1}
-\nomenclatureentry{S$ \mathbf{z}$@[{$ \mathbf{z}$}]\begingroup Latent Factor Vector (in Matrix Factorization)\nomeqref {0}|nompageref}{1}
-\nomenclatureentry{S$ \mathbf{y}$@[{$ \mathbf{y}$}]\begingroup Model Output (in supervised learning or regression tasks)\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{S$ \eta $@[{$ \eta $}]\begingroup Entropy Temperature (in Model Explainability)\nomeqref {0}|n

@@ -1,4 +1,735 @@
 \chapter{Implementation}
 \label{chapter:imp}
 
-stuff
+% Use full justification for chapter text
+\justifying
+
+This chapter presents the implementation details of the IDP recommender system, including the system architecture, data pipeline, model implementations, and integration with the TrainEase learning management system. The implementation leverages Julia 1.9.3 with Flux.jl for deep learning, providing a balance between development speed and computational performance. The system is designed to be modular, allowing individual components to be updated independently while maintaining a consistent API interface.
+
+\section{System Architecture Overview}
+
+\subsection{High-Level Architecture}
+
+The IDP recommender system follows a three-tier architecture consisting of a Data Layer, Model Layer, and API Layer. This separation of concerns enables independent scaling and maintenance of each component. The Data Layer handles data ingestion, preprocessing, and storage using CSV files and MySQL databases. The Model Layer contains all deep learning models implemented in Julia with Flux.jl, including NCF, LSTM, Transformer, and GNN architectures. The API Layer exposes RESTful endpoints that the Laravel frontend consumes to generate personalized recommendations.
+
+The system integrates with the TrainEase LMS built on Laravel and Livewire, providing a seamless user experience where employees can view their personalized development plans without leaving the familiar LMS interface. \Cref{fig:system_architecture} illustrates the complete system architecture.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/Assets/tikz/fig_5_1_system_architecture.pdf}
+    \caption[System Architecture Diagram]{System Architecture Diagram. The three-tier architecture shows the Julia ML backend, REST API layer, and Laravel/Livewire frontend integration.}
+    \label{fig:system_architecture}
+\end{figure}
+
+\subsection{Data Flow}
+
+The data flow within the system follows a request-response pattern optimized for low latency recommendations. When an employee accesses their IDP dashboard, the Laravel frontend sends an HTTP request to the Julia API server. The API server loads the appropriate pre-trained models from disk (stored in BSON format), processes the employee's profile data, and generates personalized recommendations. These recommendations are then serialized as JSON and returned to the frontend for display.
+
+The asynchronous nature of the API calls ensures that the frontend remains responsive while complex model inference occurs in the background. Model predictions are cached for frequently accessed employees to reduce response times for subsequent requests. The data flow diagram in \Cref{fig:data_flow} illustrates how user requests are processed through the system, from the frontend through the API to the model layer and back.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/Assets/tikz/fig_5_2_data_flow.pdf}
+    \caption[Data Flow Diagram]{Data Flow Diagram. User requests flow from the Laravel frontend through the REST API to the Julia ML models, which generate personalized recommendations.}
+    \label{fig:data_flow}
+\end{figure}
+
+\subsection{Project Structure}
+
+The source code is organized into modular directories for maintainability and scalability:
+
+\begin{itemize}
+    \item \textbf{api/} -- REST API server implementation
+    \begin{itemize}
+        \item \texttt{server.jl} -- Main HTTP server
+        \item \texttt{course\_recommender\_api.jl} -- API endpoints
+    \end{itemize}
+    \item \textbf{src/} -- Core ML modules
+    \begin{itemize}
+        \item \texttt{CourseRecommender.jl} -- Course recommendation models
+        \item \texttt{CareerPathPredictor.jl} -- Career transition predictions
+        \item \texttt{ActionRecommender.jl} -- Development action suggestions
+        \item \texttt{MentorMatcher.jl} -- Mentor-mentee matching
+        \item \texttt{models.jl}, \texttt{training.jl}, \texttt{data.jl} -- Shared utilities
+    \end{itemize}
+    \item \textbf{models/} -- Trained model files (.bson format)
+    \item \textbf{Data/} -- Dataset files (CSV format)
+    \item \textbf{tests/}, \textbf{notebooks/}, \textbf{scripts/}, \textbf{docs/} -- Supporting directories
+    \item \texttt{Project.toml}, \texttt{Manifest.toml} -- Julia package dependencies
+\end{itemize}
+
+\Cref{fig:project_structure} provides a visual representation of the project directory structure.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/Assets/tikz/fig_5_3_project_structure.pdf}
+    \caption[Project Directory Structure]{Project Directory Structure. The modular organization separates API endpoints, core ML modules, trained models, and data files for maintainability.}
+    \label{fig:project_structure}
+\end{figure}
+
+\section{Data Pipeline Implementation}
+
+The data pipeline forms the foundation of the IDP recommender system, transforming raw data from multiple sources into structured representations suitable for deep learning models. This section describes the data sources, collection methods, and feature engineering processes employed.
+
+\subsection{Data Sources and Collection}
+
+The implementation utilizes multiple datasets to support the IDP recommender system. These datasets were collected from publicly available sources and the TrainEase LMS database, then cleaned and preprocessed for model training. The job posts dataset provides information about skill requirements across industries, while the online courses dataset contains course metadata including topics, difficulty levels, and learning outcomes. The career paths dataset maps typical career progressions and skill requirements for each transition. \Cref{tab:dataset_statistics} provides a comprehensive overview of the datasets used in this study.
+
+\begin{table}[H]
+    \centering
+    \caption[Dataset Statistics]{Dataset Statistics for the IDP Recommender System. The table summarizes the five primary data sources, their origins, and key characteristics.}
+    \label{tab:dataset_statistics}
+    \small
+    \begin{tabular}{@{}llS[table-format=5.0]S[table-format=2.0]S[table-format=2.1]@{}}
+        \toprule
+        \textbf{Dataset} & \textbf{Source} & {\textbf{Records}} & {\textbf{Features}} & {\textbf{Size (MB)}} \\
+        \midrule
+        Job Posts & LinkedIn/Indeed & 23000 & 15 & 45.2 \\
+        Online Courses & Coursera/Udemy & 8000 & 12 & 18.7 \\
+        Career Paths & O*NET/BLS & 9000 & 18 & 22.3 \\
+        Employee Data & TrainEase LMS & 300 & 25 & 0.8 \\
+        Skills Taxonomy & ESCO/O*NET & 2500 & 8 & 3.1 \\
+        \midrule
+        \textbf{Total} & \textit{Combined} & 42800 & {--} & 90.1 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\Cref{fig:dataset_sizes} illustrates the relative sizes of the datasets used in this study.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{figures/Assets/fig_5_1_dataset_overview.pdf}
+    \caption[Dataset Size Distribution]{Dataset Sizes Used in the IDP Recommender System. The chart shows the relative sizes of the job posts (23,000 records), online courses (8,000 records), career paths (9,000 records), and employee data (300 records) datasets.}
+    \label{fig:dataset_sizes}
+\end{figure}
+
+\Cref{fig:course_distribution} presents the distribution of online courses across different categories in the dataset.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{figures/Assets/fig_5_2_course_distribution.pdf}
+    \caption[Course Distribution by Category]{Course Distribution by Category. The chart shows the breakdown of 8,000 online courses across professional development categories, informing the course recommendation component.}
+    \label{fig:course_distribution}
+\end{figure}
+
+\Cref{fig:job_distribution} illustrates the distribution of job postings across different industries and roles.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{figures/Assets/fig_5_3_job_distribution.pdf}
+    \caption[Job Distribution by Industry]{Job Distribution by Industry. The chart shows the breakdown of 23,000 job postings across industries, supporting the career path prediction component.}
+    \label{fig:job_distribution}
+\end{figure}
+
+\subsection{Feature Engineering}
+
+Feature engineering is critical for transforming raw textual and categorical data into numerical representations that deep learning models can process. The primary challenge lies in creating meaningful skill embeddings that capture semantic relationships between different competencies.
+
+Skills are extracted from job postings and course descriptions using natural language processing techniques, including tokenization and named entity recognition. These raw skills are then normalized using the European Skills, Competences, Qualifications and Occupations (ESCO) taxonomy, which provides a standardized vocabulary of over 13,000 skills. This normalization ensures consistency across different data sources and enables meaningful comparisons between employee skills and job requirements.
+
+Text features are converted to numerical vectors using TF-IDF (Term Frequency-Inverse Document Frequency) weighting, followed by dimensionality reduction using Principal Component Analysis (PCA) to reduce the feature space from thousands of dimensions to a manageable 50 dimensions. This compressed representation retains the most important variance while reducing computational requirements during model training.
+
+\Cref{fig:training_data_stats} shows the training data statistics, illustrating the distribution of samples across different components.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{figures/Assets/fig_5_5_training_data_stats.pdf}
+    \caption[Training Data Statistics]{Training Data Statistics. This visualization shows the distribution of training samples across different IDP components, informing the feature engineering process for the recommender models.}
+    \label{fig:training_data_stats}
+\end{figure}
+
+\section{Model Implementation}
+
+This section presents the implementation details of each deep learning architecture used in the IDP recommender system. All models are implemented in Julia using the Flux.jl deep learning framework, which provides automatic differentiation and GPU acceleration capabilities. The modular design allows each model to be trained independently and combined through ensemble methods for improved prediction accuracy.
+
+\subsection{Neural Collaborative Filtering (NCF)}
+
+The NCF architecture represents the core recommendation engine, combining the strengths of matrix factorization with deep neural networks. The model learns latent representations for both users (employees) and items (courses, career paths, or development actions) through embedding layers, then captures complex interaction patterns through a multi-layer perceptron.
+
+The architecture consists of two parallel branches: a Generalized Matrix Factorization (GMF) branch that captures linear interactions through element-wise products, and a Multi-Layer Perceptron (MLP) branch that models non-linear feature interactions through deep layers. These branches are fused through concatenation and a final prediction layer with sigmoid activation to produce interaction probabilities.
+
+The NCF architecture combines Generalized Matrix Factorization (GMF) and Multi-Layer Perceptron (MLP) branches for capturing both linear and non-linear user-item interactions. \Cref{fig:ncf_architecture} illustrates this architecture.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{figures/Assets/tikz/fig_5_4_ncf_architecture.pdf}
+    \caption[NCF Architecture]{NCF Architecture Diagram. The model combines a GMF branch (element-wise product of embeddings) with an MLP branch (deep feature interaction) through a fusion layer.}
+    \label{fig:ncf_architecture}
+\end{figure}
+
+\Cref{alg:ncf_forward} presents the forward pass algorithm for the NCF model, combining both GMF and MLP branches.
+
+\begin{algorithm}[H]
+\DontPrintSemicolon
+\caption{NCF Forward Pass}
+\label{alg:ncf_forward}
+
+\KwIn{User index $u$, item index $i$, embedding dimension $d$}
+\KwOut{Prediction score $\hat{y}_{ui} \in [0, 1]$}
+
+\Begin{
+    {\begingroup\small\justifying\setlength{\emergencystretch}{3em}
+        $\mathbf{p}_u \leftarrow \text{UserEmbedding}(u)$ \tcp*{$\mathbf{p}_u \in \mathbb{R}^d$}
+        $\mathbf{q}_i \leftarrow \text{ItemEmbedding}(i)$ \tcp*{$\mathbf{q}_i \in \mathbb{R}^d$}
+        \tcp{GMF Branch}
+        $\mathbf{h}_{gmf} \leftarrow \mathbf{p}_u \odot \mathbf{q}_i$ \tcp*{Element-wise product}
+        \tcp{MLP Branch}
+        $\mathbf{z}_0 \leftarrow [\mathbf{p}_u; \mathbf{q}_i]$ \tcp*{Concatenation}
+        \For{$l = 1$ \KwTo $L$}{
+            $\mathbf{z}_l \leftarrow \text{ReLU}(\mathbf{W}_l \mathbf{z}_{l-1} + \mathbf{b}_l)$\;
+            $\mathbf{z}_l \leftarrow \text{Dropout}(\mathbf{z}_l, p=0.2)$\;
+        }
+        $\mathbf{h}_{mlp} \leftarrow \mathbf{z}_L$\;
+        \tcp{Fusion Layer}
+        $\mathbf{h} \leftarrow [\mathbf{h}_{gmf}; \mathbf{h}_{mlp}]$ \tcp*{Concatenate branches}
+        $\hat{y}_{ui} \leftarrow \sigma(\mathbf{w}^\top \mathbf{h} + b)$ \tcp*{Sigmoid activation}
+        \Return $\hat{y}_{ui}$\;
+    \endgroup}
+}
+\end{algorithm}
+
+\subsection{Sequential Model (LSTM)}
+
+The Long Short-Term Memory (LSTM) architecture captures temporal patterns in employee learning behaviors and career progressions. Unlike traditional feedforward networks, LSTMs maintain an internal memory state that allows them to model sequences of variable length, making them ideal for tracking career trajectories and course completion histories.
+
+The LSTM cell contains three gates---forget, input, and output---that control information flow through the network. The forget gate determines which information from the previous state should be discarded, the input gate controls which new information should be stored, and the output gate determines the final hidden state output. This gating mechanism enables the model to selectively remember relevant long-term patterns while filtering out noise.
+
+In the IDP context, the LSTM processes sequences of past courses, roles, or skills to predict the next most likely item in the sequence. This sequential modeling is particularly valuable for understanding career progression patterns and recommending courses that align with an employee's learning trajectory.
+
+\Cref{fig:lstm_architecture} shows the complete LSTM architecture used for sequence modeling.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{figures/Assets/tikz/fig_5_5_lstm_architecture.pdf}
+    \caption[LSTM Architecture]{LSTM Architecture Diagram. The sequential model uses item embeddings, LSTM layers for sequence modeling, and dense output layers for recommendations.}
+    \label{fig:lstm_architecture}
+\end{figure}
+
+\Cref{alg:lstm_sequence} presents the LSTM sequence processing algorithm for modeling temporal learning patterns.
+
+\begin{algorithm}[H]
+\DontPrintSemicolon
+\caption{LSTM Sequence Processing}
+\label{alg:lstm_sequence}
+
+\KwIn{Item sequence $\mathbf{S} = [s_1, s_2, \ldots, s_T]$, hidden size $h$}
+\KwOut{Next item prediction $\hat{s}_{T+1}$}
+
+\Begin{
+    {\begingroup\small\justifying\setlength{\emergencystretch}{3em}
+        $\mathbf{h}_0 \leftarrow \mathbf{0}$, $\mathbf{c}_0 \leftarrow \mathbf{0}$ \tcp*{Initialize states}
+        \For{$t = 1$ \KwTo $T$}{
+            $\mathbf{x}_t \leftarrow \text{ItemEmbedding}(s_t)$\;
+            \tcp{LSTM Cell Computation}
+            $\mathbf{f}_t \leftarrow \sigma(\mathbf{W}_f [\mathbf{h}_{t-1}; \mathbf{x}_t] + \mathbf{b}_f)$ \tcp*{Forget gate}
+            $\mathbf{i}_t \leftarrow \sigma(\mathbf{W}_i [\mathbf{h}_{t-1}; \mathbf{x}_t] + \mathbf{b}_i)$ \tcp*{Input gate}
+            $\tilde{\mathbf{c}}_t \leftarrow \tanh(\mathbf{W}_c [\mathbf{h}_{t-1}; \mathbf{x}_t] + \mathbf{b}_c)$ \tcp*{Candidate}
+            $\mathbf{c}_t \leftarrow \mathbf{f}_t \odot \mathbf{c}_{t-1} + \mathbf{i}_t \odot \tilde{\mathbf{c}}_t$ \tcp*{Cell state}
+            $\mathbf{o}_t \leftarrow \sigma(\mathbf{W}_o [\mathbf{h}_{t-1}; \mathbf{x}_t] + \mathbf{b}_o)$ \tcp*{Output gate}
+            $\mathbf{h}_t \leftarrow \mathbf{o}_t \odot \tanh(\mathbf{c}_t)$ \tcp*{Hidden state}
+        }
+        $\mathbf{z} \leftarrow \text{Dense}(\mathbf{h}_T)$ \tcp*{Output projection}
+        $\hat{s}_{T+1} \leftarrow \text{argmax}(\text{softmax}(\mathbf{z}))$\;
+        \Return $\hat{s}_{T+1}$\;
+    \endgroup}
+}
+\end{algorithm}
+
+\subsection{Transformer Model}
+
+The Transformer architecture represents the state-of-the-art in sequence modeling, replacing recurrent connections with self-attention mechanisms that enable parallel processing and better capture of long-range dependencies. Unlike LSTMs, Transformers can attend to any position in the input sequence with equal computational cost, making them effective for modeling complex relationships in career and learning data.
+
+The core innovation of the Transformer is the multi-head self-attention mechanism, which computes attention weights between all pairs of positions in the input sequence. Each attention head learns to focus on different aspects of the relationships---for example, one head might attend to skill similarities while another focuses on temporal proximity. The outputs from multiple heads are concatenated and projected to produce the final representation.
+
+Positional encodings are added to the input embeddings to provide sequence order information, since the attention mechanism itself is position-agnostic. Layer normalization and residual connections stabilize training and enable the construction of deeper networks.
+
+\Cref{fig:transformer_architecture} presents the Transformer encoder architecture used in this implementation.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{figures/Assets/tikz/fig_5_6_transformer_architecture.pdf}
+    \caption[Transformer Architecture]{Transformer Encoder Architecture. The model uses positional encoding, multi-head self-attention, feed-forward networks, and layer normalization.}
+    \label{fig:transformer_architecture}
+\end{figure}
+
+\Cref{alg:transformer_attention} presents the multi-head self-attention mechanism used in the Transformer model.
+
+\begin{algorithm}[H]
+\DontPrintSemicolon
+\caption{Transformer Multi-Head Self-Attention}
+\label{alg:transformer_attention}
+
+\KwIn{Input sequence $\mathbf{X} \in \mathbb{R}^{n \times d}$, number of heads $H$, head dimension $d_k$}
+\KwOut{Attention output $\mathbf{Z} \in \mathbb{R}^{n \times d}$}
+
+\Begin{
+    {\begingroup\small\justifying\setlength{\emergencystretch}{3em}
+        \tcp{Add positional encoding}
+        $\mathbf{X} \leftarrow \mathbf{X} + \text{PositionalEncoding}(n)$\;
+        \tcp{Compute Query, Key, Value for each head}
+        \For{$h = 1$ \KwTo $H$}{
+            $\mathbf{Q}_h \leftarrow \mathbf{X} \mathbf{W}_h^Q$, $\mathbf{K}_h \leftarrow \mathbf{X} \mathbf{W}_h^K$, $\mathbf{V}_h \leftarrow \mathbf{X} \mathbf{W}_h^V$\;
+            \tcp{Scaled dot-product attention}
+            $\mathbf{A}_h \leftarrow \text{softmax}\left(\frac{\mathbf{Q}_h \mathbf{K}_h^\top}{\sqrt{d_k}}\right)$\;
+            $\text{head}_h \leftarrow \mathbf{A}_h \mathbf{V}_h$\;
+        }
+        \tcp{Concatenate and project}
+        $\mathbf{Z} \leftarrow [\text{head}_1; \ldots; \text{head}_H] \mathbf{W}^O$\;
+        \tcp{Add \& Norm, then Feed-Forward}
+        $\mathbf{Z} \leftarrow \text{LayerNorm}(\mathbf{X} + \mathbf{Z})$\;
+        $\mathbf{Z} \leftarrow \text{LayerNorm}(\mathbf{Z} + \text{FFN}(\mathbf{Z}))$\;
+        \Return $\mathbf{Z}$\;
+    \endgroup}
+}
+\end{algorithm}
+
+\subsection{Graph Neural Network (GNN)}
+
+The Graph Neural Network architecture exploits the inherent graph structure in career and skill data. Skills, roles, and courses naturally form a graph where edges represent relationships such as ``skill required for role'' or ``course teaches skill.'' GNNs propagate information through this graph structure, learning representations that incorporate both node features and neighborhood context.
+
+The implementation uses a message-passing framework where each node aggregates information from its neighbors through learned transformations. After multiple layers of message passing, each node's representation encodes information from its multi-hop neighborhood. This is particularly powerful for career path prediction, where the graph structure captures feasible transitions between roles based on skill overlap.
+
+For link prediction tasks (e.g., predicting whether a career transition is feasible), the model computes compatibility scores between node embeddings using inner products. The GNN architecture is implemented using GraphNeuralNetworks.jl, which provides efficient sparse matrix operations for graph convolutions.
+
+\Cref{fig:gnn_architecture} presents the complete GNN architecture for career transition modeling.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{figures/Assets/tikz/fig_5_7_gnn_architecture.pdf}
+    \caption[GNN Architecture]{GNN Architecture for Career Transitions. The model constructs a skill-career graph and uses graph convolution layers for node embedding aggregation and link prediction.}
+    \label{fig:gnn_architecture}
+\end{figure}
+
+\Cref{alg:gnn_message} presents the GNN message passing algorithm for learning node representations.
+
+\begin{algorithm}[H]
+\DontPrintSemicolon
+\caption{GNN Message Passing}
+\label{alg:gnn_message}
+
+\KwIn{Graph $\mathcal{G} = (\mathcal{V}, \mathcal{E})$, node features $\mathbf{X}$, number of layers $K$}
+\KwOut{Node embeddings $\mathbf{H}^{(K)}$}
+
+\Begin{
+    {\begingroup\small\justifying\setlength{\emergencystretch}{3em}
+        $\mathbf{H}^{(0)} \leftarrow \mathbf{X}$ \tcp*{Initialize with input features}
+        \For{$k = 1$ \KwTo $K$}{
+            \ForEach{node $v \in \mathcal{V}$}{
+                \tcp{Aggregate neighbor messages}
+                $\mathbf{m}_v^{(k)} \leftarrow \text{AGGREGATE}^{(k)}\left(\{\mathbf{h}_u^{(k-1)} : u \in \mathcal{N}(v)\}\right)$\;
+                \tcp{Update node representation}
+                $\mathbf{h}_v^{(k)} \leftarrow \text{UPDATE}^{(k)}\left(\mathbf{h}_v^{(k-1)}, \mathbf{m}_v^{(k)}\right)$\;
+            }
+            $\mathbf{H}^{(k)} \leftarrow \text{ReLU}(\mathbf{H}^{(k)})$\;
+            $\mathbf{H}^{(k)} \leftarrow \text{Dropout}(\mathbf{H}^{(k)}, p=0.2)$\;
+        }
+        \tcp{Link prediction for career transitions}
+        \ForEach{edge $(u, v) \in \mathcal{E}_{test}$}{
+            $\hat{y}_{uv} \leftarrow \sigma(\mathbf{h}_u^{(K)\top} \mathbf{h}_v^{(K)})$\;
+        }
+        \Return $\mathbf{H}^{(K)}$\;
+    \endgroup}
+}
+\end{algorithm}
+
+\subsection{Skill-Course NCF}
+
+The Skill-Course NCF is a specialized variant of the Neural Collaborative Filtering architecture designed specifically for mapping skill gaps to relevant courses. Unlike the standard NCF which models user-item interactions, this variant operates directly on skill-course pairs, enabling more targeted learning recommendations.
+
+The architecture learns separate embedding spaces for skills and courses, then computes compatibility scores using both dot-product similarity and deep neural network layers. This dual approach captures both direct semantic similarity (through embeddings) and complex non-linear relationships (through the MLP layers).
+
+When an employee's skill gap is identified, the model scores all available courses against each missing skill and aggregates the scores to produce a ranked list of recommendations. Courses that address multiple skill gaps receive higher aggregate scores, encouraging efficient learning paths.
+
+\Cref{fig:skill_course_architecture} shows the Skill-Course NCF architecture.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{figures/Assets/tikz/fig_5_8_skill_course_ncf.pdf}
+    \caption[Skill-Course Mapping Architecture]{Skill-Course Mapping Architecture. This NCF variant uses skill embeddings and course embeddings for direct similarity-based ranking.}
+    \label{fig:skill_course_architecture}
+\end{figure}
+
+\Cref{alg:skill_course} presents the skill-to-course mapping algorithm for targeted learning recommendations.
+
+\begin{algorithm}[H]
+\DontPrintSemicolon
+\caption{Skill-Course Mapping}
+\label{alg:skill_course}
+
+\KwIn{User skill gap $\mathcal{S}_{gap}$, course catalog $\mathcal{C}$, top-$k$}
+\KwOut{Ranked course recommendations $\mathcal{R}$}
+
+\Begin{
+    {\begingroup\small\justifying\setlength{\emergencystretch}{3em}
+        $\mathcal{R} \leftarrow \emptyset$\;
+        \ForEach{skill $s \in \mathcal{S}_{gap}$}{
+            $\mathbf{e}_s \leftarrow \text{SkillEmbedding}(s)$ \tcp*{$\mathbf{e}_s \in \mathbb{R}^d$}
+            \ForEach{course $c \in \mathcal{C}$}{
+                $\mathbf{e}_c \leftarrow \text{CourseEmbedding}(c)$\;
+                \tcp{Compute relevance score}
+                $\text{score}_{sc} \leftarrow \mathbf{e}_s^\top \mathbf{e}_c$ \tcp*{Dot product similarity}
+                $\text{score}_{sc} \leftarrow \text{score}_{sc} + \text{NCF}(s, c)$ \tcp*{Add NCF score}
+            }
+        }
+        \tcp{Aggregate scores per course}
+        \ForEach{course $c \in \mathcal{C}$}{
+            $\text{total}_c \leftarrow \sum_{s \in \mathcal{S}_{gap}} \text{score}_{sc}$\;
+        }
+        $\mathcal{R} \leftarrow \text{TopK}(\mathcal{C}, \text{total}, k)$\;
+        \Return $\mathcal{R}$\;
+    \endgroup}
+}
+\end{algorithm}
+
+\subsection{Model Hyperparameters}
+
+\Cref{tab:model_hyperparameters} summarizes the hyperparameters used for training each deep learning model in the IDP recommender system. These values were determined through grid search and cross-validation.
+
+\begin{table}[H]
+    \centering
+    \caption[Model Hyperparameters]{Model Hyperparameters for All Deep Learning Architectures. Values were optimized through grid search with 5-fold cross-validation.}
+    \label{tab:model_hyperparameters}
+    \small
+    \begin{tabular}{@{}lcccc@{}}
+        \toprule
+        \textbf{Hyperparameter} & \textbf{NCF} & \textbf{LSTM} & \textbf{Transformer} & \textbf{GNN} \\
+        \midrule
+        Embedding Dimension & 64 & 64 & 128 & 64 \\
+        Hidden Layers & 3 & 2 & 4 & 3 \\
+        Hidden Units & 128, 64, 32 & 128 & 256 & 128 \\
+        Dropout Rate & 0.2 & 0.3 & 0.1 & 0.2 \\
+        Learning Rate & $10^{-3}$ & $10^{-3}$ & $10^{-4}$ & $10^{-2}$ \\
+        Batch Size & 64 & 32 & 64 & Full batch \\
+        Epochs & 100 & 50 & 100 & 50 \\
+        Optimizer & Adam & Adam & AdamW & Adam \\
+        Attention Heads & --- & --- & 8 & --- \\
+        Graph Conv Layers & --- & --- & --- & 2 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{Data Preprocessing Pipeline}
+
+\Cref{alg:data_preprocessing} describes the data preprocessing pipeline used to prepare training data for all models.
+
+\begin{algorithm}[H]
+\DontPrintSemicolon
+\caption{Data Preprocessing Pipeline}
+\label{alg:data_preprocessing}
+
+\KwIn{Raw datasets $\{\mathcal{D}_{jobs}, \mathcal{D}_{courses}, \mathcal{D}_{careers}, \mathcal{D}_{employees}\}$}
+\KwOut{Processed feature matrices and interaction matrices}
+
+\Begin{
+    {\begingroup\small\justifying\setlength{\emergencystretch}{3em}
+        \tcp{Step 1: Data Cleaning}
+        \ForEach{dataset $\mathcal{D}$}{
+            Remove records with missing critical fields\;
+            Standardize text fields (lowercase, remove special chars)\;
+            Handle missing numerical values with median imputation\;
+        }
+        \tcp{Step 2: Skill Extraction and Normalization}
+        $\mathcal{S}_{all} \leftarrow \text{ExtractSkills}(\mathcal{D}_{jobs} \cup \mathcal{D}_{courses})$\;
+        $\mathcal{S}_{normalized} \leftarrow \text{MapToESCO}(\mathcal{S}_{all})$ \tcp*{Standardize skills}
+        \tcp{Step 3: Feature Engineering}
+        $\mathbf{X}_{skills} \leftarrow \text{TF-IDF}(\mathcal{S}_{normalized})$\;
+        $\mathbf{X}_{reduced} \leftarrow \text{PCA}(\mathbf{X}_{skills}, k=50)$\;
+        \tcp{Step 4: Build Interaction Matrices}
+        $\mathbf{R}_{user-course} \leftarrow \text{BuildInteractionMatrix}(\mathcal{D}_{employees})$\;
+        $\mathbf{R}_{skill-course} \leftarrow \text{BuildSkillCourseMatrix}(\mathcal{D}_{courses})$\;
+        \tcp{Step 5: Train/Validation/Test Split}
+        Split data with ratio 70:15:15 using stratified sampling\;
+        \Return $\mathbf{X}_{reduced}$, $\mathbf{R}_{user-course}$, $\mathbf{R}_{skill-course}$\;
+    \endgroup}
+}
+\end{algorithm}
+
+\subsection{Model Training Loop}
+
+\Cref{alg:training_loop} presents the unified training procedure used for all deep learning models with early stopping and model checkpointing.
+
+\begin{algorithm}[H]
+\DontPrintSemicolon
+\caption{Model Training Loop with Early Stopping}
+\label{alg:training_loop}
+
+\KwIn{Model $\mathcal{M}$, training data $\mathcal{D}_{train}$, validation data $\mathcal{D}_{val}$, hyperparameters $\theta$}
+\KwOut{Trained model $\mathcal{M}^*$}
+
+\Begin{
+    {\begingroup\small\justifying\setlength{\emergencystretch}{3em}
+        Initialize model parameters $\mathcal{M}$ with Xavier initialization\;
+        $\text{best\_loss} \leftarrow \infty$, $\text{patience\_counter} \leftarrow 0$\;
+        \For{epoch $= 1$ \KwTo max\_epochs}{
+            \tcp{Training phase}
+            \ForEach{mini-batch $\mathcal{B} \in \mathcal{D}_{train}$}{
+                $\hat{\mathbf{y}} \leftarrow \mathcal{M}(\mathcal{B})$ \tcp*{Forward pass}
+                $\mathcal{L} \leftarrow \text{BinaryCrossEntropy}(\mathbf{y}, \hat{\mathbf{y}})$\;
+                Compute gradients $\nabla_\theta \mathcal{L}$\;
+                Update parameters using Adam optimizer\;
+            }
+            \tcp{Validation phase}
+            $\mathcal{L}_{val} \leftarrow \text{Evaluate}(\mathcal{M}, \mathcal{D}_{val})$\;
+            \eIf{$\mathcal{L}_{val} < \text{best\_loss}$}{
+                $\text{best\_loss} \leftarrow \mathcal{L}_{val}$\;
+                Save model checkpoint $\mathcal{M}^*$\;
+                $\text{patience\_counter} \leftarrow 0$\;
+            }{
+                $\text{patience\_counter} \leftarrow \text{patience\_counter} + 1$\;
+                \If{patience\_counter $\geq$ patience}{
+                    \textbf{break} \tcp*{Early stopping}
+                }
+            }
+        }
+        Load best checkpoint $\mathcal{M}^*$\;
+        \Return $\mathcal{M}^*$\;
+    \endgroup}
+}
+\end{algorithm}
+
+\section{IDP Component Implementation}
+
+This section describes the implementation of the four main IDP components: career path prediction, course recommendation, development action selection, and mentor matching. Each component leverages the deep learning models described in the previous section, combined with domain-specific business logic to generate actionable recommendations.
+
+\subsection{Career Path Predictor}
+
+The career path predictor helps employees identify potential future roles based on their current skills, experience, and career history. This component addresses the question: ``What roles am I qualified for, and what skills do I need to acquire to reach my target position?''
+
+The predictor uses a multi-model ensemble approach, combining predictions from the GNN (which captures graph-based career transitions), NCF (which identifies patterns from similar employees), and Transformer (which models sequential career progressions). The ensemble weights are learned through cross-validation to optimize prediction accuracy.
+
+For each predicted career path, the system performs a skill gap analysis by comparing the employee's current skills against the requirements for the target role. This gap analysis directly informs the course and development action recommendations.
+
+\Cref{fig:career_pipeline} illustrates the career path prediction pipeline.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/Assets/tikz/fig_5_9_career_pipeline.pdf}
+    \caption[Career Path Prediction Pipeline]{Career Path Prediction Pipeline. The multi-model approach analyzes current skills, predicts target roles, and performs skill gap analysis.}
+    \label{fig:career_pipeline}
+\end{figure}
+
+\Cref{alg:career_path} presents the career path prediction algorithm using the multi-model ensemble.
+
+\begin{algorithm}[H]
+\DontPrintSemicolon
+\caption{Career Path Prediction}
+\label{alg:career_path}
+
+\KwIn{Employee profile $\mathbf{e}$, current role $r_{curr}$, skills $\mathcal{S}_{curr}$, top-$k$}
+\KwOut{Ranked career paths $\mathcal{P}$ with skill gaps}
+
+\Begin{
+    {\begingroup\small\justifying\setlength{\emergencystretch}{3em}
+        \tcp{Extract employee features}
+        $\mathbf{h}_e \leftarrow \text{EmployeeEmbedding}(\mathbf{e})$\;
+        \tcp{GNN-based transition prediction}
+        $\mathbf{H}_{roles} \leftarrow \text{GNN}(\mathcal{G}_{career}, \mathbf{h}_e)$\;
+        $\text{scores}_{gnn} \leftarrow \sigma(\mathbf{h}_e^\top \mathbf{H}_{roles})$\;
+        \tcp{NCF collaborative prediction}
+        $\text{scores}_{ncf} \leftarrow \text{NCF}(\mathbf{e}, \mathcal{R}_{all})$\;
+        \tcp{Transformer sequential prediction}
+        $\text{scores}_{trans} \leftarrow \text{Transformer}([r_1, \ldots, r_{curr}])$\;
+        \tcp{Ensemble fusion}
+        $\text{scores} \leftarrow \alpha \cdot \text{scores}_{gnn} + \beta \cdot \text{scores}_{ncf} + \gamma \cdot \text{scores}_{trans}$\;
+        $\mathcal{P} \leftarrow \text{TopK}(\mathcal{R}_{all}, \text{scores}, k)$\;
+        \tcp{Compute skill gaps for each path}
+        \ForEach{role $r \in \mathcal{P}$}{
+            $\mathcal{S}_{req} \leftarrow \text{RequiredSkills}(r)$\;
+            $r.\text{gap} \leftarrow \mathcal{S}_{req} \setminus \mathcal{S}_{curr}$\;
+        }
+        \Return $\mathcal{P}$\;
+    \endgroup}
+}
+\end{algorithm}
+
+\subsection{Development Action Recommender}
+
+The development action recommender generates personalized learning and development activities based on the identified skill gaps. This component implements the widely-adopted 70-20-10 learning model, which suggests that effective professional development consists of 70\% experiential learning (on-the-job activities), 20\% social learning (exposure through mentoring and networking), and 10\% formal education (courses and training).
+
+The recommender maintains a catalog of development actions categorized by type: Experience actions include stretch assignments, project leadership, and job rotations; Exposure actions include mentoring relationships, job shadowing, and professional networking; Education actions include formal courses, certifications, and workshops.
+
+The system uses a hybrid recommendation approach that combines content-based filtering (matching action descriptions to skill gaps) with collaborative filtering (learning from successful development patterns of similar employees). This hybrid approach addresses the cold-start problem for new employees while still leveraging collective intelligence from the organization.
+
+\Cref{fig:action_recommender_arch} shows the hybrid architecture used for development action recommendations.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/Assets/tikz/fig_5_10_action_recommender.pdf}
+    \caption[Action Recommender Architecture]{Action Recommender Architecture. The hybrid approach combines NCF for personalization with content-based methods for cold start handling.}
+    \label{fig:action_recommender_arch}
+\end{figure}
+
+\Cref{alg:action_selection} presents the development action selection algorithm implementing the 70-20-10 model.
+
+\begin{algorithm}[H]
+\DontPrintSemicolon
+\caption{Development Action Selection (70-20-10 Model)}
+\label{alg:action_selection}
+
+\KwIn{Skill gap $\mathcal{S}_{gap}$, action catalog $\mathcal{A}$, employee profile $\mathbf{e}$}
+\KwOut{Balanced action plan $\mathcal{D}$ with 10 actions}
+
+\Begin{
+    {\begingroup\small\justifying\setlength{\emergencystretch}{3em}
+        \tcp{Categorize actions by type}
+        $\mathcal{A}_{exp} \leftarrow \{a \in \mathcal{A} : a.type = \text{Experience}\}$\;
+        $\mathcal{A}_{exo} \leftarrow \{a \in \mathcal{A} : a.type = \text{Exposure}\}$\;
+        $\mathcal{A}_{edu} \leftarrow \{a \in \mathcal{A} : a.type = \text{Education}\}$\;
+        \tcp{Score actions using hybrid approach}
+        \ForEach{action $a \in \mathcal{A}$}{
+            $\text{relevance}_a \leftarrow \text{SkillMatch}(a, \mathcal{S}_{gap})$\;
+            $\text{personalization}_a \leftarrow \text{NCF}(\mathbf{e}, a)$\;
+            $\text{score}_a \leftarrow \lambda \cdot \text{relevance}_a + (1-\lambda) \cdot \text{personalization}_a$\;
+        }
+        \tcp{Apply 70-20-10 distribution}
+        $\mathcal{D}_{exp} \leftarrow \text{TopK}(\mathcal{A}_{exp}, \text{score}, 7)$ \tcp*{70\% Experience}
+        $\mathcal{D}_{exo} \leftarrow \text{TopK}(\mathcal{A}_{exo}, \text{score}, 2)$ \tcp*{20\% Exposure}
+        $\mathcal{D}_{edu} \leftarrow \text{TopK}(\mathcal{A}_{edu}, \text{score}, 1)$ \tcp*{10\% Education}
+        $\mathcal{D} \leftarrow \mathcal{D}_{exp} \cup \mathcal{D}_{exo} \cup \mathcal{D}_{edu}$\;
+        \Return $\mathcal{D}$\;
+    \endgroup}
+}
+\end{algorithm}
+
+\subsection{Mentor Matching System}
+
+The mentor matching system pairs employees with suitable mentors based on skill complementarity, career goals alignment, and practical considerations such as availability and capacity. Effective mentoring relationships are a key component of the 20\% Exposure category in the 70-20-10 model.
+
+The matching algorithm considers multiple factors: domain expertise overlap ensures the mentor has relevant experience in the mentee's target area; career path similarity identifies mentors who have successfully navigated similar transitions; and availability constraints ensure mentors are not over-committed. These factors are combined using learned weights optimized through historical mentoring outcome data.
+
+The NCF-based compatibility scoring learns latent representations for both mentors and mentees, capturing subtle patterns that correlate with successful mentoring relationships. The system also implements capacity constraints to ensure equitable distribution of mentoring load across the mentor pool.
+
+\Cref{fig:mentor_pipeline} illustrates the mentor matching pipeline.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{figures/Assets/tikz/fig_5_11_mentor_pipeline.pdf}
+    \caption[Mentor Matching Pipeline]{Mentor Matching Pipeline. The system embeds mentor expertise and mentee goals, then computes compatibility scores for optimal matching.}
+    \label{fig:mentor_pipeline}
+\end{figure}
+
+\Cref{alg:mentor_matching} presents the mentor-mentee matching algorithm based on NCF compatibility scoring.
+
+\begin{algorithm}[H]
+\DontPrintSemicolon
+\caption{Mentor-Mentee Matching}
+\label{alg:mentor_matching}
+
+\KwIn{Mentee profile $\mathbf{m}$, mentee goals $\mathcal{G}$, mentor pool $\mathcal{M}$, top-$k$}
+\KwOut{Ranked mentor recommendations $\mathcal{R}$}
+
+\Begin{
+    {\begingroup\small\justifying\setlength{\emergencystretch}{3em}
+        \tcp{Embed mentee goals and profile}
+        $\mathbf{h}_{goals} \leftarrow \text{mean}(\{\text{GoalEmbedding}(g) : g \in \mathcal{G}\})$\;
+        $\mathbf{h}_{mentee} \leftarrow [\text{ProfileEmbedding}(\mathbf{m}); \mathbf{h}_{goals}]$\;
+        \tcp{Score each potential mentor}
+        \ForEach{mentor $M \in \mathcal{M}$}{
+            $\mathbf{h}_{mentor} \leftarrow \text{MentorEmbedding}(M)$\;
+            \tcp{NCF compatibility score}
+            $\text{ncf}_M \leftarrow \text{NCF}(\mathbf{h}_{mentee}, \mathbf{h}_{mentor})$\;
+            \tcp{Domain expertise overlap}
+            $\text{expertise}_M \leftarrow \text{Jaccard}(M.\text{skills}, \mathcal{G}.\text{skills})$\;
+            \tcp{Availability and capacity}
+            $\text{availability}_M \leftarrow M.\text{capacity} / M.\text{max\_mentees}$\;
+            \tcp{Combined score}
+            $\text{score}_M \leftarrow w_1 \cdot \text{ncf}_M + w_2 \cdot \text{expertise}_M + w_3 \cdot \text{availability}_M$\;
+        }
+        $\mathcal{R} \leftarrow \text{TopK}(\mathcal{M}, \text{score}, k)$\;
+        \Return $\mathcal{R}$\;
+    \endgroup}
+}
+\end{algorithm}
+
+\section{TrainEase Integration}
+
+The IDP recommender system is designed to integrate seamlessly with TrainEase, a learning management system built on the Laravel PHP framework with Livewire for reactive frontend components. This section describes the integration architecture and database schema supporting the IDP functionality.
+
+\subsection{Laravel Service Layer}
+
+The integration between the Laravel frontend and Julia ML backend is achieved through a dedicated service layer that encapsulates all communication with the recommendation API. The \texttt{IdpRecommenderService} class provides a clean interface for retrieving recommendations, abstracting the HTTP communication details from the rest of the application.
+
+The service layer implements caching strategies to minimize API calls for frequently accessed data, retry logic for handling transient failures, and request throttling to prevent overloading the ML backend. Recommendations are requested asynchronously to maintain frontend responsiveness, with loading states displayed while predictions are computed.
+
+The Livewire components consume the service layer to display personalized recommendations in real-time, updating dynamically as employees interact with their IDP dashboard. \Cref{fig:integration_architecture} presents the Laravel-Julia integration architecture.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/Assets/tikz/fig_5_12_integration_architecture.pdf}
+    \caption[Laravel-Julia Integration]{Laravel-Julia Integration Architecture. The \texttt{IdpRecommenderService.php} connects to the Julia REST API for model inference.}
+    \label{fig:integration_architecture}
+\end{figure}
+
+\subsection{Database Schema}
+
+The database schema extends the existing TrainEase data model to support IDP functionality. New tables store IDP-specific data including development goals, recommended actions, mentoring relationships, and progress tracking. The schema is designed to maintain referential integrity with existing user and course tables while providing the flexibility needed for IDP features.
+
+Key entities include: \texttt{idp\_goals} for storing employee development objectives with target dates and priority levels; \texttt{idp\_actions} for tracking recommended development activities and their completion status; \texttt{mentoring\_sessions} for managing mentor-mentee pairings and session scheduling; and \texttt{idp\_feedback} for collecting user ratings on recommendation quality to enable continuous model improvement.
+
+The schema uses appropriate indexing strategies to optimize query performance for common access patterns, such as retrieving all active goals for an employee or finding available mentors with specific expertise.
+
+\Cref{fig:er_diagram} presents the entity-relationship diagram for the IDP database schema.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/Assets/tikz/fig_5_13_er_diagram.pdf}
+    \caption[Database ER Diagram]{Database Entity-Relationship Diagram. The schema includes tables for employees, goals, development actions, mentoring sessions, and feedback.}
+    \label{fig:er_diagram}
+\end{figure}
+
+\section{Implementation Environment}
+
+The implementation environment was selected to balance development productivity with computational performance. Julia was chosen as the primary language for the ML backend due to its combination of high-level syntax and near-C performance, eliminating the need to rewrite prototypes in a lower-level language for production deployment.
+
+\Cref{tab:implementation_environment} summarizes the software and hardware environment used for implementing and training the IDP recommender system.
+
+\begin{table}[H]
+    \centering
+    \caption[Implementation Environment]{Software and Hardware Environment. All experiments were conducted using this configuration.}
+    \label{tab:implementation_environment}
+    \small
+    \begin{tabular}{@{}p{4cm}p{8cm}@{}}
+        \toprule
+        \textbf{Component} & \textbf{Specification} \\
+        \midrule
+        \multicolumn{2}{@{}l}{\textit{Software Environment}} \\[2pt]
+        Programming Language & Julia 1.9.3 \\
+        Deep Learning Framework & Flux.jl 0.14.6 \\
+        Graph Neural Networks & GraphNeuralNetworks.jl 0.6.10 \\
+        Data Processing & DataFrames.jl 1.6.1, CSV.jl 0.10.11 \\
+        API Server & HTTP.jl 1.10.0, JSON3.jl 1.13.2 \\
+        Frontend Framework & Laravel 10.x, Livewire 3.x \\
+        Database & MySQL 8.0 \\
+        \midrule
+        \multicolumn{2}{@{}l}{\textit{Hardware Environment}} \\[2pt]
+        Processor & Intel Core i7-10750H @ 2.60\,GHz (6 cores, 12 threads) \\
+        Memory & 16\,GB DDR4-2933 \\
+        Storage & 512\,GB NVMe SSD \\
+        GPU & CPU-only training (hardware constraints) \\
+        Operating System & Windows 11 Pro (64-bit) \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\section{Chapter Summary}
+
+This chapter presented the comprehensive implementation of the IDP recommender system, covering all aspects from system architecture to model deployment. The key contributions of this implementation include:
+
+\begin{itemize}
+    \item A \textbf{three-tier architecture} separating data processing, model inference, and API serving concerns, enabling independent scaling and maintenance of each component.
+    
+    \item \textbf{Four deep learning architectures}---NCF, LSTM, Transformer, and GNN---each addressing different aspects of the recommendation problem, from collaborative filtering to sequential modeling and graph-based reasoning.
+    
+    \item A \textbf{Skill-Course NCF variant} that directly maps skill gaps to relevant courses, providing targeted learning recommendations based on identified development needs.
+    
+    \item \textbf{Four IDP components} implementing career path prediction, course recommendation, development action selection (using the 70-20-10 model), and mentor matching.
+    
+    \item \textbf{Seamless integration} with the TrainEase LMS through a RESTful API, allowing employees to access personalized recommendations within their familiar learning environment.
+    
+    \item A \textbf{robust data pipeline} that processes multiple data sources, normalizes skills using the ESCO taxonomy, and generates interaction matrices for model training.
+\end{itemize}
+
+The implementation leverages Julia and Flux.jl for efficient model training and inference, with all training conducted on CPU due to hardware constraints. Despite this limitation, the system achieves acceptable response times for real-time recommendations through model optimization and caching strategies.
+
+The next chapter presents the experimental results and evaluation of the implemented system, comparing the performance of different model architectures across various recommendation tasks.

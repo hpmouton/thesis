@@ -1,0 +1,512 @@
+\chapter{Results and Evaluation}
+\label{chapter:rae}
+
+% Use full justification for chapter text
+\justifying
+
+This chapter presents the experimental results and comprehensive evaluation of the IDP recommender system. The system implements a 4-Model architecture, with each model optimized for its specific recommendation task. \Cref{tab:system_architecture_summary} provides an overview of the system architecture and key performance metrics.
+
+\begin{table}[H]
+    \centering
+    \caption[IDP System Architecture Summary]{IDP System 4-Model Architecture Summary. Each component uses the optimal architecture for its specific recommendation task.}
+    \label{tab:system_architecture_summary}
+    \small
+    \begin{tabular}{@{}llll@{}}
+        \toprule
+        \textbf{Model} & \textbf{Purpose} & \textbf{Architecture} & \textbf{Key Metric} \\
+        \midrule
+        Model 1 & Skill-Course Recommendation & Two-Stage Hybrid & Coverage: 95.6\% \\
+        Model 2 & Career Path Prediction & GNN & NDCG@10: 0.849 \\
+        Model 3 & Development Action & NCF & Accuracy: 64.7\% \\
+        Model 4 & Mentor Matching & Direct Matcher & Accuracy: 76.4\% \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+%======================================================================
+\section{Experimental Setup}
+%======================================================================
+
+\subsection{Experimental Environment}
+
+All experiments were conducted using Julia 1.11 with Flux.jl for deep learning. \Cref{tab:experimental_environment} summarizes the computational environment and software configuration.
+
+\begin{table}[H]
+    \centering
+    \caption[Experimental Environment]{Experimental Environment and Software Configuration.}
+    \label{tab:experimental_environment}
+    \small
+    \begin{tabular}{@{}ll@{}}
+        \toprule
+        \textbf{Component} & \textbf{Specification} \\
+        \midrule
+        Programming Language & Julia 1.11 \\
+        Deep Learning Framework & Flux.jl \\
+        Data Processing & DataFrames.jl, CSV.jl \\
+        Visualization & Plots.jl, StatsPlots.jl \\
+        Model Serialization & BSON.jl \\
+        Hardware & Intel Core i7, 16GB RAM \\
+        Training Mode & CPU-based \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{Evaluation Metrics}
+
+Different recommendation tasks require different evaluation paradigms. \Cref{tab:evaluation_metrics} summarizes the metrics used for each model and provides rationale for metric selection.
+
+\begin{table}[H]
+    \centering
+    \caption[Evaluation Metrics]{Evaluation Metrics by Recommendation Task.}
+    \label{tab:evaluation_metrics}
+    \small
+    \begin{tabular}{@{}llp{6.5cm}@{}}
+        \toprule
+        \textbf{Task} & \textbf{Primary Metrics} & \textbf{Rationale} \\
+        \midrule
+        Skill-Course & Coverage, R², Correlation & Coverage optimization ensures all skill gaps are addressed rather than just ranking quality \\
+        Career Path & NDCG@10, AUC, F1 & Link prediction on graph structure requires ranking quality metrics \\
+        Development Action & Accuracy, F1, Precision & Classification of action relevance with balanced class evaluation \\
+        Mentor Matching & Accuracy, NDCG, Correlation & Compatibility prediction requiring both classification and ranking \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+%======================================================================
+\section{Model 1: Skill-Course Recommendation}
+%======================================================================
+
+The Skill-Course model employs a \textbf{two-stage hybrid approach} that represents a fundamental paradigm shift from traditional link prediction methods.
+
+\subsection{Two-Stage Hybrid Architecture}
+
+Traditional recommendation metrics (NDCG, MRR) optimize for top-K ranking, but IDP requires \textit{complete skill gap coverage}---every missing skill must be addressed. This insight motivates the two-stage approach:
+
+\textbf{Stage 1: Skill-Course Scorer (Regression).} An NCF-based model predicts relevance scores (0--1) between skills and courses, trained to minimize mean squared error on labeled skill-course pairs.
+
+\textbf{Stage 2: Coverage Optimization (Set Cover).} A greedy algorithm selects the minimum set of courses that collectively cover all identified skill gaps.
+
+\Cref{fig:skill_course_ncf} illustrates the NCF architecture used in Stage 1.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.65\textwidth]{figures/Assets/tikz/fig_5_8_skill_course_ncf.pdf}
+    \caption[Skill-Course NCF Architecture]{Skill-Course NCF Architecture for Stage 1 Scoring. The model processes skill and course embeddings through parallel GMF and MLP branches, fusing outputs to predict relevance scores for coverage optimization.}
+    \label{fig:skill_course_ncf}
+\end{figure}
+
+\subsection{Stage 1: Scorer Results}
+
+\Cref{tab:skill_course_scorer} presents the Stage 1 regression performance.
+
+\begin{table}[H]
+    \centering
+    \caption[Skill-Course Scorer Performance]{Skill-Course Scorer (Stage 1) Performance Metrics.}
+    \label{tab:skill_course_scorer}
+    \small
+    \begin{tabular}{@{}lcccc@{}}
+        \toprule
+        \textbf{Split} & \textbf{MSE} & \textbf{MAE} & \textbf{R²} & \textbf{Correlation} \\
+        \midrule
+        Training & 0.0042 & 0.051 & 0.528 & 0.731 \\
+        Validation & 0.0048 & 0.055 & 0.472 & 0.698 \\
+        Test & 0.0051 & 0.057 & 0.448 & 0.682 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+The test R² of 0.448 and correlation of 0.682 indicate that the model successfully learns meaningful skill-course relationships. The strong correlation confirms correct relative ranking of courses by relevance.
+
+\Cref{fig:skill_course_training} presents the training dynamics.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.65\textwidth]{figures/Assets/fig_6_1b_skill_course_training.pdf}
+    \caption[Skill-Course Training Curves]{Skill-Course Scorer Training Curves. The model shows stable convergence with MSE decreasing and correlation increasing over 50 epochs.}
+    \label{fig:skill_course_training}
+\end{figure}
+
+\subsection{Stage 2: Coverage Optimization Results}
+
+The coverage optimization stage uses Stage 1 scores to select courses. \Cref{tab:coverage_results} presents the results.
+
+\begin{table}[H]
+    \centering
+    \caption[Coverage Optimization Results]{Skill-Course Coverage Optimization (Stage 2) Results.}
+    \label{tab:coverage_results}
+    \small
+    \begin{tabular}{@{}lc@{}}
+        \toprule
+        \textbf{Metric} & \textbf{Value} \\
+        \midrule
+        Skill Gap Coverage & 95.6\% \\
+        Average Courses Selected & 2.0 \\
+        Coverage Efficiency & 47.8\% \\
+        Success Rate & 100\% \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+The system achieves \textbf{95.6\% coverage} of identified skill gaps with an average of only 2.0 courses per employee. The coverage efficiency of 47.8\% indicates that each selected course covers nearly half of the remaining skill gaps on average.
+
+\Cref{fig:skill_course_two_stage} shows the complete two-stage results.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.65\textwidth]{figures/Assets/fig_6_1_skill_course_two_stage.pdf}
+    \caption[Skill-Course Two-Stage Results]{Skill-Course Two-Stage Hybrid Results. Combined visualization of Stage 1 (Scorer) and Stage 2 (Coverage) metrics demonstrating the complete recommendation pipeline.}
+    \label{fig:skill_course_two_stage}
+\end{figure}
+
+\subsection{Paradigm Comparison: Coverage vs. Link Prediction}
+
+\Cref{fig:link_prediction} shows reference performance for traditional link prediction approaches.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/Assets/fig_6_2_skill_course_link_prediction.pdf}
+    \caption[Link Prediction Reference]{Skill-Course Link Prediction Comparison (Reference). Traditional metrics are shown for architectural comparison, though coverage optimization is preferred for IDP applications.}
+    \label{fig:link_prediction}
+\end{figure}
+
+The key insight: traditional link prediction optimizes for the \textit{wrong objective} in IDP contexts. NDCG@10 measures ranking quality at fixed K, but IDP requires ensuring every skill gap is addressed regardless of K.
+
+%======================================================================
+\section{Model 2: Career Path Prediction}
+%======================================================================
+
+Career path prediction requires understanding long-term career trajectories and the skill progressions enabling career transitions. This task is inherently graph-structured, making GNN the natural architectural choice.
+
+The GNN architecture (previously described in \Cref{fig:gnn_architecture}) uses message passing layers to aggregate neighborhood information and predict career transitions.
+
+\subsection{Architecture Comparison}
+
+Three architectures were evaluated: GNN, NCF, and Transformer. \Cref{tab:career_path_results} presents the comprehensive comparison.
+
+\begin{table}[H]
+    \centering
+    \caption[Career Path Prediction Performance]{Career Path Prediction Model Performance. Best results highlighted in \textbf{bold}.}
+    \label{tab:career_path_results}
+    \small
+    \begin{tabular}{@{}lcccccc@{}}
+        \toprule
+        \textbf{Model} & \textbf{NDCG@10} & \textbf{AUC} & \textbf{F1} & \textbf{Precision} & \textbf{Recall} & \textbf{Accuracy} \\
+        \midrule
+        \textbf{GNN} & \textbf{0.849} & 0.634 & \textbf{0.245} & \textbf{0.480} & \textbf{0.164} & 0.781 \\
+        NCF & 0.823 & 0.630 & 0.189 & 0.409 & 0.123 & 0.772 \\
+        Transformer & 0.827 & \textbf{0.692} & 0.0 & 0.0 & 0.0 & \textbf{0.784} \\
+        \bottomrule
+    \end{tabular}
+    \par\smallskip
+    \footnotesize\textit{Note}: Transformer early-stopped at epoch 26. Zero F1/Precision/Recall indicates threshold calibration issues.
+\end{table}
+
+The \textbf{GNN achieves NDCG@10 = 0.849} and the highest F1-score (0.245), making it the selected architecture for career path prediction.
+
+\Cref{fig:career_path_comparison} visualizes the model comparison.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.65\textwidth]{figures/Assets/fig_6_3_career_path_comparison.pdf}
+    \caption[Career Path Models Comparison]{Career Path Architecture Comparison. All six metrics across GNN, NCF, and Transformer architectures.}
+    \label{fig:career_path_comparison}
+\end{figure}
+
+\subsection{Training Dynamics}
+
+\Cref{fig:gnn_training_history} presents the training dynamics for all three architectures.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.65\textwidth]{figures/Assets/fig_6_4_career_path_training.pdf}
+    \caption[Career Path Training History]{Career Path Training History. Loss, NDCG, AUC, and F1 metrics tracked over training epochs for GNN, NCF, and Transformer.}
+    \label{fig:gnn_training_history}
+\end{figure}
+
+\Cref{fig:career_path_hyperparams} presents hyperparameter configuration analysis.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.65\textwidth]{figures/Assets/fig_6_5_career_path_hyperparams.pdf}
+    \caption[Career Path Hyperparameters]{Career Path Hyperparameter Configurations. Impact of embedding dimension, learning rate, and regularization on model performance.}
+    \label{fig:career_path_hyperparams}
+\end{figure}
+
+\subsection{GNN Architecture Details}
+
+The GNN's superior performance validates that career transitions are inherently graph-structured. Key architectural features:
+
+\begin{itemize}
+    \item \textbf{Embedding Layer}: Career $\rightarrow$ 64-dimensional learned representation
+    \item \textbf{Message Passing}: Two layers with 128-dimensional hidden states
+    \item \textbf{Link Prediction Head}: Dense(256 $\rightarrow$ 128) $\rightarrow$ Dropout(0.4) $\rightarrow$ Dense(1, sigmoid)
+\end{itemize}
+
+%======================================================================
+\section{Model 3: Development Action Recommendation}
+%======================================================================
+
+Development actions implement the 70-20-10 learning model: 70\% Experience (on-the-job learning), 20\% Exposure (mentoring, networking), and 10\% Education (formal training).
+
+The action recommender pipeline (described in \Cref{fig:action_recommender_arch}) processes employee profiles and skill gaps to generate personalized actions following the 70-20-10 model.
+
+\subsection{Architecture Comparison}
+
+Three approaches were evaluated: NCF, Content-Based, and Hybrid. \Cref{tab:action_results} presents the results.
+
+\begin{table}[H]
+    \centering
+    \caption[Development Action Performance]{Development Action Recommender Performance. Best results highlighted in \textbf{bold}.}
+    \label{tab:action_results}
+    \small
+    \begin{tabular}{@{}lcccc@{}}
+        \toprule
+        \textbf{Model} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} & \textbf{F1} \\
+        \midrule
+        \textbf{NCF} & \textbf{0.647} & 0.521 & 0.521 & \textbf{0.521} \\
+        Content-Based & 0.626 & 0.492 & 0.479 & 0.485 \\
+        Hybrid & 0.620 & 0.485 & 0.521 & 0.502 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+The \textbf{NCF achieves 64.7\% accuracy} and F1 = 0.521, making it the selected architecture.
+
+\Cref{fig:action_recommender} visualizes the comparison.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.65\textwidth]{figures/Assets/fig_6_6_action_comparison.pdf}
+    \caption[Action Recommender Performance]{Development Action Recommender Performance. Comparison of NCF, Content-Based, and Hybrid approaches.}
+    \label{fig:action_recommender}
+\end{figure}
+
+\subsection{70-20-10 Distribution Analysis}
+
+The recommender successfully adheres to the 70-20-10 model. \Cref{fig:action_distribution} shows the actual distribution.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/Assets/fig_6_7_action_distribution.pdf}
+    \caption[Action Distribution]{Action Distribution Following the 70-20-10 Model. Experience (70\%), Exposure (20\%), and Education (10\%) action type allocations.}
+    \label{fig:action_distribution}
+\end{figure}
+
+%======================================================================
+\section{Model 4: Mentor Matching}
+%======================================================================
+
+Mentor matching was significantly improved through architectural innovations, achieving a \textbf{+29.1 percentage point improvement} over the baseline approach.
+
+The mentor matching pipeline (described in \Cref{fig:mentor_pipeline}) analyzes mentor and mentee features with explicit skill overlap computation for robust compatibility prediction.
+
+\subsection{Architecture: Direct Matcher with Skill Overlap}
+
+The Direct Matcher architecture incorporates several key innovations that enabled the performance improvement from 47.3\% to 76.4\%:
+
+\begin{enumerate}
+    \item \textbf{Hard Negative Sampling}: Sample similar but non-matching mentors (4:1 ratio) to improve discrimination
+    \item \textbf{Explicit Skill Overlap Features}: Compute overlap between mentor expertise and mentee skill gaps
+    \item \textbf{Higher Regularization}: Dropout = 0.5, Weight Decay = 5e-4 to prevent overfitting
+    \item \textbf{Focal Loss}: Handle class imbalance with $\gamma = 2.0$
+    \item \textbf{Label Smoothing}: Additional regularization with $\alpha = 0.1$
+\end{enumerate}
+
+\Cref{tab:skill_overlap_features} describes the explicit skill overlap features.
+
+\begin{table}[H]
+    \centering
+    \caption[Skill Overlap Features]{Skill Overlap Features for Mentor Matching.}
+    \label{tab:skill_overlap_features}
+    \small
+    \begin{tabular}{@{}lp{8cm}@{}}
+        \toprule
+        \textbf{Feature} & \textbf{Description} \\
+        \midrule
+        skill\_overlap\_count & Number of overlapping skills between mentor expertise and mentee gaps \\
+        skill\_overlap\_ratio & Overlap count normalized by total mentee skill gaps \\
+        expertise\_match\_score & Weighted match based on mentor expertise level in overlapping skills \\
+        department\_match & Binary indicator for same-department matching \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\Cref{tab:mentor_config} presents the training configuration.
+
+\begin{table}[H]
+    \centering
+    \caption[Mentor Matching Configuration]{Mentor Matching Training Configuration.}
+    \label{tab:mentor_config}
+    \small
+    \begin{tabular}{@{}ll@{}}
+        \toprule
+        \textbf{Parameter} & \textbf{Value} \\
+        \midrule
+        Embedding Dimension & 48 \\
+        Hidden Dimensions & [192, 96, 48, 24] \\
+        Dropout & 0.5 \\
+        Learning Rate & 3e-4 \\
+        Batch Size & 8 \\
+        Weight Decay & 5e-4 \\
+        Epochs & 300 (early stopped at $\sim$66) \\
+        Negative Ratio & 4:1 (hard negatives) \\
+        Loss Function & Focal Loss ($\gamma = 2.0$) \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{Model Performance}
+
+\Cref{tab:mentor_results} presents the mentor matching results.
+
+\begin{table}[H]
+    \centering
+    \caption[Mentor Matching Performance]{Mentor Matching Model Performance. Best results highlighted in \textbf{bold}.}
+    \label{tab:mentor_results}
+    \small
+    \begin{tabular}{@{}lcccccc@{}}
+        \toprule
+        \textbf{Model} & \textbf{Accuracy} & \textbf{Correlation} & \textbf{Precision} & \textbf{Recall} & \textbf{F1} & \textbf{NDCG@10} \\
+        \midrule
+        \textbf{Direct Matcher} & \textbf{0.764} & 0.168 & 0.250 & 0.161 & 0.196 & \textbf{0.345} \\
+        Enhanced MLP & 0.747 & \textbf{0.228} & \textbf{0.276} & \textbf{0.258} & \textbf{0.267} & 0.324 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+The Direct Matcher achieves \textbf{76.4\% accuracy}, representing a \textbf{+29.1 percentage point improvement} over the original NCF-based approach (47.3\%).
+
+\Cref{fig:mentor_matching,fig:mentor_detailed,fig:mentor_training} present the mentor matching analysis.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.65\textwidth]{figures/Assets/fig_6_8_mentor_comparison.pdf}
+    \caption[Mentor Matching Comparison]{Mentor Matching Model Comparison. Direct Matcher vs. Enhanced MLP performance across all metrics.}
+    \label{fig:mentor_matching}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.65\textwidth]{figures/Assets/fig_6_9_mentor_detailed.pdf}
+    \caption[Mentor Matching Detailed Analysis]{Mentor Matching Detailed Metrics. Complete performance breakdown for the Direct Matcher architecture.}
+    \label{fig:mentor_detailed}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.65\textwidth]{figures/Assets/fig_6_9b_mentor_training.pdf}
+    \caption[Mentor Matching Training History]{Mentor Matching Training History. Training and validation loss curves showing model convergence over 300 epochs with focal loss optimization.}
+    \label{fig:mentor_training}
+\end{figure}
+
+\subsection{Key Improvements Analysis}
+
+The dramatic improvement from 47.3\% to 76.4\% accuracy was achieved through:
+
+\begin{itemize}
+    \item \textbf{Explicit Feature Engineering}: Skill overlap features provide direct signal for mentor-mentee compatibility rather than relying solely on learned embeddings.
+    \item \textbf{Hard Negative Sampling}: Training on similar-but-wrong mentor pairs forces the model to learn fine-grained discrimination.
+    \item \textbf{Focal Loss}: Better handles the inherent class imbalance in mentor-mentee matching data.
+    \item \textbf{Deeper Architecture}: The [192, 96, 48, 24] hidden layer configuration captures complex compatibility patterns.
+\end{itemize}
+
+%======================================================================
+\section{Overall System Performance}
+%======================================================================
+
+\subsection{Summary Comparison}
+
+\Cref{fig:all_models_summary} provides a comprehensive summary of all four models.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.65\textwidth]{figures/Assets/fig_6_10_all_models_summary.pdf}
+    \caption[All Models Summary]{All Models Performance Summary. Comprehensive comparison across the 4-Model IDP architecture showing key metrics for each component.}
+    \label{fig:all_models_summary}
+\end{figure}
+
+\subsection{Final Model Selection}
+
+\Cref{tab:final_selection} summarizes the selected models and their key performance metrics.
+
+\begin{table}[htbp]
+    \centering
+    \caption[Final Model Selection]{Final Model Selection Summary for IDP Recommender System.}
+    \label{tab:final_selection}
+    \small
+    \begin{tabular}{@{}llcc@{}}
+        \toprule
+        \textbf{Component} & \textbf{Selected Model} & \textbf{Key Metric} & \textbf{Value} \\
+        \midrule
+        Skill-Course Recommendation & Two-Stage Hybrid & Coverage & 95.6\% \\
+        Career Path Prediction & GNN & NDCG@10 & 0.849 \\
+        Development Action & NCF & Accuracy & 64.7\% \\
+        Mentor Matching & Direct Matcher & Accuracy & 76.4\% \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{Configuration Analysis}
+
+\Cref{fig:config_heatmap} presents the hyperparameter configuration analysis.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.65\textwidth]{figures/Assets/fig_6_11_config_heatmap.pdf}
+    \caption[Configuration Heatmap]{Model Configuration Heatmap. Hyperparameter configurations and their impact on performance across all architectures.}
+    \label{fig:config_heatmap}
+\end{figure}
+
+%======================================================================
+\section{Discussion}
+%======================================================================
+
+\subsection{Key Findings}
+
+The experimental results yield several key findings:
+
+\begin{enumerate}
+    \item \textbf{Skill-Course Recommendation}: The two-stage hybrid approach with coverage optimization (95.6\%) fundamentally outperforms traditional link prediction methods. This paradigm shift---from ``rank courses by relevance'' to ``select courses that cover all gaps''---better addresses IDP requirements.
+    
+    \item \textbf{Career Path Prediction}: GNN effectively captures the graph structure of career transitions (NDCG@10 = 0.849), validating that career paths are inherently relational and benefit from graph-based modeling.
+    
+    \item \textbf{Development Action}: NCF provides personalized action recommendations (Accuracy = 64.7\%) following the 70-20-10 model, though action recommendation remains challenging due to context-dependent relevance.
+    
+    \item \textbf{Mentor Matching}: The Direct Matcher with skill overlap features achieves 76.4\% accuracy, a +29.1 percentage point improvement over the baseline, demonstrating the importance of explicit feature engineering for compatibility prediction.
+\end{enumerate}
+
+\subsection{Paradigm Shift: Coverage vs. Link Prediction}
+
+The most significant methodological contribution of this work is the paradigm shift from link prediction to coverage optimization for skill-course recommendation. Traditional metrics (NDCG, MRR) optimize for ranking quality at fixed K, but IDP requires ensuring \textit{every skill gap is addressed}. The two-stage hybrid approach directly optimizes for this objective.
+
+\subsection{Limitations}
+
+Several limitations warrant discussion:
+
+\begin{itemize}
+    \item \textbf{Dataset Size}: The 300-employee dataset limits generalizability. Enterprise-scale deployments should validate results with larger populations.
+    
+    \item \textbf{Cold Start Problem}: New employees without historical data experience reduced recommendation quality. Future work should explore zero-shot or transfer learning approaches.
+    
+    \item \textbf{Offline Evaluation}: All evaluation uses offline metrics. Production A/B testing would provide more robust validation of real-world effectiveness.
+    
+    \item \textbf{Temporal Dynamics}: The current models do not explicitly model skill evolution over time. Incorporating temporal aspects could improve long-term career path predictions.
+\end{itemize}
+
+%======================================================================
+\section{Chapter Summary}
+%======================================================================
+
+This chapter presented comprehensive evaluation of the 4-Model IDP recommender system:
+
+\begin{enumerate}
+    \item The \textbf{Skill-Course Two-Stage Hybrid} achieves 95.6\% skill gap coverage, demonstrating that coverage optimization outperforms traditional link prediction for IDP applications.
+    
+    \item The \textbf{GNN} excels at career path prediction (NDCG@10 = 0.849), leveraging graph structure to capture complex career transition patterns.
+    
+    \item The \textbf{NCF} provides effective development action recommendations (Accuracy = 64.7\%) following the 70-20-10 learning model.
+    
+    \item The \textbf{Direct Matcher} achieves 76.4\% mentor matching accuracy through explicit skill overlap features and hard negative sampling, a +29.1 percentage point improvement over baseline.
+\end{enumerate}
+
+The key contributions include the paradigm shift from link prediction to coverage optimization for skill-course recommendation and the Direct Matcher innovations for mentor matching. Together, these findings validate that task-specific architectures with appropriate optimization objectives significantly outperform general-purpose recommendation approaches for IDP applications.

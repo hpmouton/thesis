@@ -19,7 +19,7 @@ This appendix contains an example algorithm.
 \KwOut{Reduced representation $\mathbf{X}_{\text{reduced}}$}
 
 \Begin{
-    {\begingroup\scriptsize\sloppy\raggedright\setlength{\emergencystretch}{3em}
+    {\begingroup\scriptsize\justifying\setlength{\emergencystretch}{3em}
         Center the data: $\mathbf{X} \leftarrow \mathbf{X} - \text{mean}(\mathbf{X})$\;
         Compute covariance matrix: $\mathbf{C} = \frac{1}{n-1} \mathbf{X}^T \mathbf{X}$\;
         Compute eigenvectors and eigenvalues of $\mathbf{C}$\;
@@ -40,7 +40,7 @@ This appendix contains an example algorithm.
 \KwOut{Encoded representation $\mathbf{Z}$}
 
 \Begin{
-    {\begingroup\scriptsize\sloppy\raggedright\setlength{\emergencystretch}{3em}
+    {\begingroup\scriptsize\justifying\setlength{\emergencystretch}{3em}
         Define encoder network $f_{\theta}$ and decoder network $g_{\phi}$\;
         Initialize parameters $\theta, \phi$\;
         \For{each epoch}{
@@ -63,7 +63,7 @@ This appendix contains an example algorithm.
 \KwOut{Predicted user preferences $\hat{\mathbf{R}}$}
 
 \Begin{
-    {\begingroup\scriptsize\sloppy\raggedright\setlength{\emergencystretch}{3em}
+    {\begingroup\scriptsize\justifying\setlength{\emergencystretch}{3em}
         Initialize embeddings for users and items\;
         Define neural network $f(\cdot)$ to model interaction between embeddings\;
         \For{each epoch}{
@@ -85,7 +85,7 @@ This appendix contains an example algorithm.
 \KwOut{Updated node embeddings $\mathbf{H}^L$}
 
 \Begin{
-    {\begingroup\scriptsize\sloppy\raggedright\setlength{\emergencystretch}{3em}
+    {\begingroup\scriptsize\justifying\setlength{\emergencystretch}{3em}
         \For{layer $l = 0$ \KwTo $L-1$}{
                 \For{each node $v \in V$}{
                         Aggregate neighbor features:
@@ -109,7 +109,7 @@ This appendix contains an example algorithm.
 \KwOut{Contextual embeddings $H = (h_1, \ldots, h_n)$}
 
 \Begin{
-    {\begingroup\scriptsize\sloppy\raggedright\setlength{\emergencystretch}{3em}
+    {\begingroup\scriptsize\justifying\setlength{\emergencystretch}{3em}
         Embed tokens: $\mathbf{E} = \text{Embedding}(X)$\;
         Add positional encodings to $\mathbf{E}$\;
         \For{each layer}{
@@ -133,54 +133,54 @@ This appendix contains an example algorithm.
 \KwOut{Personalized Individual Development Plans (IDPs)}
 
 \Begin{
-    {\begingroup\scriptsize\sloppy\raggedright\setlength{\emergencystretch}{3em}
-    	extbf{Step 1: Data Collection and Preprocessing}\;
+    {\begingroup\scriptsize\justifying\setlength{\emergencystretch}{3em}
+        \textbf{Step 1: Data Collection and Preprocessing}\;
         \Indp
         Collect employee datasets (skills, evaluations, feedback, goals)\;
         Clean and normalize data (handling missing values, text cleaning)\;
-        Extract features from structured data and unstructured text using NLP\;
+        Extract features from structured and unstructured text using NLP\;
         \Indm
 
-             	extbf{Step 2: Feature Engineering}\;
+        \textbf{Step 2: Feature Engineering}\;
         \Indp
         Apply PCA for dimensionality reduction\;
         Train Autoencoder to learn compact feature representations\;
         Perform Clustering to identify similar employee profiles\;
         \Indm
 
-             	extbf{Step 3: Model Training}\;
+        \textbf{Step 3: Model Training}\;
         \Indp
-             	extbf{Sub-step 3.1: NCF-based Interaction Modeling}\;
+        \textbf{Sub-step 3.1: NCF-based Interaction Modeling}\;
         \Indp
-        Train Neural Collaborative Filtering (NCF) to predict personalized recommendations based on historical data\;
+        Train NCF to predict personalized recommendations\;
         \Indm
-             	extbf{Sub-step 3.2: Graph Modeling}\;
+        \textbf{Sub-step 3.2: Graph Modeling}\;
         \Indp
-        Construct Knowledge Graph of skills, learning paths, career objectives\;
-        Train Graph Neural Network (GNN) to capture relational dependencies\;
+        Construct Knowledge Graph of skills, learning paths, objectives\;
+        Train GNN to capture relational dependencies\;
         \Indm
-             	extbf{Sub-step 3.3: Textual Understanding}\;
+        \textbf{Sub-step 3.3: Textual Understanding}\;
         \Indp
-        Train Transformer model (e.g., BERT) on employee goal statements\;
+        Train Transformer model on employee goal statements\;
         Generate embeddings for career goal descriptions\;
         \Indm
         \Indm
 
-             	extbf{Step 4: Inference and Recommendation}\;
+        \textbf{Step 4: Inference and Recommendation}\;
         \Indp
-        For a given employee:
-        \begin{itemize}
-                \item Embed structured and unstructured data
-                \item Aggregate predictions from NCF, GNN, and Transformer models
-                \item Rank and select top development plan recommendations
-        \end{itemize}
+        For a given employee:\;
+        \Indp
+        Embed structured and unstructured data\;
+        Aggregate predictions from NCF, GNN, and Transformer\;
+        Rank and select top development plan recommendations\;
+        \Indm
         Generate customized IDP output for the employee\;
         \Indm
 
-             	extbf{Step 5: Feedback Integration}\;
+        \textbf{Step 5: Feedback Integration}\;
         \Indp
         Collect employee and supervisor feedback post-recommendation\;
-        Update training datasets and retrain models periodically for dynamic adaptation\;
+        Update training datasets and retrain models periodically\;
         \Indm
     \endgroup}
 }

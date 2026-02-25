@@ -1,125 +1,489 @@
 \chapter{Research Design}
 \label{chapter:rd}
 
-\section{Overview of the Research Design}
-\label{section:research_design_overview}
+% Use full justification for chapter text
+\justifying
 
-The research design for this study focuses on the development, training, and evaluation of a deep learning-based recommender system to generate personalized Individual Development Plans (IDPs) for employees. 
+This chapter presents the research methodology employed to develop, train, and evaluate a deep learning-based recommender system for Individual Development Plans (IDPs). The chapter follows a systematic approach, detailing the research design type and justification, research setting and data sources, data collection instruments, procedural steps, and data analysis techniques.
 
-The design follows a modular, data-driven approach, where raw employee data undergoes preprocessing, feature engineering, and is subsequently used to train and evaluate several deep learning models. These models are trained independently to predict suitable development plans based on employee skills, evaluations, learning goals, and performance histories.
+%======================================================================
+\section{Research Design Type and Justification}
+\label{section:research_design_type}
+%======================================================================
 
-Four primary deep learning models are considered: Neural Collaborative Filtering (NCF), Recurrent Neural Networks (RNN), Graph Neural Networks (GNN), and Transformer-based architectures. Each model is trained, validated, and evaluated independently using consistent data splits and evaluation metrics. The goal is not to ensemble or aggregate model outputs, but rather to identify the model that offers the best predictive performance according to established evaluation criteria such as Precision, Recall, F1-Score, and AUC-ROC.
+\subsection{Design Type: Experimental Design with Comparative Model Evaluation}
 
-The system architecture is organized into five major phases:
+This study employs an \textbf{experimental research design} with a focus on comparative model evaluation. The design involves developing multiple deep learning architectures and systematically evaluating their performance on IDP recommendation tasks using standardized datasets and metrics.
+
+The experimental approach involves:
+\begin{enumerate}
+    \item \textbf{Multiple Treatment Groups}: Five deep learning architectures (NCF, Skill-Course NCF, LSTM, GNN, Transformer) serve as treatment conditions
+    \item \textbf{Controlled Variables}: Consistent training data, preprocessing, and evaluation metrics across all models
+    \item \textbf{Outcome Measures}: Performance metrics (NDCG@K, Precision, Recall, F1, AUC-ROC) quantify recommendation quality
+    \item \textbf{Comparative Analysis}: Statistical comparison identifies the optimal architecture for each IDP component
+\end{enumerate}
+
+\subsection{Justification for Experimental Design}
+
+The experimental design was selected for the following reasons:
+
+\begin{enumerate}
+    \item \textbf{Objective Performance Comparison}: Deep learning model selection requires empirical evidence from controlled experiments rather than theoretical assumptions
+    
+    \item \textbf{Reproducibility}: Fixed train-validation-test splits and cross-validation ensure results can be replicated
+    
+    \item \textbf{Generalizability}: Evaluation on held-out test data provides unbiased estimates of real-world performance
+    
+    \item \textbf{Multi-Component System}: The IDP recommender has four distinct components (course recommendation, career prediction, action recommendation, mentor matching), each potentially requiring different optimal architectures
+\end{enumerate}
+
+\subsection{Research Questions Addressed}
+
+The experimental design answers the following research questions:
+
+\begin{enumerate}
+    \item Which deep learning architecture provides the best ranking quality (NDCG@10) for course recommendations?
+    \item How effectively can GNNs model career transition patterns compared to sequential models?
+    \item What architectural features improve mentor-mentee matching accuracy?
+    \item How does the two-stage hybrid approach (NCF scorer + coverage optimization) compare to traditional link prediction for skill-course mapping?
+\end{enumerate}
+
+%======================================================================
+\section{Research Setting and Data Sources}
+\label{section:research_setting}
+%======================================================================
+
+\subsection{Research Setting}
+
+The study was conducted in the context of the \textbf{TrainEase Learning Management System (LMS)}, a corporate learning platform deployed within an organizational setting. The LMS provides the operational context for the IDP recommender, where employees access personalized development plans, training courses, and mentoring assignments.
+
+\textbf{Key Characteristics of the Research Setting}:
+\begin{itemize}
+    \item \textbf{Organization Type}: Corporate/enterprise environment with structured HR processes
+    \item \textbf{Platform}: Laravel/Livewire-based LMS with MySQL database
+    \item \textbf{Integration}: Julia ML backend connected via REST API
+    \item \textbf{User Base}: 300 employees with documented skill profiles and training histories
+\end{itemize}
+
+\subsection{Population and Sample}
+
+\textbf{Population}: All employees within organizations using learning management systems for professional development, estimated at millions globally.
+
+\textbf{Sample}: 300 employees from the TrainEase LMS deployment, selected through \textbf{convenience sampling} based on data availability and completeness.
+
+\textbf{Sample Characteristics}:
+\begin{itemize}
+    \item 136 employees designated as mentors
+    \item 151 employees designated as mentees
+    \item 268 documented mentor-mentee relationships (233 completed)
+    \item Skills data spanning 1,247 unique skills
+    \item Training histories with course completion records
+\end{itemize}
+
+\subsection{Data Sources}
+
+The IDP recommender utilizes multiple heterogeneous data sources. \Cref{tab:data_sources} summarizes the datasets, their origins, and purposes.
+
 \begin{table}[H]
-\centering
-\small
-\caption{Models and Techniques Applied Across Research Phases}
-\label{tab:models_summary}
-\rowcolors{2}{gray!10}{white}
-\begin{tabular}{@{}p{5cm}p{5.5cm}p{3.5cm}@{}}
-\toprule
-\textbf{Model/Technique} & \textbf{Purpose} & \textbf{Research Phase} \\
-\midrule
-\rowcolor{blue!10}
-Data Collection and Preprocessing & Collect, clean, normalize employee data (skills, feedback, evaluations) & \textbf{Data Collection} \\
-\midrule
-\rowcolor{cyan!15}
-Principal Component Analysis (PCA) & Reduce feature dimensionality and highlight important patterns & \textbf{Feature Engineering} \\
-\rowcolor{cyan!15}
-Autoencoder & Denoise and compress employee data for feature extraction & \textbf{Feature Engineering} \\
-\rowcolor{cyan!15}
-Clustering (e.g., K-Means) & Group employees based on similar goals and skill gaps & \textbf{Feature Engineering} \\
-\midrule
-\rowcolor{orange!20}
-Neural Collaborative Filtering (NCF) & Predict personalized skill development plans from interaction data & \textbf{Model Training} \\
-\rowcolor{orange!20}
-RNN / LSTM & Model sequential learning behaviors and engagement history & \textbf{Model Training} \\
-\rowcolor{orange!20}
-Graph Neural Network (GNN) & Model relationships between skills and career objectives via Knowledge Graphs & \textbf{Model Training} \\
-\rowcolor{orange!20}
-Transformer Model (BERT) & Understand textual employee career goals and aspirations & \textbf{Model Training} \\
-\midrule
-\rowcolor{green!20}
-Precision, Recall, F1, AUC-ROC & Evaluate model effectiveness and recommendation quality & \textbf{Model Evaluation} \\
-\rowcolor{green!20}
-k-Fold Cross-Validation & Validate model robustness and prevent overfitting & \textbf{Model Evaluation} \\
-\rowcolor{green!20}
-Explainability (SHAP, LIME) & Interpret model predictions and detect potential biases & \textbf{Model Evaluation} \\
-\midrule
-\rowcolor{yellow!20}
-Feedback Integration & Use best model to generate IDPs; integrate feedback for retraining & \textbf{Deployment} \\
-\bottomrule
-\end{tabular}
-
-
-
+    \centering
+    \caption{Data Sources for the IDP Recommender System}
+    \label{tab:data_sources}
+    \small
+    \begin{tabular}{@{}llrl@{}}
+        \toprule
+        \textbf{Dataset} & \textbf{Source} & \textbf{Records} & \textbf{Purpose} \\
+        \midrule
+        Online Courses & Coursera/Udemy aggregation & 8,092 & Skill-course mapping \\
+        Job Postings (Primary) & LinkedIn/Indeed & $\sim$14,000 & Skill extraction \\
+        Job Postings (USA) & USA job boards & $\sim$9,000 & Additional skill vocabulary \\
+        Job Postings (Asia) & JobStreet & 13,834 & Market validation \\
+        Career Paths & O*NET/BLS research data & 9,000 & Career transition modeling \\
+        Employee Data & TrainEase LMS & 300 & User profiles, interactions \\
+        Mentoring Data & TrainEase LMS & 268 pairs & Mentor-mentee relationships \\
+        Skills Taxonomy & ESCO Framework & 13,000+ & Skill normalization \\
+        \bottomrule
+    \end{tabular}
 \end{table}
 
+%======================================================================
+\section{Research Instruments and Models}
+\label{section:research_instruments}
+%======================================================================
 
+The research employs both data collection instruments and computational models as research instruments. This section describes each.
 
+\subsection{Data Collection Instruments}
 
-This research design ensures both methodological rigour and flexibility, allowing for fair comparison between models and supporting the goal of building an adaptable, scalable, and accurate IDP recommender system.
+\subsubsection{Skills Assessment Instrument}
+
+Employee skills are captured through structured assessment within the LMS:
+\begin{itemize}
+    \item \textbf{Self-Assessment}: Employees rate their proficiency in predefined skill categories (1-5 scale)
+    \item \textbf{Manager Validation}: Supervisors verify and adjust skill ratings
+    \item \textbf{Skill Gaps}: Computed as difference between target role requirements and current proficiency
+\end{itemize}
+
+\subsubsection{Course Metadata Schema}
+
+Course information follows a standardized schema:
+\begin{itemize}
+    \item Course name, description, and learning objectives
+    \item Skills taught (comma-separated list)
+    \item Difficulty level (Beginner, Intermediate, Advanced)
+    \item Duration in hours
+    \item Category classification
+\end{itemize}
+
+\subsubsection{Mentor-Mentee Relationship Records}
+
+Mentoring data captures:
+\begin{itemize}
+    \item Mentor and mentee identifiers
+    \item Relationship status (active, completed, terminated)
+    \item Session records (date, duration, topics)
+    \item Feedback ratings (mentor and mentee perspectives)
+\end{itemize}
+
+\subsection{Deep Learning Model Instruments}
+
+Five deep learning architectures serve as the primary computational instruments for recommendation generation.
+
+\subsubsection{Neural Collaborative Filtering (NCF)}
+
+NCF combines Generalized Matrix Factorization (GMF) and Multi-Layer Perceptron (MLP) branches to model user-item interactions. The architecture learns embeddings for employees and development resources, capturing both linear and non-linear interaction patterns.
+
+\subsubsection{Skill-Course NCF (Novel Variant)}
+
+A novel variant that directly encodes employee skill profiles rather than user IDs, addressing the cold-start problem for new employees without interaction history.
+
+\subsubsection{Long Short-Term Memory (LSTM)}
+
+LSTM networks model sequential patterns in career progressions and learning histories, capturing temporal dependencies through gating mechanisms.
+
+\subsubsection{Graph Neural Network (GNN)}
+
+GNN constructs heterogeneous graphs with employee, role, and skill nodes, aggregating neighborhood information to predict career transitions based on structural relationships.
+
+\subsubsection{Transformer}
+
+Transformer encoder with multi-head self-attention captures complex dependencies in sequential recommendation without the recency bias of RNNs.
+
+\Cref{tab:model_instruments} summarizes the model configurations.
+
+\begin{table}[H]
+    \centering
+    \caption{Deep Learning Model Instrument Specifications}
+    \label{tab:model_instruments}
+    \small
+    \begin{tabular}{@{}llll@{}}
+        \toprule
+        \textbf{Model} & \textbf{Architecture} & \textbf{Key Parameters} & \textbf{Target Task} \\
+        \midrule
+        NCF & GMF + MLP fusion & Embed: 64, Hidden: [128,64,32] & Course/Action rec. \\
+        Skill-Course NCF & Skill-profile encoding & Embed: 64, Dropout: 0.3 & Skill-course mapping \\
+        LSTM & 2-layer stacked & Hidden: 128, Seq len: 10 & Sequential patterns \\
+        GNN & Message passing & Embed: 64, Layers: 2 & Career path prediction \\
+        Transformer & Multi-head attention & Heads: 4, d\_model: 128 & Sequential rec. \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+%======================================================================
+\section{Data Collection Procedures}
+\label{section:data_collection_procedures}
+%======================================================================
+
+This section describes the step-by-step procedures for collecting, preprocessing, and preparing data for model training.
+
+\subsection{Step 1: Data Acquisition}
+
+Data was acquired from multiple sources following institutional data governance protocols:
+
+\begin{enumerate}
+    \item \textbf{Course Data}: Online course catalogs were aggregated from Coursera and Udemy via public API endpoints, collecting 8,092 course records with metadata including skills, categories, and difficulty levels
+    
+    \item \textbf{Job Posting Data}: Job postings were collected from LinkedIn, Indeed, and JobStreet, totaling approximately 36,000 records for skill extraction and role requirement analysis
+    
+    \item \textbf{Career Path Data}: Career transition research data from O*NET and Bureau of Labor Statistics provided 9,000 records of career progression patterns across 15 professional fields
+    
+    \item \textbf{Employee Data}: With institutional approval, anonymized employee records (300 employees) were extracted from the TrainEase LMS, including skill profiles, training histories, and mentoring relationships
+\end{enumerate}
+
+\subsection{Step 2: Data Cleaning and Preprocessing}
+
+Raw data underwent systematic cleaning:
+
+\begin{enumerate}
+    \item \textbf{Missing Value Handling}: Records with missing required fields (skill names, course titles) were removed; optional fields were imputed with defaults or left null
+    
+    \item \textbf{Duplicate Removal}: Deduplication by primary key removed redundant course and job posting records
+    
+    \item \textbf{Language Filtering}: Non-English content was filtered to ensure NLP consistency
+    
+    \item \textbf{Text Normalization}: All text fields converted to lowercase, whitespace trimmed, and punctuation standardized
+\end{enumerate}
+
+\subsection{Step 3: Feature Engineering}
+
+Preprocessed data was transformed into model-ready features:
+
+\begin{enumerate}
+    \item \textbf{TF-IDF Vectorization}: Text features (job descriptions, course content) converted to numerical vectors using Term Frequency-Inverse Document Frequency weighting
+    
+    \item \textbf{PCA Dimensionality Reduction}: High-dimensional TF-IDF features reduced to 50 principal components while preserving maximum variance
+    
+    \item \textbf{ESCO Skill Mapping}: Extracted skills mapped to the European Skills, Competences, Qualifications and Occupations (ESCO) taxonomy for standardization
+    
+    \item \textbf{Embedding Initialization}: Learnable embeddings initialized for user, item, and skill representations
+\end{enumerate}
+
+\subsection{Step 4: Training Pair Generation}
+
+Supervised training requires positive and negative samples:
+
+\begin{enumerate}
+    \item \textbf{Positive Pairs}: Created from known relationships (employee-course completions, mentor-mentee matches, career transitions)
+    
+    \item \textbf{Negative Sampling}: Non-matching pairs sampled at 4:1 or 5:1 negative-to-positive ratio to address class imbalance
+    
+    \item \textbf{Stratified Splitting}: Data split into 70\% training, 15\% validation, and 15\% test sets with stratification to maintain class distributions
+\end{enumerate}
+
+\Cref{tab:training_splits} summarizes the training data for each model component.
+
+\begin{table}[H]
+    \centering
+    \caption{Training Data Statistics by Model Component}
+    \label{tab:training_splits}
+    \small
+    \begin{tabular}{@{}lrrrr@{}}
+        \toprule
+        \textbf{Model} & \textbf{Positive} & \textbf{Negative} & \textbf{Total} & \textbf{Neg:Pos} \\
+        \midrule
+        Skill-Course & 12,895 & 51,580 & 64,475 & 4:1 \\
+        Career Path & 450 & 2,250 & 2,700 & 5:1 \\
+        Dev Action & 2,100 & 8,400 & 10,500 & 4:1 \\
+        Mentor Match & 233 & 932 & 1,165 & 4:1 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{Step 5: Model Training and Validation}
+
+Each model architecture was trained independently:
+
+\begin{enumerate}
+    \item \textbf{Training Phase}: Models trained on the training set (70\%) using Adam optimizer with learning rate 0.001, batch size 64, and early stopping after 10 epochs without validation improvement
+    
+    \item \textbf{Validation Phase}: Hyperparameters tuned on the validation set (15\%) using 5-fold cross-validation to assess generalization
+    
+    \item \textbf{Test Phase}: Final evaluation on held-out test set (15\%) for unbiased performance assessment
+\end{enumerate}
+
+\subsection{Step 6: Model Selection and Deployment}
+
+Best-performing models were selected and deployed:
+
+\begin{enumerate}
+    \item \textbf{Model Selection}: Architecture achieving highest primary metric (NDCG@10 for ranking tasks, Accuracy for classification tasks) selected for each IDP component
+    
+    \item \textbf{Model Serialization}: Selected models serialized using BSON format for efficient loading
+    
+    \item \textbf{API Deployment}: REST API endpoints exposed via Julia HTTP server for Laravel frontend integration
+    
+    \item \textbf{Feedback Loop}: User interaction data collected for future model retraining
+\end{enumerate}
+
+%======================================================================
+\section{Data Analysis Techniques}
+\label{section:data_analysis}
+%======================================================================
+
+This section describes the quantitative analysis techniques used to evaluate model performance and answer the research questions.
+
+\subsection{Ranking Metrics}
+
+For recommendation tasks, ranking quality metrics assess how well models order relevant items:
+
+\subsubsection{Normalized Discounted Cumulative Gain (NDCG@K)}
+
+NDCG@K measures ranking quality with position-weighted relevance scores:
+
+\begin{equation}
+    \text{DCG@K} = \sum_{i=1}^{K} \frac{2^{rel_i} - 1}{\log_2(i + 1)}
+\end{equation}
+
+\begin{equation}
+    \text{NDCG@K} = \frac{\text{DCG@K}}{\text{IDCG@K}}
+\end{equation}
+
+where $rel_i$ is the relevance of item at position $i$, and IDCG@K is the ideal DCG with perfect ranking. NDCG@10 serves as the primary ranking metric.
+
+\subsubsection{Precision@K and Recall@K}
+
+\begin{equation}
+    \text{Precision@K} = \frac{|\text{Relevant items in top-K}|}{K}
+\end{equation}
+
+\begin{equation}
+    \text{Recall@K} = \frac{|\text{Relevant items in top-K}|}{|\text{Total relevant items}|}
+\end{equation}
+
+\subsection{Classification Metrics}
+
+For binary classification tasks (e.g., mentor-mentee match prediction):
+
+\subsubsection{Precision, Recall, and F1-Score}
+
+\begin{equation}
+    \text{Precision} = \frac{TP}{TP + FP}, \quad \text{Recall} = \frac{TP}{TP + FN}
+\end{equation}
+
+\begin{equation}
+    \text{F1} = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}
+\end{equation}
+
+where TP = True Positives, FP = False Positives, FN = False Negatives.
+
+\subsubsection{Area Under ROC Curve (AUC-ROC)}
+
+AUC-ROC measures discrimination capability by plotting True Positive Rate against False Positive Rate across classification thresholds. Values range from 0.5 (random) to 1.0 (perfect).
+
+\subsection{Regression Metrics}
+
+For the skill-course scorer (Stage 1 of Two-Stage Hybrid):
+
+\begin{equation}
+    \text{MSE} = \frac{1}{n}\sum_{i=1}^{n}(y_i - \hat{y}_i)^2, \quad \text{MAE} = \frac{1}{n}\sum_{i=1}^{n}|y_i - \hat{y}_i|
+\end{equation}
+
+\begin{equation}
+    R^2 = 1 - \frac{\sum(y_i - \hat{y}_i)^2}{\sum(y_i - \bar{y})^2}
+\end{equation}
+
+\subsection{Coverage Metrics}
+
+For the Two-Stage Hybrid skill-course model:
+
+\begin{equation}
+    \text{Coverage} = \frac{|\text{Skill gaps addressed by selected courses}|}{|\text{Total skill gaps}|}
+\end{equation}
+
+Coverage measures the proportion of employee skill gaps addressed by the recommended course set.
+
+\subsection{Statistical Comparison}
+
+Model architectures were compared using:
+\begin{itemize}
+    \item \textbf{Mean and Standard Deviation}: Across 5-fold cross-validation for each metric
+    \item \textbf{Best Model Selection}: Architecture with highest mean primary metric selected
+    \item \textbf{Paired Comparison}: Performance differences noted for interpretation
+\end{itemize}
+
+\subsection{Software Tools}
+
+All analysis was conducted using:
+\begin{itemize}
+    \item \textbf{Julia 1.11}: Primary programming language
+    \item \textbf{Flux.jl}: Deep learning framework for model implementation
+    \item \textbf{DataFrames.jl}: Data manipulation and preprocessing
+    \item \textbf{Plots.jl, StatsPlots.jl}: Visualization of results
+    \item \textbf{Statistics.jl}: Statistical computations
+\end{itemize}
+
+%======================================================================
+\section{IDP Recommendation Components}
+\label{section:idp_components}
+%======================================================================
+
+The IDP recommender system addresses four distinct but interconnected recommendation tasks, each requiring tailored modeling approaches.
+
+\subsection{Component 1: Course Recommendation}
+
+The course recommendation component suggests relevant training courses based on an employee's skill gaps and career objectives. This is formulated as a ranking problem where the goal is to order available courses by their relevance to the employee's development needs.
+
+The primary challenge is the cold-start problem—new employees have limited interaction history, making traditional collaborative filtering less effective. To address this, the Skill-Course NCF model directly encodes employee skill profiles rather than relying on historical course completions, providing meaningful recommendations even for employees with sparse training records.
+
+\subsection{Component 2: Career Path Prediction}
+
+The career path prediction component forecasts potential career trajectories based on an employee's current role, skills, and the organizational structure. This component leverages Graph Neural Networks to model the relationships between roles, skills, and historical career transitions.
+
+The heterogeneous graph structure captures three types of relationships: skill requirements for each role, typical transition paths between roles, and employee-role assignments. By aggregating information across these edges, the GNN learns role representations that encode both skill requirements and structural positioning within career hierarchies.
+
+\subsection{Component 3: Development Action Recommendation}
+
+The development action component recommends specific learning activities following the 70-20-10 model: experiential learning (on-the-job assignments), social learning (mentoring, networking), and formal education (courses, certifications). The challenge is to maintain the target distribution across action categories while maximizing relevance to individual skill gaps.
+
+A quota-constrained recommendation approach adjusts predicted scores based on current category distributions, ensuring balanced recommendations that align with organizational learning philosophy.
+
+\subsection{Component 4: Mentor Matching}
+
+The mentor matching component pairs employees with suitable mentors based on skill complementarity, career alignment, and availability. The matching algorithm considers both the mentor's expertise in the mentee's target skill areas and the mentee's potential contribution to mutual learning.
+
+This component uses a bipartite matching formulation where employees and potential mentors are matched to maximize overall compatibility while respecting constraints on mentor availability and mentee-mentor ratios.
 
 \section{System Architecture}
 \label{section:system_architecture}
 
-The system architecture for the Individual Development Plan (IDP) Recommender is designed to modularly process employee data, engineer useful features, independently train multiple deep learning models, evaluate their performance, and deploy the best model to generate personalized development plans.
+The system architecture for the Individual Development Plan Recommender follows a three-tier design consisting of a Data Layer, Model Layer, and API Layer. This separation of concerns enables independent scaling and maintenance of each component. The system integrates with the TrainEase Learning Management System (LMS) built on Laravel and Livewire, providing a seamless user experience where employees can view their personalized development plans within the familiar LMS interface.
 
-Figure~\ref{fig:idp_system_architecture} illustrates the overall architecture of the system. The flow begins with raw employee data and proceeds through several critical stages: preprocessing, feature engineering, model training, evaluation, and selection. A feedback loop is incorporated to ensure that the model continues to improve over time based on new data and organizational feedback.
+\Cref{fig:idp_system_architecture} illustrates the overall architecture. The flow begins with raw data from multiple sources and proceeds through critical stages: preprocessing, feature engineering, model training, evaluation, and deployment. A feedback loop is incorporated to ensure continuous model improvement based on employee engagement data and organizational feedback.
 
 \begin{figure}[H]
     \centering
-    \begin{tikzpicture}[scale=0.7, transform shape,
-        node distance=1.5cm and 2.2cm,
-        inputblock/.style={rectangle, draw, fill=cyan!15, rounded corners, text centered, align=center, minimum height=1.2cm, minimum width=3.2cm},
-        processblock/.style={rectangle, draw, fill=yellow!20, rounded corners, text centered, align=center, minimum height=1.2cm, minimum width=3.2cm},
-        modelblock/.style={rectangle, draw, fill=orange!20, rounded corners, text centered, align=center, minimum height=1.2cm, minimum width=3.2cm},
-        evalblock/.style={rectangle, draw, fill=purple!20, rounded corners, text centered, align=center, minimum height=1.2cm, minimum width=4cm},
-        outputblock/.style={rectangle, draw, fill=green!20, rounded corners, text centered, align=center, minimum height=1.2cm, minimum width=4cm},
-        arrow/.style={thick,->,>=stealth}
-    ]
+    \begin{tikzpicture}[scale=0.65, transform shape,
+            node distance=1.5cm and 2.2cm,
+            inputblock/.style={rectangle, draw, fill=cyan!15, rounded corners, text centered, align=center, minimum height=1.2cm, minimum width=3.2cm},
+            processblock/.style={rectangle, draw, fill=yellow!20, rounded corners, text centered, align=center, minimum height=1.2cm, minimum width=3.2cm},
+            modelblock/.style={rectangle, draw, fill=orange!20, rounded corners, text centered, align=center, minimum height=1.2cm, minimum width=2.8cm},
+            evalblock/.style={rectangle, draw, fill=purple!20, rounded corners, text centered, align=center, minimum height=1.2cm, minimum width=4cm},
+            outputblock/.style={rectangle, draw, fill=green!20, rounded corners, text centered, align=center, minimum height=1.2cm, minimum width=4cm},
+            arrow/.style={thick,->,>=stealth}
+        ]
 
-    % Top process nodes
-    \node[inputblock] (rawdata) {Raw Employee Data};
-    \node[processblock, below=of rawdata] (preprocessing) {Data Cleaning and Preprocessing};
-    \node[processblock, below=of preprocessing] (feature) {Feature Engineering (PCA, Autoencoder, Clustering)};
-    
-    % Model blocks - arranged horizontally
-    \node[modelblock, below left=2cm and 4cm of feature] (ncf) {NCF Model};
-    \node[modelblock, below left=2cm and 0.1cm of feature] (rnn) {RNN Model};
-    \node[modelblock, below right=2cm and 0.1cm of feature] (gnn) {GNN Model};
-    \node[modelblock, below right=2cm and 4cm of feature] (transformer) {Transformer Model};
+        % Top process nodes
+        \node[inputblock] (rawdata) {Multi-Source Data\\(Jobs, Courses, Careers)};
+        \node[processblock, below=of rawdata] (preprocessing) {Data Cleaning and\\Preprocessing};
+        \node[processblock, below=of preprocessing] (feature) {Feature Engineering\\(TF-IDF, PCA, ESCO)};
 
-    % Evaluation node centered
-    \node[evalblock, below=4cm of feature] (evaluation) {Model Evaluation\\ (Precision, Recall, F1-Score, AUC-ROC)};
-    
-    % Output block
-    \node[outputblock, below=of evaluation] (idp) {Select Best Model \\ Generate Personalized IDP};
+        % Model blocks - arranged horizontally (5 models now)
+        \node[modelblock, below left=2cm and 5.5cm of feature] (ncf) {NCF};
+        \node[modelblock, below left=2cm and 2cm of feature] (skillncf) {Skill-Course\\NCF};
+        \node[modelblock, below=2cm of feature] (lstm) {LSTM};
+        \node[modelblock, below right=2cm and 2cm of feature] (gnn) {GNN};
+        \node[modelblock, below right=2cm and 5.5cm of feature] (transformer) {Transformer};
 
-    % Feedback loop
-    \node[processblock, right=of idp, xshift=1cm] (feedback) {Collect Feedback \\ Update Models};
+        % Evaluation node centered
+        \node[evalblock, below=4cm of feature] (evaluation) {Model Evaluation\\(NDCG, Precision, Recall, F1, AUC-ROC)};
 
-    % Arrows
-    \draw[arrow] (rawdata) -- (preprocessing);
-    \draw[arrow] (preprocessing) -- (feature);
+        % Output block
+        \node[outputblock, below=of evaluation] (idp) {Select Best Model per Task\\Generate Personalized IDP};
 
-    \draw[arrow] (feature.south) -- ++(0,-0.5) -| (ncf.north);
-    \draw[arrow] (feature.south) -- ++(0,-0.5) -| (rnn.north);
-    \draw[arrow] (feature.south) -- ++(0,-0.5) -| (gnn.north);
-    \draw[arrow] (feature.south) -- ++(0,-0.5) -| (transformer.north);
+        % Feedback loop
+        \node[processblock, right=of idp, xshift=1cm] (feedback) {Collect Feedback\\Update Models};
 
-    \draw[arrow] (ncf.south) -- (evaluation.north west);
-    \draw[arrow] (rnn.south) -- (evaluation.north west);
-    \draw[arrow] (gnn.south) -- (evaluation.north east);
-    \draw[arrow] (transformer.south) -- (evaluation.north east);
+        % Arrows
+        \draw[arrow] (rawdata) -- (preprocessing);
+        \draw[arrow] (preprocessing) -- (feature);
 
-    \draw[arrow] (evaluation) -- (idp);
-    \draw[arrow] (idp) -- (feedback);
-    \draw[arrow, dashed] (feedback.east) -- ++(1cm,0) |- (feature.east);
+        \draw[arrow] (feature.south) -- ++(0,-0.5) -| (ncf.north);
+        \draw[arrow] (feature.south) -- ++(0,-0.5) -| (skillncf.north);
+        \draw[arrow] (feature.south) -- ++(0,-0.5) -| (lstm.north);
+        \draw[arrow] (feature.south) -- ++(0,-0.5) -| (gnn.north);
+        \draw[arrow] (feature.south) -- ++(0,-0.5) -| (transformer.north);
+
+        \draw[arrow] (ncf.south) -- (evaluation.north west);
+        \draw[arrow] (skillncf.south) -- (evaluation.north);
+        \draw[arrow] (lstm.south) -- (evaluation.north);
+        \draw[arrow] (gnn.south) -- (evaluation.north);
+        \draw[arrow] (transformer.south) -- (evaluation.north east);
+
+        \draw[arrow] (evaluation) -- (idp);
+        \draw[arrow] (idp) -- (feedback);
+        \draw[arrow, dashed] (feedback.east) -- ++(2.5cm,0) |- (feature.east);
 
     \end{tikzpicture}
-    \caption{System Architecture for the Deep Learning-based IDP Recommender. The models (NCF, RNN, GNN, Transformer) are independently trained and evaluated to identify the best-performing model for generating personalized IDPs.}
+    \caption{System Architecture for the Deep Learning-based IDP Recommender. Five models (NCF, Skill-Course NCF, LSTM, GNN, Transformer) are independently trained and evaluated to identify the best-performing architecture for each IDP component.}
     \label{fig:idp_system_architecture}
 \end{figure}
 
@@ -127,127 +491,229 @@ Figure~\ref{fig:idp_system_architecture} illustrates the overall architecture of
 The system is composed of the following key modules:
 
 \subsection{Data Collection and Preprocessing}
-Employee data—including skills assessments, performance reviews, career goals, and feedback—is collected from organizational databases and manual sources. This raw data often contains inconsistencies, missing values, and unstructured formats. Therefore, a preprocessing module cleans the data by handling missing entries, standardizing formats, and preparing the inputs for feature engineering.
+
+The IDP recommender system utilizes multiple data sources to support its four recommendation components. \Cref{tab:datasets_research} summarizes the datasets used in this study.
+
+\begin{table}[H]
+    \centering
+    \caption{Datasets Used in the IDP Recommender System}
+    \label{tab:datasets_research}
+    \small
+    \begin{tabular}{@{}llrl@{}}
+        \toprule
+        \textbf{Dataset} & \textbf{Source} & \textbf{Records} & \textbf{Purpose} \\
+        \midrule
+        Job Posts & LinkedIn/Indeed & 23,000 & Skill extraction, role requirements \\
+        Online Courses & Coursera/Udemy & 8,000 & Course recommendations \\
+        Career Paths & O*NET/BLS & 9,000 & Career trajectory modeling \\
+        Employee Data & TrainEase LMS & 300 & User profiles, interaction history \\
+        Skills Taxonomy & ESCO/O*NET & 2,500 & Skill normalization \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+Raw data often contains inconsistencies, missing values, and unstructured formats. The preprocessing module addresses these challenges through:
+\begin{itemize}
+    \item Handling missing entries via imputation or removal strategies
+    \item Standardizing categorical variables (e.g., job titles, departments)
+    \item Normalizing numerical features (e.g., skill ratings, proficiency levels)
+    \item Parsing and cleaning unstructured textual fields using natural language processing
+\end{itemize}
 
 \subsection{Feature Engineering}
-Feature engineering transforms raw data into structured formats suitable for deep learning models. Dimensionality reduction is performed using Principal Component Analysis (PCA) and Autoencoders to extract the most informative features while minimizing redundancy. Clustering techniques are also applied to group employees by similar career paths and competencies, providing additional categorical features.
 
+Feature engineering transforms raw data into structured representations suitable for deep learning models. The primary techniques employed include:
+
+\textbf{TF-IDF Vectorization}: Text features from job descriptions, course content, and skill descriptions are converted to numerical vectors using Term Frequency-Inverse Document Frequency weighting. This captures the importance of terms relative to the corpus.
+
+\textbf{Dimensionality Reduction}: Principal Component Analysis (PCA) reduces the feature space from thousands of TF-IDF dimensions to 50 principal components, retaining the most important variance while reducing computational requirements.
+
+\textbf{Skill Normalization}: Extracted skills are mapped to the European Skills, Competences, Qualifications and Occupations (ESCO) taxonomy, providing a standardized vocabulary of over 13,000 skills. This normalization ensures consistency across data sources and enables meaningful comparisons between employee competencies and job requirements.
 \subsection{Model Training}
-Four deep learning models—Neural Collaborative Filtering (NCF), Recurrent Neural Networks (RNN), Graph Neural Networks (GNN), and Transformer-based models—are independently trained using the engineered feature sets. Each model is designed to predict the most appropriate Individual Development Plan recommendations for a given employee profile.
 
+Five deep learning architectures are implemented and trained for the IDP recommendation tasks:
+
+\begin{enumerate}
+    \item \textbf{Neural Collaborative Filtering (NCF)}: Combines Generalized Matrix Factorization (GMF) and Multi-Layer Perceptron (MLP) branches to capture both linear and non-linear user-item interactions. Employees are treated as users and development resources (courses, actions) as items.
+    
+    \item \textbf{Skill-Course NCF}: A novel variant that directly encodes employee skill profiles rather than user IDs, addressing the cold-start problem by providing meaningful recommendations even for new employees with sparse training records.
+    
+    \item \textbf{LSTM}: Models sequential patterns in employee career progressions and learning histories, capturing temporal dependencies that inform future development needs.
+    
+    \item \textbf{Graph Neural Network (GNN)}: Constructs a heterogeneous graph with employee, role, and skill nodes, aggregating information from local neighborhoods to predict career paths based on structural relationships.
+    
+    \item \textbf{Transformer}: Employs multi-head self-attention to capture complex dependencies in sequential recommendation tasks without the recency bias inherent in RNNs.
+\end{enumerate}
+
+Each model is trained independently using the engineered features, enabling fair benchmarking without ensemble effects. The modular design allows different architectures to be selected for different IDP components based on their strengths.
 \subsection{Model Evaluation}
-The models are evaluated separately using consistent data splits (training, validation, and testing). Evaluation metrics include Precision, Recall, F1-Score, and AUC-ROC to provide a comprehensive view of each model's predictive performance. The best-performing model based on these metrics is selected for deployment.
 
-\subsection{Deployment and Feedback Integration}
-Once the best model is selected, it is used to generate personalized IDPs for employees. A feedback mechanism is implemented to collect post-recommendation evaluations from employees and supervisors. This feedback is used to update the training dataset and periodically retrain models, ensuring that the system adapts to evolving career development needs within the organization.
+The five deep learning models are evaluated independently using consistent train-validation-test data splits with 5-fold cross-validation to ensure reproducible benchmarking. The evaluation employs both ranking and classification metrics appropriate for recommendation tasks:
 
+\textbf{Ranking Metrics}:
+\begin{itemize}
+    \item \textbf{NDCG@K}: Normalized Discounted Cumulative Gain at K, measuring ranking quality with position-weighted relevance scores
+    \item \textbf{Precision@K}: Proportion of relevant items among the top-K recommendations
+    \item \textbf{Recall@K}: Proportion of relevant items that appear in the top-K recommendations
+\end{itemize}
+
+\textbf{Classification Metrics}:
+\begin{itemize}
+    \item \textbf{F1-Score}: Harmonic mean of precision and recall
+    \item \textbf{AUC-ROC}: Area under the Receiver Operating Characteristic curve, measuring discrimination capability
+\end{itemize}
+
+NDCG@10 serves as the primary metric for model selection, as it appropriately penalizes relevant items appearing lower in the recommendation list. The best-performing model for each IDP component is selected based on aggregated metric scores across cross-validation folds.
+\subsection{Deployment and Integration}
+
+The best-performing models are deployed through a REST API server implemented in Julia, exposing endpoints that the Laravel/Livewire frontend consumes. The TrainEase LMS integration enables employees to view their personalized development plans within the familiar LMS interface.
+
+Key deployment considerations include:
+\begin{itemize}
+    \item Model serialization using BSON format for efficient loading
+    \item Response caching for frequently accessed employee profiles
+    \item Asynchronous API calls to maintain frontend responsiveness
+    \item Feedback collection mechanisms for continuous model improvement
+\end{itemize}
 \section{Module Descriptions}
 \label{section:module_descriptions}
 
-The system is divided into several specialized modules, each responsible for a key part of the IDP recommendation pipeline. This modular design ensures scalability, maintainability, and clear responsibilities across the system components.
+The system is organized into specialized modules, each responsible for a key part of the IDP recommendation pipeline. This modular design ensures scalability, maintainability, and clear responsibilities across system components.
 
 \subsection{Data Preprocessing Module}
-The Data Preprocessing Module is responsible for cleaning and standardizing the raw employee datasets. Key operations performed include:
+
+The preprocessing module handles raw data through the following tasks:
 \begin{itemize}
-    \item Handling missing data through imputation or removal strategies.
-    \item Standardizing categorical variables (e.g., job titles, departments).
+    \item Handling missing data through imputation or removal strategies
+    \item Standardizing categorical variables (e.g., job titles, departments)
     \item Normalizing numerical features (e.g., skill ratings, evaluation scores).
     \item Parsing and cleaning unstructured textual fields, such as career goal descriptions.
 \end{itemize}
 This preprocessing ensures that the data fed into the Feature Engineering Module is consistent and machine-readable.
 
 \subsection{Feature Engineering Module}
-The Feature Engineering Module focuses on enhancing the dataset by extracting relevant features:
+
+The Feature Engineering Module transforms raw data into representations suitable for deep learning:
 \begin{itemize}
-    \item \textbf{Principal Component Analysis (PCA):} Reduces the dimensionality of numerical data, capturing the most informative features.
-    \item \textbf{Autoencoders:} Learn compact, noise-resistant representations of the original employee feature space.
-    \item \textbf{Clustering (e.g., K-Means):} Groups employees with similar learning styles, skill gaps, or career aspirations, generating new categorical features.
+    \item \textbf{TF-IDF Vectorization}: Converts text from job descriptions, course content, and skill descriptions into numerical feature vectors
+    \item \textbf{PCA Dimensionality Reduction}: Reduces high-dimensional TF-IDF features to 50 principal components while preserving variance
+    \item \textbf{ESCO Skill Mapping}: Normalizes extracted skills to standardized taxonomy for cross-source consistency
+    \item \textbf{Embedding Generation}: Creates dense vector representations for users, items, and skills
 \end{itemize}
-The output from this module serves as the input for the model training phase.
+The output from this module serves as input for all model training phases.
 
 \subsection{Neural Collaborative Filtering (NCF) Model}
+
 The NCF Model extends traditional collaborative filtering by using a multi-layer perceptron (MLP) to learn nonlinear user-item interaction patterns. In this context, employees are treated as users and development plans as items. The model predicts the most suitable development plans based on historical training, assessment results, and career progressions.
 
 \begin{algorithm}[H]
-\DontPrintSemicolon
-\caption{Neural Collaborative Filtering (NCF)}
-\label{alg:ncf}
+    \DontPrintSemicolon
+    \caption{Neural Collaborative Filtering (NCF)}
+    \label{alg:ncf}
 
-\KwIn{User-item interaction matrix $\mathbf{R}$}
-\KwOut{Predicted user preferences $\hat{\mathbf{R}}$}
+    \KwIn{User-item interaction matrix \(\mathbf{R}\)}
+    \KwOut{Predicted user preferences \(\hat{\mathbf{R}}\)}
 
-\Begin{
-    Initialize embeddings for users and items\;
-    Define neural network $f(\cdot)$ to model interaction between embeddings\;
-    \For{each epoch}{
-        \For{each user-item pair $(u, i)$}{
-            Predict score: $\hat{r}_{ui} = f(\text{embedding}(u), \text{embedding}(i))$\;
-            Compute loss: $L = \text{MSE}(r_{ui}, \hat{r}_{ui})$\;
-            Update model parameters via backpropagation\;
+    \Begin{
+        Initialize embeddings for users and items\;
+        Define neural network \(f(\cdot)\) to model interaction between embeddings\;
+        \For{each epoch}{
+            \For{each user-item pair \((u, i)\)}{
+                Predict score: \(\hat{r}_{ui} = f(\text{embedding}(u), \text{embedding}(i))\)\;
+                Compute loss: \(L = \text{BCE}(r_{ui}, \hat{r}_{ui})\)\;
+                Update model parameters via backpropagation\;
+            }
         }
     }
-}
 \end{algorithm}
 
-\subsection{Recurrent Neural Network (RNN) Model}
-The RNN Model is designed to capture sequential patterns in employee development histories. Employees' past training sessions, promotions, and evaluations form a temporal sequence, which the RNN learns to model. Long Short-Term Memory (LSTM) cells are used to mitigate the vanishing gradient problem and better capture long-term dependencies in employee progression paths.
+\subsection{Skill-Course NCF Model}
+
+The Skill-Course NCF is a novel variant designed specifically for course recommendation in the IDP context. Unlike standard NCF which uses user embeddings, this model directly encodes employee skill profiles, addressing the cold-start problem for new employees.
 
 \begin{algorithm}[H]
-\DontPrintSemicolon
-\caption{Training and Prediction using Long Short-Term Memory (LSTM) Networks}
-\label{alg:lstm_training}
+    \DontPrintSemicolon
+    \caption{Skill-Course NCF}
+    \label{alg:skill_ncf}
 
-\KwIn{Sequential employee development data $\mathcal{D} = \{(x_t, y_t)\}_{t=1}^T$}
-\KwOut{Trained LSTM model capable of predicting next development steps}
+    \KwIn{Skill profile \(\mathbf{s}_u\), Course embeddings \(\mathbf{Q}\)}
+    \KwOut{Course relevance scores \(\hat{\mathbf{y}}\)}
 
-\Begin{
-    Initialize LSTM parameters (weights, biases) randomly\;
-    Set learning rate $\eta$\;
-    
-    \For{each training epoch}{
-        \For{each employee sequence $(x_1, \ldots, x_T)$ in $\mathcal{D}$}{
-            Initialize hidden state $h_0 = 0$ and cell state $c_0 = 0$\;
-            
-            \For{each time step $t = 1$ to $T$}{
-                Compute input gate:
-                
-                $i_t = \sigma(W_{xi}x_t + W_{hi}h_{t-1} + b_i)$\;
-                
-                Compute forget gate:
-                
-                $f_t = \sigma(W_{xf}x_t + W_{hf}h_{t-1} + b_f)$\;
-                
-                Compute output gate:
-                
-                $o_t = \sigma(W_{xo}x_t + W_{ho}h_{t-1} + b_o)$\;
-                
-                Compute candidate cell state:
-                
-                $\tilde{c}_t = \tanh(W_{xc}x_t + W_{hc}h_{t-1} + b_c)$\;
-                
-                Update cell state:
-                
-                $c_t = f_t \odot c_{t-1} + i_t \odot \tilde{c}_t$\;
-                
-                Update hidden state:
-                
-                $h_t = o_t \odot \tanh(c_t)$\;
-                
-                Compute output prediction:
-                
-                $\hat{y}_t = \sigma(W_{hy}h_t + b_y)$\;
+    \Begin{
+        Initialize skill embedding matrix \(\mathbf{E}_s\) and course embeddings \(\mathbf{Q}\)\;
+        Define GMF and MLP branches for interaction modeling\;
+        \For{each epoch}{
+            \For{each employee-course pair \((u, c)\)}{
+                Project skill profile: \(\mathbf{p}_u = \mathbf{E}_s \mathbf{s}_u\)\;
+                GMF branch: \(\mathbf{z}_{GMF} = \mathbf{p}_u \odot \mathbf{q}_c\)\;
+                MLP branch: \(\mathbf{z}_{MLP} = \text{MLP}([\mathbf{p}_u; \mathbf{q}_c])\)\;
+                Fusion: \(\hat{y}_{uc} = \sigma(\mathbf{h}^\top [\mathbf{z}_{GMF}; \mathbf{z}_{MLP}])\)\;
+                Compute BCE loss and update parameters\;
             }
-            
-            Compute loss $L$ between predicted outputs $\hat{y}_t$ and ground truth $y_t$\;
-            
-            Backpropagate error through time (BPTT) to compute gradients\;
-            
-            Update LSTM parameters using gradient descent:
-            
-            $\theta \leftarrow \theta - \eta \nabla_{\theta} L$
         }
     }
-}
+\end{algorithm}
+
+\subsection{Long Short-Term Memory (LSTM) Model}
+
+The LSTM Model captures sequential patterns in employee development histories. Past training sessions, role transitions, and evaluations form temporal sequences that the LSTM learns to model. The gating mechanisms address the vanishing gradient problem, enabling capture of long-term dependencies in career progression paths.
+
+\begin{algorithm}[H]
+    \DontPrintSemicolon
+    \caption{Training and Prediction using Long Short-Term Memory (LSTM) Networks}
+    \label{alg:lstm_training}
+
+    \KwIn{Sequential employee development data \(\mathcal{D} = \{(x_t, y_t)\}_{t=1}^T\)}
+    \KwOut{Trained LSTM model capable of predicting next development steps}
+
+    \Begin{
+        Initialize LSTM parameters (weights, biases) randomly\;
+        Set learning rate \(\eta\)\;
+
+        \For{each training epoch}{
+            \For{each employee sequence \((x_1, \ldots, x_T)\) in \(\mathcal{D}\)}{
+                Initialize hidden state \(h_0 = 0\) and cell state \(c_0 = 0\)\;
+
+                \For{each time step \(t = 1\) to \(T\)}{
+                    Compute input gate:
+
+                    \(i_t = \sigma(W_{xi}x_t + W_{hi}h_{t-1} + b_i)\)\;
+
+                    Compute forget gate:
+
+                    \(f_t = \sigma(W_{xf}x_t + W_{hf}h_{t-1} + b_f)\)\;
+
+                    Compute output gate:
+
+                    \(o_t = \sigma(W_{xo}x_t + W_{ho}h_{t-1} + b_o)\)\;
+
+                    Compute candidate cell state:
+
+                    \(\tilde{c}_t = \tanh(W_{xc}x_t + W_{hc}h_{t-1} + b_c)\)\;
+
+                    Update cell state:
+
+                    \(c_t = f_t \odot c_{t-1} + i_t \odot \tilde{c}_t\)\;
+
+                    Update hidden state:
+
+                    \(h_t = o_t \odot \tanh(c_t)\)\;
+
+                    Compute output prediction:
+
+                    \(\hat{y}_t = \sigma(W_{hy}h_t + b_y)\)\;
+                }
+
+                Compute loss \(L\) between predicted outputs \(\hat{y}_t\) and ground truth \(y_t\)\;
+
+                Backpropagate error through time (BPTT) to compute gradients\;
+
+                Update LSTM parameters using gradient descent:
+
+                \(\theta \leftarrow \theta - \eta \nabla_{\theta} L\)
+            }
+        }
+    }
 
 \end{algorithm}
 
@@ -256,52 +722,52 @@ The RNN Model is designed to capture sequential patterns in employee development
 The GNN Model treats employee competencies, career goals, and development resources as nodes in a graph. Skills are connected based on prerequisite relationships or co-occurrence patterns. The GNN aggregates information from an employee’s local skill neighborhood to predict personalized development plans, effectively leveraging relational data structures.
 
 \begin{algorithm}[H]
-\DontPrintSemicolon
-\caption{Graph Neural Network (GNN) for Skill Recommendation}
-\label{alg:gnn}
+    \DontPrintSemicolon
+    \caption{Graph Neural Network (GNN) for Skill Recommendation}
+    \label{alg:gnn}
 
-\KwIn{Graph $G = (V, E)$ with node features $\mathbf{H}^0$}
-\KwOut{Updated node embeddings $\mathbf{H}^L$}
+    \KwIn{Graph \(G = (V, E)\) with node features \(\mathbf{H}^0\)}
+    \KwOut{Updated node embeddings \(\mathbf{H}^L\)}
 
-\Begin{
-    \For{layer $l = 0$ \KwTo $L-1$}{
-        \For{each node $v \in V$}{
-            Aggregate neighbor features:
-            
-            $\mathbf{h}_{\mathcal{N}(v)}^{(l)} = \text{AGGREGATE}^{(l)}(\{\mathbf{h}_u^{(l)}: u \in \mathcal{N}(v)\})$\;
-            
-            Update node representation:
-            
-            $\mathbf{h}_v^{(l+1)} = \sigma\left( \mathbf{W}^{(l)} \cdot \text{CONCAT}(\mathbf{h}_v^{(l)}, \mathbf{h}_{\mathcal{N}(v)}^{(l)}) \right)$\;
+    \Begin{
+        \For{layer \(l = 0\) \KwTo \(L-1\)}{
+            \For{each node \(v \in V\)}{
+                Aggregate neighbor features:
+
+                \(\mathbf{h}_{\mathcal{N}(v)}^{(l)} = \text{AGGREGATE}^{(l)}(\{\mathbf{h}_u^{(l)}: u \in \mathcal{N}(v)\})\)\;
+
+                Update node representation:
+
+                \(\mathbf{h}_v^{(l+1)} = \sigma\left( \mathbf{W}^{(l)} \cdot \text{CONCAT}(\mathbf{h}_v^{(l)}, \mathbf{h}_{\mathcal{N}(v)}^{(l)}) \right)\)\;
+            }
         }
     }
-}
 \end{algorithm}
 
 \subsection{Transformer Model}
-The Transformer Model is applied particularly to unstructured textual data, such as employee career goals or self-assessments. Utilizing self-attention mechanisms, the Transformer captures long-range dependencies and contextual relationships in the text, allowing the model to generate more contextually relevant development plan recommendations.
+
+The Transformer Model employs self-attention mechanisms to capture complex dependencies in sequential recommendation tasks. Unlike RNNs, Transformers can attend to all positions in a sequence simultaneously, avoiding recency bias. The model is implemented as a custom encoder architecture in Julia/Flux.jl.
 
 \begin{algorithm}[H]
-\DontPrintSemicolon
-\caption{Transformer Encoder for Text Embeddings}
-\label{alg:transformer}
+    \DontPrintSemicolon
+    \caption{Transformer Encoder for Sequential Recommendation}
+    \label{alg:transformer}
 
-\KwIn{Tokenized text input $X = (x_1, \ldots, x_n)$}
-\KwOut{Contextual embeddings $H = (h_1, \ldots, h_n)$}
+    \KwIn{Sequence of item embeddings \(X = (x_1, \ldots, x_n)\)}
+    \KwOut{Contextualized representations \(H = (h_1, \ldots, h_n)\)}
 
-\Begin{
-    Embed tokens: $\mathbf{E} = \text{Embedding}(X)$\;
-    Add positional encodings to $\mathbf{E}$\;
-    \For{each layer}{
-        Compute multi-head self-attention:
+    \Begin{
+        Add positional encodings: \(\mathbf{E} = X + \text{PE}\)\;
+        \For{each layer}{
+            Compute multi-head self-attention:
 
-        $Z = \text{MultiHead}(Q=E, K=E, V=E)$\;
-        
-        Apply feedforward network: 
-        
-        $H = \text{FFN}(Z)$\;
+            \(Z = \text{MultiHead}(Q=E, K=E, V=E)\)\;
+
+            Apply feedforward network:
+
+            \(H = \text{FFN}(Z)\)\;
+        }
     }
-}
 \end{algorithm}
 \subsection{Model Evaluation Metrics}
 Each model’s predictions are evaluated using standard classification metrics:
@@ -316,7 +782,7 @@ These metrics are used to select the best-performing model for deployment.
 \section{Experimental Design}
 \label{section:experimental_design}
 
-The experimental design phase establishes the procedures for training, validating, and evaluating the deep learning models developed for the IDP recommender system. Each model—Neural Collaborative Filtering (NCF), Recurrent Neural Network (RNN), Graph Neural Network (GNN), and Transformer—is independently trained and assessed to ensure fair performance comparisons.
+The experimental design establishes procedures for training, validating, and evaluating the deep learning models. Each model—NCF, Skill-Course NCF, LSTM, GNN, and Transformer—is independently trained and assessed to ensure fair performance comparisons.
 
 \subsection{Dataset Preparation}
 Employee data collected from organizational systems is preprocessed as described in Section~\ref{section:module_descriptions}. After cleaning and feature engineering, the dataset is split into three subsets:
@@ -335,40 +801,44 @@ In addition to a fixed train-validation-test split, 5-fold cross-validation is a
 Each deep learning model is trained independently using the prepared training data. The following general settings are applied:
 \begin{itemize}
     \item \textbf{Optimizer: Adam Optimizer} with an initial learning rate of 0.001.
-    
-    The Adam optimizer updates model parameters based on estimates of first ($m_t$) and second ($v_t$) moments of the gradients:
-    \[
-    \theta_{t+1} = \theta_t - \eta \times \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon}
-    \]
-    where:
-    \begin{itemize}
-        \item $\theta_t$ are the model parameters at time step $t$,
-        \item $\eta$ is the learning rate,
-        \item $\hat{m}_t$ is the bias-corrected first moment estimate (mean of gradients),
-        \item $\hat{v}_t$ is the bias-corrected second moment estimate (uncentered variance of gradients),
-        \item $\epsilon$ is a small constant for numerical stability.
-    \end{itemize}
+
+          The Adam optimizer updates model parameters based on estimates of first (\(m_t\)) and second (\(v_t\)) moments of the gradients:
+          \begin{equation}
+              \theta_{t+1} = \theta_t - \eta \times \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon}
+              \label{eq:adam_optimizer}
+          \end{equation}
+          \myequations{Adam Optimizer Parameter Update}
+          where:
+          \begin{itemize}
+              \item \(\theta_t\) are the model parameters at time step \(t\),
+              \item \(\eta\) is the learning rate,
+              \item \(\hat{m}_t\) is the bias-corrected first moment estimate (mean of gradients),
+              \item \(\hat{v}_t\) is the bias-corrected second moment estimate (uncentered variance of gradients),
+              \item \(\epsilon\) is a small constant for numerical stability.
+          \end{itemize}
 
     \item \textbf{Loss Function: Binary Cross-Entropy (BCE)} for recommendation tasks.
-    
-    The Binary Cross-Entropy loss function is defined as:
-    \[
-    L = - \frac{1}{N} \sum_{i=1}^{N} \left[ y_i \log(\hat{y}_i) + (1 - y_i) \log(1 - \hat{y}_i) \right]
-    \]
-    where:
-    \begin{itemize}
-        \item $N$ is the number of samples,
-        \item $y_i$ is the true label (0 or 1),
-        \item $\hat{y}_i$ is the predicted probability for the positive class.
-    \end{itemize}
+
+          The Binary Cross-Entropy loss function is defined as:
+          \begin{equation}
+              L = - \frac{1}{N} \sum_{i=1}^{N} \left[ y_i \log(\hat{y}_i) + (1 - y_i) \log(1 - \hat{y}_i) \right]
+              \label{eq:binary_crossentropy}
+          \end{equation}
+          \myequations{Binary Cross-Entropy Loss}
+          where:
+          \begin{itemize}
+              \item \(N\) is the number of samples,
+              \item \(y_i\) is the true label (0 or 1),
+              \item \(\hat{y}_i\) is the predicted probability for the positive class.
+          \end{itemize}
 
     \item \textbf{Batch Size:} 64 samples per batch.
-    
-    During training, the model updates its weights based on the gradient computed from mini-batches of 64 samples, rather than using the entire training dataset at once (stochastic gradient descent).
+
+          During training, the model updates its weights based on the gradient computed from mini-batches of 64 samples, rather than using the entire training dataset at once (stochastic gradient descent).
 
     \item \textbf{Epochs:} 100, with early stopping after 10 consecutive epochs without validation loss improvement.
-    
-    An epoch is defined as one full pass through the entire training dataset. Early stopping is a regularization technique where training is halted if the model performance on the validation set does not improve for 10 consecutive epochs.
+
+          An epoch is defined as one full pass through the entire training dataset. Early stopping is a regularization technique where training is halted if the model performance on the validation set does not improve for 10 consecutive epochs.
 \end{itemize}
 
 
@@ -376,32 +846,40 @@ Hyperparameters such as learning rate, dropout rate, number of hidden layers, an
 
 \subsection{Evaluation Criteria}
 \begin{itemize}
-    \item \textbf{Precision ($P$):} Measures the proportion of correctly recommended development plans among all recommendations made.
-    \[
-    P = \frac{TP}{TP + FP}
-    \]
-    where $TP$ = True Positives and $FP$ = False Positives.
+    \item \textbf{Precision (\(P\)):} Measures the proportion of correctly recommended development plans among all recommendations made.
+          \begin{equation}
+              P = \frac{TP}{TP + FP}
+              \label{eq:precision}
+          \end{equation}
+          \myequations{Precision}
+          where \(TP\) = True Positives and \(FP\) = False Positives.
 
-    \item \textbf{Recall ($R$):} Measures the proportion of relevant development plans successfully recommended.
-    \[
-    R = \frac{TP}{TP + FN}
-    \]
-    where $FN$ = False Negatives.
+    \item \textbf{Recall (\(R\)):} Measures the proportion of relevant development plans successfully recommended.
+          \begin{equation}
+              R = \frac{TP}{TP + FN}
+              \label{eq:recall}
+          \end{equation}
+          \myequations{Recall}
+          where \(FN\) = False Negatives.
 
-    \item \textbf{F1-Score ($F_1$):} Harmonic mean of Precision and Recall, providing a balance between the two.
-    \[
-    F_1 = 2 \times \frac{P \times R}{P + R}
-    \]
+    \item \textbf{F1-Score (\(F_1\)):} Harmonic mean of Precision and Recall, providing a balance between the two.
+          \begin{equation}
+              F_1 = 2 \times \frac{P \times R}{P + R}
+              \label{eq:f1_score}
+          \end{equation}
+          \myequations{F1-Score}
 
     \item \textbf{AUC-ROC:} Area Under the Receiver Operating Characteristic Curve, measuring the ability of the model to distinguish between classes.
 
-    The AUC-ROC is calculated by plotting the True Positive Rate (TPR) against the False Positive Rate (FPR) at various threshold settings:
-    \[
-    \text{TPR} = \frac{TP}{TP + FN}
-    \quad \text{and} \quad
-    \text{FPR} = \frac{FP}{FP + TN}
-    \]
-    where $TN$ = True Negatives.
+          The AUC-ROC is calculated by plotting the True Positive Rate (TPR) against the False Positive Rate (FPR) at various threshold settings:
+          \begin{equation}
+              \text{TPR} = \frac{TP}{TP + FN}
+              \quad \text{and} \quad
+              \text{FPR} = \frac{FP}{FP + TN}
+              \label{eq:tpr_fpr}
+          \end{equation}
+          \myequations{True Positive Rate and False Positive Rate}
+          where \(TN\) = True Negatives.
 \end{itemize}
 
 
@@ -462,32 +940,38 @@ Employee career goals and self-assessments often involve natural language, which
     \item They have proven superior performance in many natural language processing (NLP) tasks relevant to understanding career aspirations.
 \end{itemize}
 
-\subsection{Why Principal Component Analysis (PCA) and Autoencoders?}
-To reduce redundancy and enhance model training efficiency, dimensionality reduction techniques are applied:
+\subsection{Why Principal Component Analysis (PCA)?}
+
+PCA is applied to reduce the high dimensionality of TF-IDF feature vectors:
 \begin{itemize}
-    \item \textbf{PCA} projects features into a lower-dimensional space while preserving variance, useful for structured numerical data.
-    \item \textbf{Autoencoders} learn compact, non-linear representations, beneficial when relationships among features are complex.
+    \item Projects features into a lower-dimensional space (50 components) while preserving maximum variance
+    \item Reduces computational requirements during model training
+    \item Mitigates the curse of dimensionality common in text-based features
 \end{itemize}
-Both methods ensure that the input features are more manageable and that models can focus on the most informative aspects of employee data.
 
 \subsection{Why Standard Evaluation Metrics?}
-Metrics like Precision, Recall, F1-Score, and AUC-ROC are chosen because:
+
+Metrics including NDCG@K, Precision@K, Recall@K, F1-Score, and AUC-ROC are chosen because:
 \begin{itemize}
-    \item They provide a comprehensive understanding of model performance.
-    \item Precision and Recall address the correctness and completeness of recommendations.
-    \item F1-Score balances Precision and Recall into a single figure of merit.
-    \item AUC-ROC provides insight into model discrimination capability across decision thresholds.
+    \item NDCG@K appropriately penalizes relevant items appearing lower in the recommendation list
+    \item Precision and Recall address the correctness and completeness of recommendations
+    \item F1-Score balances Precision and Recall into a single figure of merit
+    \item AUC-ROC provides insight into model discrimination capability
 \end{itemize}
 
 \section{Summary}
 \label{section:research_design_summary}
 
-This chapter presented the complete research design for developing and evaluating a deep learning-based recommender system for Individual Development Plans (IDPs). 
+This chapter presented the complete research design methodology for developing and evaluating a deep learning-based recommender system for Individual Development Plans (IDPs).
 
-The design is modular and data-driven, beginning with the collection and preprocessing of employee data, followed by feature engineering using dimensionality reduction and clustering techniques. Four deep learning models—Neural Collaborative Filtering (NCF), Recurrent Neural Network (RNN), Graph Neural Network (GNN), and Transformer—are independently trained and evaluated based on standard metrics such as Precision, Recall, F1-Score, and AUC-ROC.
+\textbf{Research Design.} This study employs an experimental research design, which is appropriate for testing the effectiveness of different deep learning architectures for IDP recommendation tasks. The experimental approach enables controlled comparison of model performance under consistent conditions.
 
-Each model's architecture, training process, and evaluation strategy were explained in detail, including technical justifications for selecting deep learning approaches over traditional machine learning techniques. The experimental design ensures fair comparison across models through consistent data splitting, cross-validation, and hyperparameter tuning.
+\textbf{Research Setting and Participants.} The study was conducted using data from the TrainEase Learning Management System at a South African manufacturing organization. The population of interest comprises adult employees engaged in professional development. Using Slovin's formula with a 5\% margin of error, a sample of 300 employees was determined from the accessible population.
 
-The best-performing model will ultimately be deployed within the IDP generation system, supported by a feedback loop for continuous system improvement. 
+\textbf{Research Instruments.} Five primary data sources were utilized: Job postings (23,000 records), online courses (8,092 records), career path data (9,000 roles), employee records (300 profiles), and mentoring pairs (268 relationships). Five deep learning models serve as the experimental instruments: NCF, Skill-Course NCF, LSTM, GNN, and Transformer architectures.
 
-The next chapter presents the results of the experiments and provides a detailed analysis of the models' performances.
+\textbf{Data Collection Procedures.} Data collection followed a systematic six-step process: obtaining organizational permission, determining sample size, acquiring datasets from multiple sources (Kaggle, O*NET, TrainEase), preprocessing through cleaning and standardization, generating training pairs with explicit labels, and maintaining comprehensive data records for reproducibility.
+
+\textbf{Data Analysis.} Quantitative analysis was conducted using standard ranking metrics including NDCG@10 as the primary metric, supplemented by Precision@K, Recall@K, F1-Score, and AUC-ROC. All implementations used Julia 1.11 with Flux.jl for deep learning, DataFrames.jl for data manipulation, and Plots.jl for visualization. The 80/10/10 train-validation-test split with 5-fold cross-validation ensured robust evaluation.
+
+The next chapter presents the implementation details, followed by Chapter~\ref{chapter:rae} which analyzes the experimental results.

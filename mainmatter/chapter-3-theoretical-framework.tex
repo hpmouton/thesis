@@ -1,2 +1,729 @@
 \chapter{Theoretical Framework}
 \label{chapter:tf}
+
+% Use full justification for chapter text
+\justifying
+
+A theoretical framework provides the foundational structure that guides research by connecting existing theories, concepts, and definitions to the research problem. This chapter establishes the theoretical foundations for developing a deep learning-based Individual Development Plan (IDP) recommender system.
+
+\section{Key Concepts and Variables}
+
+This study addresses the following research question: \textit{How can deep learning architectures be applied to generate personalized IDP recommendations that address employee skill gaps, career aspirations, and development needs?}
+
+From this question, the following key concepts and variables are identified:
+
+\begin{itemize}
+    \item \textbf{Individual Development Plans (IDPs)}: Structured documents outlining an employee's development goals, actions, and timelines
+    \item \textbf{Deep Learning Architectures}: Neural network models capable of learning complex patterns from data
+    \item \textbf{Recommendation Systems}: Information filtering systems that predict user preferences
+    \item \textbf{Skill Gaps}: Differences between current competencies and required competencies for target roles
+    \item \textbf{Career Paths}: Sequences of job roles representing professional progression
+    \item \textbf{Development Actions}: Learning activities spanning formal education, social learning, and experiential learning
+\end{itemize}
+
+\section{Theoretical Foundations Overview}
+
+To address these concepts, this study draws upon theories from three domains:
+
+\begin{enumerate}
+    \item \textbf{Professional Development Theory}: Provides the domain context for IDPs, including the 70-20-10 learning model, competency-based development, and career development theory. These theories define \textit{what} should be recommended.
+    
+    \item \textbf{Recommendation Systems Theory}: Provides the computational framework for generating personalized suggestions, including collaborative filtering, content-based filtering, and hybrid approaches. These theories define \textit{how} recommendations are generated.
+    
+    \item \textbf{Deep Learning Theory}: Provides the architectural foundations for learning complex patterns, including Neural Collaborative Filtering, LSTMs, Graph Neural Networks, and Transformers. These architectures implement the recommendation approaches.
+\end{enumerate}
+
+Figure~\ref{fig:theoretical_framework} illustrates how these theoretical domains connect to produce the IDP recommender system.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}[
+        node distance=1.5cm,
+        box/.style={rectangle, draw=black, fill=gray!10, text width=4cm, minimum height=1cm, align=center, rounded corners=3pt},
+        arrow/.style={->, >=stealth, thick}
+    ]
+        % Domain Theory
+        \node[box, fill=blue!15] (domain) {\textbf{Professional Development Theory}\\70-20-10 Model\\Competency Frameworks\\Career Development};
+        
+        % Recommendation Theory
+        \node[box, fill=green!15, right=2cm of domain] (recsys) {\textbf{Recommendation Systems Theory}\\Collaborative Filtering\\Content-Based Filtering\\Hybrid Approaches};
+        
+        % Deep Learning Theory
+        \node[box, fill=orange!15, below=1.5cm of $(domain)!0.5!(recsys)$] (dl) {\textbf{Deep Learning Theory}\\NCF, LSTM, GNN\\Transformer};
+        
+        % Output
+        \node[box, fill=purple!15, below=1.5cm of dl] (output) {\textbf{IDP Recommender System}\\Course Recommendations\\Career Path Predictions\\Development Actions\\Mentor Matching};
+        
+        % Arrows
+        \draw[arrow] (domain) -- (dl) node[midway, left, text width=2cm, align=center] {\small Defines requirements};
+        \draw[arrow] (recsys) -- (dl) node[midway, right, text width=2cm, align=center] {\small Provides methods};
+        \draw[arrow] (dl) -- (output) node[midway, right] {\small Implements};
+    \end{tikzpicture}
+    \caption{Conceptual model showing the relationship between theoretical domains in this study.}
+    \label{fig:theoretical_framework}
+\end{figure}
+
+The remainder of this chapter is organized as follows: Section~\ref{section:idp_theory} presents professional development theories that define the IDP domain. Sections~\ref{section:recsys_theory}--\ref{section:hybrid_approaches} introduce recommendation systems theory. Sections~\ref{section:dl_foundations}--\ref{section:transformer_theory} present the deep learning architectures. Finally, Sections~\ref{section:eval_metrics} and~\ref{section:explainability} cover evaluation metrics and explainability theory.
+
+\section{Individual Development Plan Theory}
+\label{section:idp_theory}
+
+This section introduces the theoretical frameworks underlying Individual Development Plans, providing the domain knowledge that shapes the recommender system's design requirements. IDPs are structured documents outlining personal and professional goals, competencies needed for sustained career growth, and actionable strategies to address skill gaps \parencite{j_lio_fernando_da_silva_3789f1cc, amirhadi_azizi_f3da0874}.
+
+\subsection{The 70-20-10 Learning Model}
+
+The 70-20-10 model, developed by the Center for Creative Leadership, posits that professional development occurs through three channels in approximate proportions \parencite{kyle_coopersmith_f0b49c08}:
+
+\begin{itemize}
+    \item \textbf{70\% Experiential Learning}: On-the-job experiences, challenging assignments, stretch projects, and learning from mistakes
+    \item \textbf{20\% Social Learning}: Mentoring, coaching, feedback from peers and managers, networking, and collaborative work
+    \item \textbf{10\% Formal Education}: Structured courses, workshops, certifications, and academic programs
+\end{itemize}
+
+This model informs the development action recommender's quota system, ensuring recommendations span all three learning channels rather than focusing exclusively on formal training \parencite{sumartik_sumartik_d349b8c0}.
+
+Mathematically, the action recommendation score is adjusted to maintain the target distribution:
+\begin{equation}
+    \hat{s}_{ua}^{adj} = \hat{s}_{ua} \cdot \alpha_c \cdot \frac{t_c - n_{u,c}}{t_c}
+    \myequations{Quota-Adjusted Score}
+\end{equation}
+where $\hat{s}_{ua}$ is the raw recommendation score for action $a$, $\alpha_c$ is the base weight for category $c \in \{\text{Experience, Exposure, Education}\}$, $t_c$ is the target count for category $c$, and $n_{u,c}$ is the current count of category $c$ actions in user $u$'s recommendations.
+
+\subsection{Competency-Based Development}
+
+Competency-based development frameworks define the knowledge, skills, abilities, and behaviors required for successful job performance \parencite{jaason_m__geerts_0c88612e, muhammad_zafar_e3593584}. A competency model typically includes:
+
+\begin{itemize}
+    \item \textbf{Core Competencies}: Fundamental skills required across all roles
+    \item \textbf{Functional Competencies}: Skills specific to a job function or department
+    \item \textbf{Leadership Competencies}: Skills for managing and leading others
+\end{itemize}
+
+Each competency can be assessed at proficiency levels (e.g., Novice, Intermediate, Proficient, Expert), enabling gap analysis:
+\begin{equation}
+    \text{Gap}_{u,c} = \text{Required Level}_{r,c} - \text{Current Level}_{u,c}
+    \myequations{Competency Gap}
+\end{equation}
+where $r$ is the target role and $c$ is a competency. Positive gaps indicate areas for development.
+
+\subsection{Career Development Theory}
+
+Career development theories inform the career path prediction component. Super's Life-Span, Life-Space theory describes career development as a lifelong process with distinct stages:
+
+\begin{itemize}
+    \item \textbf{Growth} (ages 0-14): Developing self-concept and attitudes toward work
+    \item \textbf{Exploration} (ages 15-24): Crystallizing occupational preferences
+    \item \textbf{Establishment} (ages 25-44): Gaining experience and advancing
+    \item \textbf{Maintenance} (ages 45-64): Holding position and updating skills
+    \item \textbf{Decline} (ages 65+): Transitioning toward retirement
+\end{itemize}
+
+Holland's RIASEC model categorizes careers into six personality-occupation types: Realistic, Investigative, Artistic, Social, Enterprising, and Conventional. Career path recommendations should consider alignment between employee personality profiles and role characteristics.
+
+\subsection{Application to IDP Recommendations}
+
+These professional development theories inform the recommender system design in specific ways:
+
+\begin{itemize}
+    \item The \textbf{70-20-10 model} requires the development action recommender to balance recommendations across experiential, social, and formal learning categories
+    \item \textbf{Competency-based development} provides the skill gap analysis that drives course recommendations
+    \item \textbf{Career development theory} informs career path predictions by considering employee career stage and personality-occupation fit
+\end{itemize}
+
+\section{Recommendation Systems Theory}
+\label{section:recsys_theory}
+
+Recommendation systems are information filtering systems that predict user preferences for items based on historical interaction data, user profiles, and item characteristics \parencite{shaina_raza_02fc35a5, deepjyoti_roy_f246a341}. This section formalizes the recommendation problem and introduces the foundational approaches.
+
+\subsection{Problem Formulation}
+
+The recommendation problem can be formally defined as follows. Let $\mathcal{U} = \{u_1, u_2, \ldots, u_M\}$ denote the set of $M$ users and $\mathcal{I} = \{i_1, i_2, \ldots, i_N\}$ denote the set of $N$ items. The user-item interaction matrix $\mathbf{R} \in \mathbb{R}^{M \times N}$ captures observed interactions, where entry $r_{ui}$ represents user $u$'s interaction with item $i$. In explicit feedback scenarios, $r_{ui}$ is a rating (e.g., 1-5 stars); in implicit feedback scenarios, $r_{ui} \in \{0, 1\}$ indicates whether an interaction occurred.
+
+The recommendation task is to predict the unobserved entries of $\mathbf{R}$, typically formulated as learning a function:
+\begin{equation}
+    \hat{r}_{ui} = f(u, i; \Theta)
+    \myequations{Predicted Rating Function}
+\end{equation}
+where $\hat{r}_{ui}$ is the predicted preference score, and $\Theta$ represents the model parameters learned from observed data. The goal is to rank items for each user such that items with higher predicted scores are more likely to be relevant.
+
+\subsection{Collaborative Filtering}
+
+Collaborative Filtering (CF) is based on the assumption that users who agreed in the past will agree in the future \parencite{wilson_c__hsieh_33aa6434}. CF approaches exploit the collective behavior patterns encoded in the interaction matrix without requiring explicit item features \parencite{hind_i__alshbanat_afd083dd}.
+
+\subsubsection{Memory-Based Collaborative Filtering}
+
+Memory-based CF computes predictions directly from the interaction matrix using similarity measures \parencite{fu_jie_tey_0aad3c4f}. User-based CF predicts ratings using weighted averages of ratings from similar users:
+\begin{equation}
+    \hat{r}_{ui} = \bar{r}_u + \frac{\sum_{v \in \mathcal{N}_u} \text{sim}(u, v) \cdot (r_{vi} - \bar{r}_v)}{\sum_{v \in \mathcal{N}_u} |\text{sim}(u, v)|}
+    \myequations{User-Based CF Prediction}
+\end{equation}
+where $\bar{r}_u$ is user $u$'s mean rating, $\mathcal{N}_u$ is the set of users similar to $u$ who rated item $i$, and $\text{sim}(u, v)$ is the similarity between users $u$ and $v$, commonly computed using Pearson correlation or cosine similarity.
+
+\subsubsection{Model-Based Collaborative Filtering}
+
+Model-based CF learns a parametric model from the data. Matrix Factorization (MF) is the most successful approach, decomposing the interaction matrix into low-rank latent factor matrices:
+\begin{equation}
+    \mathbf{R} \approx \mathbf{P} \mathbf{Q}^\top
+    \myequations{Matrix Factorization}
+\end{equation}
+where $\mathbf{P} \in \mathbb{R}^{M \times K}$ contains user latent factors and $\mathbf{Q} \in \mathbb{R}^{N \times K}$ contains item latent factors, with $K \ll \min(M, N)$ being the latent dimension. The predicted rating becomes:
+\begin{equation}
+    \hat{r}_{ui} = \mathbf{p}_u^\top \mathbf{q}_i = \sum_{k=1}^{K} p_{uk} q_{ik}
+    \myequations{MF Prediction}
+\end{equation}
+
+The model is trained by minimizing the regularized squared error:
+\begin{equation}
+    \mathcal{L} = \sum_{(u,i) \in \mathcal{O}} (r_{ui} - \mathbf{p}_u^\top \mathbf{q}_i)^2 + \lambda(\|\mathbf{p}_u\|^2 + \|\mathbf{q}_i\|^2)
+    \myequations{MF Loss Function}
+\end{equation}
+where $\mathcal{O}$ is the set of observed interactions and $\lambda$ is the regularization coefficient.
+
+\subsection{Content-Based Filtering}
+
+Content-Based Filtering (CBF) recommends items similar to those the user has previously preferred, based on item features \parencite{deepjyoti_roy_f246a341}. Let $\mathbf{x}_i \in \mathbb{R}^D$ be the feature vector of item $i$ with $D$ features. The user profile $\mathbf{w}_u$ is learned from items the user has interacted with:
+\begin{equation}
+    \mathbf{w}_u = \frac{\sum_{i \in \mathcal{I}_u} r_{ui} \cdot \mathbf{x}_i}{\sum_{i \in \mathcal{I}_u} r_{ui}}
+    \myequations{User Profile Vector}
+\end{equation}
+where $\mathcal{I}_u$ is the set of items user $u$ has rated. Predictions are made using similarity:
+\begin{equation}
+    \hat{r}_{ui} = \text{sim}(\mathbf{w}_u, \mathbf{x}_i) = \frac{\mathbf{w}_u^\top \mathbf{x}_i}{\|\mathbf{w}_u\| \|\mathbf{x}_i\|}
+    \myequations{CBF Prediction}
+\end{equation}
+
+\subsection{Hybrid Approaches}
+\label{section:hybrid_approaches}
+
+Hybrid recommender systems combine multiple recommendation strategies to leverage their complementary strengths \parencite{hind_i__alshbanat_afd083dd, pijitra_jomsri_14dad661}. Common hybridization methods include:
+
+\begin{itemize}
+    \item \textbf{Weighted}: Linear combination of scores from multiple recommenders
+    \item \textbf{Switching}: Selection of recommender based on context
+    \item \textbf{Feature Combination}: Using features from one approach as input to another
+    \item \textbf{Cascade}: Sequential refinement of recommendations
+    \item \textbf{Meta-level}: Using the model learned by one as input to another
+\end{itemize}
+
+The weighted hybrid approach combines predictions as:
+\begin{equation}
+    \hat{r}_{ui} = \alpha \cdot \hat{r}_{ui}^{CF} + (1 - \alpha) \cdot \hat{r}_{ui}^{CBF}
+    \myequations{Weighted Hybrid}
+\end{equation}
+where $\alpha \in [0, 1]$ balances the contribution of each component.
+
+\section{Deep Learning Foundations}
+\label{section:dl_foundations}
+
+Deep learning extends traditional machine learning by learning hierarchical feature representations through multiple layers of nonlinear transformations \parencite{amany_sami_28c22187, wilson_c__hsieh_33aa6434}. This section introduces the fundamental concepts underlying the neural architectures used in this study.
+
+\subsection{Neural Network Fundamentals}
+
+A feedforward neural network transforms input $\mathbf{x} \in \mathbb{R}^{d_0}$ through $L$ layers:
+\begin{equation}
+    \mathbf{h}^{(l)} = \sigma(\mathbf{W}^{(l)} \mathbf{h}^{(l-1)} + \mathbf{b}^{(l)}), \quad l = 1, \ldots, L
+    \myequations{Neural Network Layer}
+\end{equation}
+where $\mathbf{h}^{(0)} = \mathbf{x}$, $\mathbf{W}^{(l)} \in \mathbb{R}^{d_l \times d_{l-1}}$ is the weight matrix, $\mathbf{b}^{(l)} \in \mathbb{R}^{d_l}$ is the bias vector, and $\sigma(\cdot)$ is a nonlinear activation function.
+
+\subsubsection{Activation Functions}
+
+Activation functions introduce nonlinearity, enabling neural networks to learn complex patterns. Common activation functions include:
+
+\textbf{ReLU (Rectified Linear Unit)}:
+\begin{equation}
+    \sigma(z) = \max(0, z)
+    \myequations{ReLU Activation}
+\end{equation}
+
+\textbf{Sigmoid}:
+\begin{equation}
+    \sigma(z) = \frac{1}{1 + e^{-z}}
+    \myequations{Sigmoid Activation}
+\end{equation}
+
+\textbf{Tanh}:
+\begin{equation}
+    \sigma(z) = \frac{e^z - e^{-z}}{e^z + e^{-z}}
+    \myequations{Tanh Activation}
+\end{equation}
+
+ReLU is preferred in hidden layers due to its computational efficiency and mitigation of the vanishing gradient problem. Sigmoid is used in output layers for binary classification or probability prediction.
+
+\subsubsection{Loss Functions}
+
+The loss function quantifies the discrepancy between predictions and ground truth. For regression tasks (e.g., rating prediction):
+\begin{equation}
+    \mathcal{L}_{MSE} = \frac{1}{|\mathcal{O}|} \sum_{(u,i) \in \mathcal{O}} (r_{ui} - \hat{r}_{ui})^2
+    \myequations{Mean Squared Error Loss}
+\end{equation}
+
+For binary classification (e.g., implicit feedback):
+\begin{equation}
+    \mathcal{L}_{BCE} = -\frac{1}{|\mathcal{O}|} \sum_{(u,i) \in \mathcal{O}} \left[ y_{ui} \log(\hat{y}_{ui}) + (1 - y_{ui}) \log(1 - \hat{y}_{ui}) \right]
+    \myequations{Binary Cross-Entropy Loss}
+\end{equation}
+
+\subsubsection{Backpropagation}
+
+Backpropagation computes gradients of the loss with respect to parameters using the chain rule. For parameter $\theta$ in layer $l$:
+\begin{equation}
+    \frac{\partial \mathcal{L}}{\partial \theta^{(l)}} = \frac{\partial \mathcal{L}}{\partial \mathbf{h}^{(L)}} \cdot \prod_{k=l+1}^{L} \frac{\partial \mathbf{h}^{(k)}}{\partial \mathbf{h}^{(k-1)}} \cdot \frac{\partial \mathbf{h}^{(l)}}{\partial \theta^{(l)}}
+    \myequations{Backpropagation Chain Rule}
+\end{equation}
+
+\subsection{Embedding Representations}
+
+Embeddings map discrete entities (users, items, skills) to dense, continuous vector representations. For an entity with index $i$ from a vocabulary of size $V$, the embedding lookup retrieves:
+\begin{equation}
+    \mathbf{e}_i = \mathbf{E}[i, :] \in \mathbb{R}^d
+    \myequations{Embedding Lookup}
+\end{equation}
+where $\mathbf{E} \in \mathbb{R}^{V \times d}$ is the learned embedding matrix and $d$ is the embedding dimension.
+
+Embeddings are learned end-to-end during training, allowing the model to discover meaningful representations where semantically similar entities are close in the embedding space. This property is crucial for recommendation, as it enables generalization to unseen user-item pairs.
+
+\subsection{Optimization}
+
+Neural networks are trained using gradient-based optimization. Stochastic Gradient Descent (SGD) updates parameters as:
+\begin{equation}
+    \theta_{t+1} = \theta_t - \eta \nabla_\theta \mathcal{L}(\theta_t)
+    \myequations{SGD Update Rule}
+\end{equation}
+where $\eta$ is the learning rate.
+
+\textbf{Adam} (Adaptive Moment Estimation) is a widely used optimizer that maintains running averages of gradients and squared gradients:
+\begin{align}
+    m_t &= \beta_1 m_{t-1} + (1 - \beta_1) \nabla_\theta \mathcal{L} \\
+    v_t &= \beta_2 v_{t-1} + (1 - \beta_2) (\nabla_\theta \mathcal{L})^2 \\
+    \theta_{t+1} &= \theta_t - \eta \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon}
+\end{align}
+where $\hat{m}_t$ and $\hat{v}_t$ are bias-corrected estimates, $\beta_1 = 0.9$ and $\beta_2 = 0.999$ are typical decay rates, and $\epsilon = 10^{-8}$ ensures numerical stability.
+
+\subsection{Regularization Techniques}
+
+Regularization prevents overfitting by constraining model complexity.
+
+\textbf{L2 Regularization} adds a penalty term to the loss:
+\begin{equation}
+    \mathcal{L}_{reg} = \mathcal{L} + \lambda \sum_{l} \|\mathbf{W}^{(l)}\|_F^2
+    \myequations{L2 Regularization}
+\end{equation}
+
+\textbf{Dropout} randomly sets activations to zero during training with probability $p$:
+\begin{equation}
+    \tilde{\mathbf{h}}^{(l)} = \mathbf{h}^{(l)} \odot \mathbf{m}, \quad m_j \sim \text{Bernoulli}(1-p)
+    \myequations{Dropout}
+\end{equation}
+where $\odot$ denotes element-wise multiplication. At inference, activations are scaled by $(1-p)$ to maintain expected values.
+
+\section{Neural Collaborative Filtering}
+
+Neural Collaborative Filtering (NCF) replaces the linear inner product of matrix factorization with a neural network, enabling the learning of nonlinear user-item interactions \parencite{ssvr_kumar_addagarla_b0d9e4cf, mohamed_grida_279a8709}. This section presents the NCF framework and its components.
+
+\subsection{NCF Framework}
+
+The NCF framework models user-item interactions through learned embeddings and neural interaction functions. Given user $u$ and item $i$, their embeddings $\mathbf{p}_u$ and $\mathbf{q}_i$ are obtained from embedding layers. The prediction is:
+\begin{equation}
+    \hat{y}_{ui} = f(\mathbf{p}_u, \mathbf{q}_i | \Theta)
+    \myequations{NCF General Form}
+\end{equation}
+where $f$ is a neural network with parameters $\Theta$.
+
+\subsection{Generalized Matrix Factorization}
+
+Generalized Matrix Factorization (GMF) extends traditional MF by allowing element-wise product with a learned output layer:
+\begin{equation}
+    \hat{y}_{ui}^{GMF} = \sigma(\mathbf{h}^\top (\mathbf{p}_u^G \odot \mathbf{q}_i^G))
+    \myequations{GMF Prediction}
+\end{equation}
+where $\mathbf{p}_u^G$ and $\mathbf{q}_i^G$ are GMF-specific embeddings, $\odot$ denotes element-wise product, $\mathbf{h}$ is the learned weight vector, and $\sigma$ is the sigmoid activation for binary prediction.
+
+When $\mathbf{h}$ is a uniform vector of ones, GMF reduces to standard matrix factorization. The learnable $\mathbf{h}$ allows varying importance of latent dimensions.
+
+\subsection{Multi-Layer Perceptron Component}
+
+The MLP component learns nonlinear interactions through concatenation and deep layers:
+\begin{align}
+    \mathbf{z}_0 &= [\mathbf{p}_u^M; \mathbf{q}_i^M] \\
+    \mathbf{z}_l &= \sigma(\mathbf{W}_l \mathbf{z}_{l-1} + \mathbf{b}_l), \quad l = 1, \ldots, L \\
+    \hat{y}_{ui}^{MLP} &= \sigma(\mathbf{h}^\top \mathbf{z}_L)
+\end{align}
+where $[\cdot; \cdot]$ denotes concatenation and $\mathbf{p}_u^M$, $\mathbf{q}_i^M$ are MLP-specific embeddings.
+
+\subsection{NeuMF: Neural Matrix Factorization}
+
+Neural Matrix Factorization (NeuMF) combines GMF and MLP to leverage both linear and nonlinear interactions:
+\begin{equation}
+    \hat{y}_{ui} = \sigma\left(\mathbf{h}^\top \left[\mathbf{p}_u^G \odot \mathbf{q}_i^G; \mathbf{z}_L\right]\right)
+    \myequations{NeuMF Fusion}
+\end{equation}
+
+The model is trained using binary cross-entropy loss with negative sampling:
+\begin{equation}
+    \mathcal{L} = -\sum_{(u,i) \in \mathcal{O}^+} \log \hat{y}_{ui} - \sum_{(u,j) \in \mathcal{O}^-} \log(1 - \hat{y}_{uj})
+    \myequations{NCF Training Loss}
+\end{equation}
+where $\mathcal{O}^+$ contains observed positive interactions and $\mathcal{O}^-$ contains sampled negative interactions.
+
+\subsection{Skill-Course NCF Formulation}
+
+For IDP course recommendation, we extend NCF to model skill-course relationships directly. Let $\mathbf{s}_u \in \{0,1\}^S$ be the binary skill profile of employee $u$ with $S$ skills. The Skill-Course NCF predicts course relevance as:
+\begin{equation}
+    \hat{y}_{uc} = f_{NCF}(\mathbf{E}_s \mathbf{s}_u, \mathbf{q}_c)
+    \myequations{Skill-Course NCF}
+\end{equation}
+where $\mathbf{E}_s \in \mathbb{R}^{d \times S}$ is the skill embedding matrix that projects the skill profile to a dense representation, and $\mathbf{q}_c$ is the course embedding.
+
+This formulation directly encodes skill gap information, providing a stronger training signal than user-based collaborative filtering.
+
+\section{Recurrent Neural Networks and LSTMs}
+
+Recurrent Neural Networks (RNNs) are designed to process sequential data by maintaining hidden states that capture temporal dependencies \parencite{gourav_bathla_4b0f5bec, vaios_stergiopoulos_eed71846}. Long Short-Term Memory (LSTM) networks address the vanishing gradient problem inherent in standard RNNs.
+
+\subsection{RNN Fundamentals}
+
+An RNN processes a sequence $\{\mathbf{x}_1, \mathbf{x}_2, \ldots, \mathbf{x}_T\}$ by updating a hidden state at each timestep:
+\begin{equation}
+    \mathbf{h}_t = \sigma(\mathbf{W}_{xh} \mathbf{x}_t + \mathbf{W}_{hh} \mathbf{h}_{t-1} + \mathbf{b}_h)
+    \myequations{RNN Hidden State Update}
+\end{equation}
+where $\mathbf{W}_{xh}$ and $\mathbf{W}_{hh}$ are weight matrices for input-to-hidden and hidden-to-hidden connections respectively.
+
+The output at each timestep is:
+\begin{equation}
+    \mathbf{y}_t = \mathbf{W}_{hy} \mathbf{h}_t + \mathbf{b}_y
+    \myequations{RNN Output}
+\end{equation}
+
+\subsection{LSTM Architecture}
+
+LSTMs introduce gating mechanisms to control information flow, enabling learning of long-range dependencies. The LSTM cell computes:
+
+\textbf{Forget Gate}: Determines what information to discard from the cell state:
+\begin{equation}
+    \mathbf{f}_t = \sigma(\mathbf{W}_f [\mathbf{h}_{t-1}; \mathbf{x}_t] + \mathbf{b}_f)
+    \myequations{LSTM Forget Gate}
+\end{equation}
+
+\textbf{Input Gate}: Determines what new information to store:
+\begin{equation}
+    \mathbf{i}_t = \sigma(\mathbf{W}_i [\mathbf{h}_{t-1}; \mathbf{x}_t] + \mathbf{b}_i)
+    \myequations{LSTM Input Gate}
+\end{equation}
+
+\textbf{Candidate Cell State}:
+\begin{equation}
+    \tilde{\mathbf{c}}_t = \tanh(\mathbf{W}_c [\mathbf{h}_{t-1}; \mathbf{x}_t] + \mathbf{b}_c)
+    \myequations{LSTM Candidate State}
+\end{equation}
+
+\textbf{Cell State Update}:
+\begin{equation}
+    \mathbf{c}_t = \mathbf{f}_t \odot \mathbf{c}_{t-1} + \mathbf{i}_t \odot \tilde{\mathbf{c}}_t
+    \myequations{LSTM Cell State}
+\end{equation}
+
+\textbf{Output Gate}:
+\begin{equation}
+    \mathbf{o}_t = \sigma(\mathbf{W}_o [\mathbf{h}_{t-1}; \mathbf{x}_t] + \mathbf{b}_o)
+    \myequations{LSTM Output Gate}
+\end{equation}
+
+\textbf{Hidden State}:
+\begin{equation}
+    \mathbf{h}_t = \mathbf{o}_t \odot \tanh(\mathbf{c}_t)
+    \myequations{LSTM Hidden State}
+\end{equation}
+
+\subsection{Application to Sequential Recommendation}
+
+For sequential recommendation, LSTM models the sequence of user interactions $\{i_1, i_2, \ldots, i_t\}$ to predict the next item $i_{t+1}$. Item embeddings are fed as input:
+\begin{equation}
+    \mathbf{h}_t = \text{LSTM}(\mathbf{e}_{i_t}, \mathbf{h}_{t-1}, \mathbf{c}_{t-1})
+    \myequations{Sequential LSTM}
+\end{equation}
+
+The final hidden state $\mathbf{h}_T$ encodes the user's sequential preferences and is used to score candidate items:
+\begin{equation}
+    \hat{y}_{u,i} = \mathbf{h}_T^\top \mathbf{e}_i
+    \myequations{LSTM Recommendation Score}
+\end{equation}
+
+\section{Graph Neural Networks}
+
+Graph Neural Networks (GNNs) operate on graph-structured data, learning node representations by aggregating information from neighboring nodes \parencite{wenhao_zhang_a1b490f2, wilson_c__hsieh_33aa6434}. GNNs are particularly suited for recommendation when user-item interactions or knowledge relationships form natural graph structures.
+
+\subsection{Graph Theory Preliminaries}
+
+A graph $\mathcal{G} = (\mathcal{V}, \mathcal{E})$ consists of nodes $\mathcal{V}$ and edges $\mathcal{E} \subseteq \mathcal{V} \times \mathcal{V}$. The adjacency matrix $\mathbf{A} \in \{0,1\}^{|\mathcal{V}| \times |\mathcal{V}|}$ encodes edge connectivity:
+\begin{equation}
+    A_{ij} = \begin{cases} 1 & \text{if } (v_i, v_j) \in \mathcal{E} \\ 0 & \text{otherwise} \end{cases}
+    \myequations{Adjacency Matrix}
+\end{equation}
+
+The degree matrix $\mathbf{D}$ is diagonal with $D_{ii} = \sum_j A_{ij}$. The normalized Laplacian is:
+\begin{equation}
+    \mathbf{L} = \mathbf{I} - \mathbf{D}^{-1/2} \mathbf{A} \mathbf{D}^{-1/2}
+    \myequations{Normalized Laplacian}
+\end{equation}
+
+\subsection{Message Passing Framework}
+
+GNNs follow a message passing paradigm where each node aggregates information from its neighbors. At layer $l$, the representation of node $v$ is updated as:
+\begin{align}
+    \mathbf{m}_v^{(l)} &= \text{AGGREGATE}^{(l)}\left(\{\mathbf{h}_u^{(l-1)} : u \in \mathcal{N}(v)\}\right) \\
+    \mathbf{h}_v^{(l)} &= \text{UPDATE}^{(l)}\left(\mathbf{h}_v^{(l-1)}, \mathbf{m}_v^{(l)}\right)
+\end{align}
+where $\mathcal{N}(v)$ denotes the neighbors of node $v$, AGGREGATE combines neighbor representations, and UPDATE combines the node's previous representation with the aggregated message.
+
+\subsection{Graph Convolutional Networks}
+
+Graph Convolutional Networks (GCN) implement spectral graph convolutions in the spatial domain. The layer-wise propagation rule is:
+\begin{equation}
+    \mathbf{H}^{(l+1)} = \sigma\left(\tilde{\mathbf{D}}^{-1/2} \tilde{\mathbf{A}} \tilde{\mathbf{D}}^{-1/2} \mathbf{H}^{(l)} \mathbf{W}^{(l)}\right)
+    \myequations{GCN Layer}
+\end{equation}
+where $\tilde{\mathbf{A}} = \mathbf{A} + \mathbf{I}$ is the adjacency matrix with added self-loops, $\tilde{\mathbf{D}}$ is the corresponding degree matrix, $\mathbf{H}^{(l)} \in \mathbb{R}^{|\mathcal{V}| \times d_l}$ is the matrix of node representations at layer $l$, and $\mathbf{W}^{(l)}$ is the learnable weight matrix.
+
+For a single node $v$, the GCN update is:
+\begin{equation}
+    \mathbf{h}_v^{(l+1)} = \sigma\left(\mathbf{W}^{(l)} \cdot \text{MEAN}\left(\{\mathbf{h}_u^{(l)} : u \in \mathcal{N}(v) \cup \{v\}\}\right)\right)
+    \myequations{GCN Node Update}
+\end{equation}
+
+\subsection{Application to Career Path Prediction}
+
+For career path prediction, we construct a heterogeneous graph with three node types:
+\begin{itemize}
+    \item \textbf{Employee nodes}: Representing individual employees
+    \item \textbf{Role nodes}: Representing job positions/titles
+    \item \textbf{Skill nodes}: Representing professional competencies
+\end{itemize}
+
+Edge types include:
+\begin{itemize}
+    \item \texttt{has\_skill}: Employee $\rightarrow$ Skill
+    \item \texttt{requires}: Role $\rightarrow$ Skill
+    \item \texttt{transitions\_to}: Role $\rightarrow$ Role (career transitions)
+    \item \texttt{current\_role}: Employee $\rightarrow$ Role
+\end{itemize}
+
+The GNN learns role representations that capture both skill requirements and transition patterns, enabling prediction of suitable career paths based on an employee's current role and skill profile.
+
+\section{Transformer Architecture}
+\label{section:transformer_theory}
+
+The Transformer architecture, introduced for sequence-to-sequence tasks, has become foundational in modern deep learning. Its self-attention mechanism enables modeling of long-range dependencies without the sequential processing constraints of RNNs.
+
+\subsection{Self-Attention Mechanism}
+
+Self-attention computes attention weights between all pairs of positions in a sequence. Given input representations $\mathbf{H} \in \mathbb{R}^{T \times d}$ for a sequence of length $T$, we compute Query, Key, and Value matrices:
+\begin{align}
+    \mathbf{Q} &= \mathbf{H} \mathbf{W}_Q \\
+    \mathbf{K} &= \mathbf{H} \mathbf{W}_K \\
+    \mathbf{V} &= \mathbf{H} \mathbf{W}_V
+\end{align}
+where $\mathbf{W}_Q, \mathbf{W}_K, \mathbf{W}_V \in \mathbb{R}^{d \times d_k}$ are learned projection matrices.
+
+Scaled dot-product attention computes:
+\begin{equation}
+    \text{Attention}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \text{softmax}\left(\frac{\mathbf{Q} \mathbf{K}^\top}{\sqrt{d_k}}\right) \mathbf{V}
+    \myequations{Scaled Dot-Product Attention}
+\end{equation}
+
+The scaling factor $\sqrt{d_k}$ prevents the dot products from growing too large, which would push the softmax into regions with extremely small gradients.
+
+\subsection{Multi-Head Attention}
+
+Multi-head attention runs multiple attention functions in parallel, allowing the model to attend to information from different representation subspaces:
+\begin{align}
+    \text{head}_i &= \text{Attention}(\mathbf{H}\mathbf{W}_Q^i, \mathbf{H}\mathbf{W}_K^i, \mathbf{H}\mathbf{W}_V^i) \\
+    \text{MultiHead}(\mathbf{H}) &= [\text{head}_1; \ldots; \text{head}_h] \mathbf{W}_O
+\end{align}
+where $h$ is the number of heads and $\mathbf{W}_O \in \mathbb{R}^{hd_k \times d}$ projects the concatenated heads back to the model dimension.
+
+\subsection{Positional Encoding}
+
+Since self-attention is permutation-invariant, positional encodings are added to inject sequence order information:
+\begin{align}
+    PE_{(pos, 2i)} &= \sin\left(\frac{pos}{10000^{2i/d}}\right) \\
+    PE_{(pos, 2i+1)} &= \cos\left(\frac{pos}{10000^{2i/d}}\right)
+\end{align}
+where $pos$ is the position and $i$ is the dimension. These sinusoidal encodings allow the model to extrapolate to sequence lengths longer than those seen during training.
+
+\subsection{Transformer Block}
+
+A Transformer block combines multi-head attention with a feedforward network and residual connections:
+\begin{align}
+    \mathbf{H}' &= \text{LayerNorm}(\mathbf{H} + \text{MultiHead}(\mathbf{H})) \\
+    \mathbf{H}'' &= \text{LayerNorm}(\mathbf{H}' + \text{FFN}(\mathbf{H}'))
+\end{align}
+where FFN is a position-wise feedforward network:
+\begin{equation}
+    \text{FFN}(\mathbf{x}) = \text{ReLU}(\mathbf{x}\mathbf{W}_1 + \mathbf{b}_1)\mathbf{W}_2 + \mathbf{b}_2
+    \myequations{Feedforward Network}
+\end{equation}
+
+\subsection{Application to Sequential Recommendation}
+
+For sequential recommendation, Transformers process the sequence of user interactions to predict future items. The self-attention mechanism captures item-item dependencies regardless of their distance in the sequence, overcoming LSTM's recency bias.
+
+Given interaction sequence $\{i_1, \ldots, i_T\}$, the Transformer outputs contextualized representations for each position. The representation at position $T$ is used to score candidate items:
+\begin{equation}
+    \hat{y}_{u,i} = \mathbf{h}_T^\top \mathbf{e}_i
+    \myequations{Transformer Recommendation Score}
+\end{equation}
+
+Causal masking ensures that predictions at position $t$ can only attend to positions $\leq t$, preventing information leakage from future interactions.
+
+\section{Evaluation Metrics Theory}
+\label{section:eval_metrics}
+
+This section formalizes the evaluation metrics used to assess recommender system performance, providing the mathematical foundations for the empirical evaluation \parencite{aryan_jadon_0d8634f5, aryan_jadon_d08575f7}.
+
+\subsection{Ranking Metrics}
+
+Ranking metrics evaluate the quality of the ordered list of recommendations.
+
+\subsubsection{Precision at K}
+
+Precision@K measures the proportion of relevant items among the top-K recommendations \parencite{c_k_raghavendra_29a7009e, rim_fakhfakh_5a2a658b}:
+\begin{equation}
+    \text{Precision@}K = \frac{|\{\text{relevant items}\} \cap \{\text{top-}K \text{ recommendations}\}|}{K}
+    \myequations{Precision at K}
+\end{equation}
+
+\subsubsection{Recall at K}
+
+Recall@K measures the proportion of relevant items that appear in the top-K recommendations \parencite{nurul_aida_osman_c621c258}:
+\begin{equation}
+    \text{Recall@}K = \frac{|\{\text{relevant items}\} \cap \{\text{top-}K \text{ recommendations}\}|}{|\{\text{relevant items}\}|}
+    \myequations{Recall at K}
+\end{equation}
+
+\subsubsection{Normalized Discounted Cumulative Gain}
+
+NDCG accounts for the position of relevant items in the ranking, with higher positions contributing more \parencite{aryan_jadon_d08575f7}:
+\begin{equation}
+    \text{DCG@}K = \sum_{i=1}^{K} \frac{2^{rel_i} - 1}{\log_2(i + 1)}
+    \myequations{Discounted Cumulative Gain}
+\end{equation}
+where $rel_i$ is the relevance score (typically binary: 1 if relevant, 0 otherwise) of the item at position $i$.
+
+NDCG normalizes by the ideal DCG (IDCG), where items are perfectly ranked:
+\begin{equation}
+    \text{NDCG@}K = \frac{\text{DCG@}K}{\text{IDCG@}K}
+    \myequations{Normalized DCG}
+\end{equation}
+
+\subsubsection{Mean Reciprocal Rank}
+
+MRR measures the average reciprocal rank of the first relevant item \parencite{aryan_jadon_d08575f7}:
+\begin{equation}
+    \text{MRR} = \frac{1}{|\mathcal{U}|} \sum_{u \in \mathcal{U}} \frac{1}{\text{rank}_u}
+    \myequations{Mean Reciprocal Rank}
+\end{equation}
+where $\text{rank}_u$ is the position of the first relevant item for user $u$.
+
+\subsection{Classification Metrics}
+
+When recommendations are treated as binary classification (relevant/not relevant), standard classification metrics apply.
+
+\subsubsection{F1-Score}
+
+F1-Score is the harmonic mean of precision and recall \parencite{chuan_qin_e4dbb673, rim_fakhfakh_5a2a658b}:
+\begin{equation}
+    F_1 = 2 \cdot \frac{\text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}}
+    \myequations{F1-Score}
+\end{equation}
+
+\subsubsection{AUC-ROC}
+
+The Area Under the Receiver Operating Characteristic Curve (AUC-ROC) measures the probability that a randomly chosen positive example is ranked higher than a randomly chosen negative example \parencite{chuan_qin_e4dbb673}:
+\begin{equation}
+    \text{AUC} = \frac{\sum_{i \in \mathcal{O}^+} \sum_{j \in \mathcal{O}^-} \mathbbm{1}[\hat{y}_i > \hat{y}_j]}{|\mathcal{O}^+| \cdot |\mathcal{O}^-|}
+    \myequations{AUC-ROC}
+\end{equation}
+where $\mathbbm{1}[\cdot]$ is the indicator function.
+
+AUC = 0.5 indicates random performance, while AUC = 1.0 indicates perfect ranking. AUC is particularly useful for imbalanced datasets common in recommendation scenarios.
+
+\section{Explainability in Machine Learning}
+\label{section:explainability}
+
+Explainability is crucial for IDP recommendations, as employees and managers need to understand why specific courses, career paths, or actions are suggested \parencite{jorge_paz_ruza_ae98c034, vatesh_pasrija_8c9fefb6}. This section introduces the theoretical foundations of model-agnostic explanation methods.
+
+\subsection{SHAP: SHapley Additive exPlanations}
+
+SHAP values are based on Shapley values from cooperative game theory, providing a unified measure of feature importance with theoretical guarantees \parencite{jinfeng_zhong_130b030a, ronilo_ragodos_cb23fa64}.
+
+For a model $f$ and input $\mathbf{x}$ with $M$ features, the Shapley value for feature $i$ is:
+\begin{equation}
+    \phi_i = \sum_{S \subseteq \{1,\ldots,M\} \setminus \{i\}} \frac{|S|!(M-|S|-1)!}{M!} \left[f(S \cup \{i\}) - f(S)\right]
+    \myequations{Shapley Value}
+\end{equation}
+where $S$ is a subset of features, and $f(S)$ is the model prediction using only features in $S$ (with other features marginalized).
+
+SHAP values satisfy three desirable properties \parencite{ronilo_ragodos_cb23fa64}:
+\begin{itemize}
+    \item \textbf{Local Accuracy}: $f(\mathbf{x}) = \phi_0 + \sum_{i=1}^{M} \phi_i$
+    \item \textbf{Missingness}: Features not present have zero contribution
+    \item \textbf{Consistency}: If a feature's contribution increases, its attribution should not decrease
+\end{itemize}
+
+For IDP recommendations, SHAP values can explain which skills or profile features most strongly influenced a course or career path recommendation.
+
+\subsection{LIME: Local Interpretable Model-agnostic Explanations}
+
+LIME explains individual predictions by approximating the complex model locally with an interpretable model \parencite{eduardo_e_oliveira_18f6e51c, alan_said_5e90bca4}. Given a prediction to explain, LIME:
+
+\begin{enumerate}
+    \item Generates perturbed samples around the instance
+    \item Obtains predictions from the complex model for perturbed samples
+    \item Weights samples by proximity to the original instance
+    \item Fits an interpretable model (e.g., linear regression) on the weighted samples
+\end{enumerate}
+
+The LIME objective is \parencite{dieter_brughmans_2b0e7957}:
+\begin{equation}
+    \xi(\mathbf{x}) = \argmin{g \in \mathcal{G}} \mathcal{L}(f, g, \pi_{\mathbf{x}}) + \Omega(g)
+    \myequations{LIME Objective}
+\end{equation}
+where $\mathcal{G}$ is the class of interpretable models, $\mathcal{L}$ measures fidelity of $g$ to $f$ in the locality defined by $\pi_{\mathbf{x}}$, and $\Omega(g)$ penalizes complexity.
+
+For a linear explanation model:
+\begin{equation}
+    g(\mathbf{z}) = w_0 + \sum_{i=1}^{M} w_i z_i
+    \myequations{LIME Linear Model}
+\end{equation}
+the coefficients $w_i$ indicate the importance of each feature for the specific prediction \parencite{ronilo_ragodos_cb23fa64}.
+
+\subsection{Application to IDP Recommendations}
+
+Explainability in IDP recommendations serves multiple purposes \parencite{mouadh_guesmi_912d0183, behnoush_abdollahi_fb517d12}:
+
+\begin{itemize}
+    \item \textbf{Employee Understanding}: Employees can see which skill gaps or career goals influenced their recommendations
+    \item \textbf{Manager Validation}: Managers can verify that recommendations align with organizational needs
+    \item \textbf{Trust Building}: Transparent explanations increase user trust and adoption \parencite{henriette_cramer_d661df37}
+    \item \textbf{Bias Detection}: Explanations can reveal if recommendations are based on inappropriate factors
+\end{itemize}
+
+The Skill-Course NCF architecture provides inherent explainability, as recommendations can be traced to specific skill-course alignments. For more complex models like GNNs, post-hoc methods like SHAP are applied to generate feature-level explanations.
+
+\section{Chapter Summary}
+
+This chapter established the theoretical framework for developing a deep learning-based IDP recommender system. The framework integrates theories from three domains to address the research question.
+
+\textbf{Key Concepts Identified.} From the research question, six key concepts were identified: Individual Development Plans, deep learning architectures, recommendation systems, skill gaps, career paths, and development actions. These concepts guided the selection of relevant theories.
+
+\textbf{Professional Development Theory.} The 70-20-10 learning model provides the theoretical basis for balancing development actions across experiential, social, and formal learning channels \parencite{kyle_coopersmith_f0b49c08}. Competency-based development frameworks define the skill gap analysis that drives course recommendations \parencite{jaason_m__geerts_0c88612e}. Career development theories (Super's Life-Span theory, Holland's RIASEC model) inform career path predictions.
+
+\textbf{Recommendation Systems Theory.} Collaborative filtering, content-based filtering, and hybrid approaches provide the computational foundations for generating personalized recommendations \parencite{hind_i__alshbanat_afd083dd, deepjyoti_roy_f246a341}. The mathematical formulations of matrix factorization and similarity-based methods underpin the deep learning extensions.
+
+\textbf{Deep Learning Architectures.} Neural Collaborative Filtering extends matrix factorization with neural networks for learning nonlinear user-item interactions \parencite{ssvr_kumar_addagarla_b0d9e4cf}. LSTMs capture sequential patterns in career progressions \parencite{gourav_bathla_4b0f5bec}. Graph Neural Networks model the relational structure of skills, roles, and employees \parencite{wenhao_zhang_a1b490f2}. Transformers enable attention-based modeling of complex dependencies.
+
+\textbf{Evaluation and Explainability.} Ranking metrics (NDCG, Precision@K, Recall@K) and classification metrics (F1-Score, AUC-ROC) provide the theoretical basis for model evaluation \parencite{aryan_jadon_d08575f7}. SHAP and LIME enable post-hoc explanation of recommendations \parencite{alan_said_5e90bca4}.
+
+The conceptual model (Figure~\ref{fig:theoretical_framework}) illustrates how these theoretical domains connect: professional development theory defines the requirements, recommendation systems theory provides the methods, and deep learning implements the solutions. These foundations inform the research design in \Cref{chapter:rd} and guide the implementation in \Cref{chapter:implementation}.

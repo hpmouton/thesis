@@ -1,87 +1,102 @@
 \chapter{Literature Review}
 \label{chapter:lit_review}
 
-% Scope the chapter in a sloppypar to reduce overfull hbox warnings caused by long unbreakable tokens and dense tables.
-\begin{sloppypar}
+% Use full justification for chapter text; prefer local fixes over global sloppypar
+\justifying
 
-% Leveldown and levelup commands allow to re-use chapters from the literature review but with different section levels.
+% Leveldown and Comparative Analysis with Traditional Recommender Methods
 
-\newenvironment{leveldown}% Demote sectional commands
-  {\let\chapter\section
-   \let\section\subsection%
-   \let\subsection\subsubsection%
-   \let\subsubsection\paragraph%
-  }{}
-  
-\newenvironment{levelup}% Promote sectional commands
-  {\let\subparagraph\paragraph%
-   \let\paragraph\subsubsection%
-   \let\subsubsection\subsection%
-   \let\subsection\section%
-   \let\section\chapter
-}{}
+Deep learning outperforms traditional methods on large-scale, unstructured data by automating feature extraction and handling non-linearity, but requires more data and compute  \parencite[]{shivangi_gheewala_86d36cab, berke_akkaya_a91dda76}.
+
+\begin{table}[h!]
+\centering
+\caption{Traditional vs. Deep Learning Methods in Recommender Systems}
+\label{tab:traditional_vs_dl_rs}
+\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}p{0.24\textwidth}p{0.36\textwidth}p{0.34\textwidth}@{}}
+\toprule
+\textbf{Aspect} & \textbf{Traditional Methods} & \textbf{Deep Learning Methods} \\
+\midrule
+Feature Engineering & Manual feature design & Automatic feature learning \parencite{ssvr_kumar_addagarla_b0d9e4cf} \\
+\midrule
+Data Requirements & Smaller, structured datasets & Large-scale, unstructured data \parencite{gourav_bathla_4b0f5bec} \\
+\midrule
+Handling Sparsity/Cold Start & Poor performance & Strong mitigation \parencite{wenhao_zhang_a1b490f2} \\
+\midrule
+Scalability & Limited scalability & High scalability \parencite{mohamed_grida_279a8709} \\
+\midrule
+Performance on Complex Patterns & Linear assumptions & Superior accuracy \parencite[]{shuai_zhang_47a1072e, shivangi_gheewala_86d36cab} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \section{Introduction}
 
-\begin{sloppypar}
-The increasing complexity of the global market necessitates innovative approaches to workforce development, with artificial intelligence emerging as a pivotal technology for upskilling and reskilling employees  \cite{developing_ai_powered_training_programs_for_employee_upskilling_and_reskilling_4a4b0729}. This is particularly crucial for companies aiming to personalize learning experiences and enhance productivity by leveraging advanced AI algorithms to create tailored training programs  \cite{developing_ai_powered_training_programs_for_employee_upskilling_and_reskilling_4a4b0729}. Such personalized training recommendations are vital for improving individual and organizational performance, allowing companies to maintain a competitive edge in fast-paced business environments  \cite[]{chao_wang_f11198d9, chao_wang_f11198d9}. These AI-powered solutions leverage data analytics and machine learning to adapt training modules based on individual needs, skill gaps, and performance metrics, thereby enhancing engagement and knowledge retention within organizations  \cite{sunday_oladele_e97c4106}. Importantly, these systems consider both employees' current competencies and their future career development preferences to offer relevant and explainable recommendations  \cite[]{chao_wang_f11198d9, chao_wang_f11198d9}. Such models can also forecast necessary competencies for software development teams, aligning training with future organizational demands and even contributing to comprehensive workforce optimization  \cite{saeed_nosratabadi_393c48bc}. This strategic alignment ensures that learning and development initiatives are not merely reactive but proactively address skill shortages and contribute to organizational agility  \cite{kadar_nurjaman_cb412930}. However, challenges such as data sparsity and cold-start problems, along with the need for accurate skill profile reflection, remain pertinent considerations in developing such systems  \cite{chao_wang_f11198d9}.
-\end{sloppypar}
-\subsection{Individual Development Plans}
+The increasing complexity of the global market necessitates innovative approaches to workforce development, with artificial intelligence emerging as a pivotal technology for upskilling and reskilling employees \parencite{developing_ai_powered_training_programs_for_employee_upskilling_and_reskilling_4a4b0729}. This is particularly crucial for companies aiming to personalize learning experiences and enhance productivity by leveraging advanced AI algorithms to create tailored training programs. These AI-powered solutions leverage data analytics and machine learning to adapt training modules based on individual needs, skill gaps, and performance metrics, thereby enhancing engagement and knowledge retention within organizations \parencite{sunday_oladele_e97c4106}. Such models can also forecast necessary competencies for software development teams, aligning training with future organizational demands and contributing to comprehensive workforce optimization \parencite{saeed_nosratabadi_393c48bc}. This strategic alignment ensures that learning and development initiatives proactively address skill shortages and contribute to organizational agility \parencite{kadar_nurjaman_cb412930}. However, challenges such as data sparsity and cold-start problems remain pertinent considerations in developing such systems \parencite{chao_wang_f11198d9}.
 
-\begin{sloppypar}
-Individual Development Plans are structured documents outlining personal and professional goals, competencies needed for sustained career growth, and actionable strategies to address skill gaps, typically co-developed by employees and managers  \cite[]{j_lio_fernando_da_silva_3789f1cc, amirhadi_azizi_f3da0874}. Their primary purpose is to facilitate targeted training, self-assessment, career exploration, and setting of SMART objectives, aligning individual aspirations with organizational needs  \cite[]{chi_ning_chang_c0da09a0, amar_h__flood_1095a193}. In organizational contexts, IDPs boost employee engagement, retention, leadership skills, and overall alignment between personal development and business goals  \cite[]{sumartik_sumartik_d349b8c0, marna_van_der_merwe_53642fbd}. In educational settings, particularly STEM graduate programs, they enhance self-awareness, self-efficacy, goal clarity, and continuous improvement through iterative planning and mentoring  \cite[]{kyle_coopersmith_f0b49c08, doris_m__rubio_a080cab4}.
+This chapter reviews the literature on Individual Development Plans, recommender systems, and deep learning techniques that form the foundation of this research.
 
-IDPs offer significant benefits, including increased motivation, productivity, talent retention, and organizational agility by fostering continuous learning and employability  \cite[]{sumartik_sumartik_d349b8c0, marna_van_der_merwe_53642fbd}. Organizations gain from effective IDP implementation through strengthened leadership pipelines, reduced absenteeism, higher performance, and strategic workforce planning  \cite[]{jaason_m__geerts_0c88612e, muhammad_zafar_e3593584}.
+\section{Individual Development Plans}
 
-However, traditional IDPs often fall short in dynamically adapting to rapidly changing demands, relying on static frameworks that fail to capture evolving skill requirements or individual learning paces  \cite[]{zenun_kastrati_0e2ecb6d, kadar_nurjaman_cb412930}. Additional challenges include lack of interactivity, limited mentor access, poor compliance, and perceived ineffectiveness for career success  \cite{doris_m__rubio_a080cab4}. Common barriers encompass resource constraints, manager time limitations, employee resistance, goal misalignment, inconsistent evaluation, and organizational culture issues  \cite{muhammad_zafar_e3593584}.
+Individual Development Plans are structured documents outlining personal and professional goals, competencies needed for sustained career growth, and actionable strategies to address skill gaps, typically co-developed by employees and managers  \parencite[]{j_lio_fernando_da_silva_3789f1cc, amirhadi_azizi_f3da0874}. Their primary purpose is to facilitate targeted training, self-assessment, career exploration, and setting of SMART objectives, aligning individual aspirations with organizational needs  \parencite[]{chi_ning_chang_c0da09a0, amar_h__flood_1095a193}. In organizational contexts, IDPs boost employee engagement, retention, leadership skills, and overall alignment between personal development and business goals  \parencite[]{sumartik_sumartik_d349b8c0, marna_van_der_merwe_53642fbd}. In educational settings, particularly STEM graduate programs, they enhance self-awareness, self-efficacy, goal clarity, and continuous improvement through iterative planning and mentoring  \parencite[]{kyle_coopersmith_f0b49c08, doris_m__rubio_a080cab4}.
 
-Over recent years, IDPs have evolved from paper-based, static tools to digital platforms like myIDP and AI-integrated systems offering real-time feedback, personalized paths, and mentor-AI hybrids, enhancing adaptability amid technological disruption  \cite[]{chi_ning_chang_c0da09a0, chi_ning_chang_c0da09a0, chi_ning_chang_c0da09a0, deborah_e__eason_1beca78d}. This shift incorporates AI analytics for dynamic L\&D, addressing prior static limitations  \cite[]{kadar_nurjaman_cb412930, sunday_oladele_e97c4106}.
-\end{sloppypar}
+IDPs offer significant benefits, including increased motivation, productivity, talent retention, and organizational agility by fostering continuous learning and employability  \parencite[]{sumartik_sumartik_d349b8c0, marna_van_der_merwe_53642fbd}. Organizations gain from effective IDP implementation through strengthened leadership pipelines, reduced absenteeism, higher performance, and strategic workforce planning  \parencite[]{jaason_m__geerts_0c88612e, muhammad_zafar_e3593584}.
 
-\subsection{Recommender Systems}
+However, traditional IDPs often fall short in dynamically adapting to rapidly changing demands, relying on static frameworks that fail to capture evolving skill requirements or individual learning paces  \parencite[]{zenun_kastrati_0e2ecb6d, kadar_nurjaman_cb412930}. Additional challenges include lack of interactivity, limited mentor access, poor compliance, and perceived ineffectiveness for career success  \parencite{doris_m__rubio_a080cab4}. Common barriers encompass resource constraints, manager time limitations, employee resistance, goal misalignment, inconsistent evaluation, and organizational culture issues  \parencite{muhammad_zafar_e3593584}.
 
-\begin{sloppypar}
-Recommender systems are advanced algorithms designed to filter and suggest relevant items from large datasets to users, mitigating information overload and enhancing personalization across various domains  \cite[]{shaina_raza_02fc35a5, deepjyoti_roy_f246a341}. These systems integrate artificial intelligence to analyze vast datasets, including user profiles, behaviors, preferences, and item characteristics, thereby facilitating highly personalized recommendations such as adaptive development plans in employee training  \cite{sunday_oladele_e97c4106}.
+Over recent years, IDPs have evolved from paper-based, static tools to digital platforms like myIDP and AI-integrated systems offering real-time feedback, personalized paths, and mentor-AI hybrids, enhancing adaptability amid technological disruption  \parencite[]{chi_ning_chang_c0da09a0, chi_ning_chang_c0da09a0, chi_ning_chang_c0da09a0, deborah_e__eason_1beca78d}. This shift incorporates AI analytics for dynamic L\&D, addressing prior static limitations  \parencite[]{kadar_nurjaman_cb412930, sunday_oladele_e97c4106}.
+
+\section{Recommender Systems}
+
+Recommender systems are advanced algorithms designed to filter and suggest relevant items from large datasets to users, mitigating information overload and enhancing personalization across various domains  \parencite[]{shaina_raza_02fc35a5, deepjyoti_roy_f246a341}. These systems integrate artificial intelligence to analyze vast datasets, including user profiles, behaviors, preferences, and item characteristics, thereby facilitating highly personalized recommendations such as adaptive development plans in employee training  \parencite{sunday_oladele_e97c4106}.
 
 Overview and Types of Recommender Systems
 
-RS are broadly categorized into three primary types: collaborative filtering, content-based filtering, and hybrid systems  \cite[]{hind_i__alshbanat_afd083dd, deepjyoti_roy_f246a341, shaina_raza_02fc35a5}. CF leverages collective user behavior, assuming similar users share preferences  \cite{wilson_c__hsieh_33aa6434}. CBF matches items to user profiles based on feature similarities  \cite{deepjyoti_roy_f246a341}. Hybrid systems combine both to address individual limitations, improving accuracy and diversity  \cite[]{hind_i__alshbanat_afd083dd, fu_jie_tey_0aad3c4f}.
+RS are broadly categorized into three primary types: collaborative filtering, content-based filtering, and hybrid systems  \parencite[]{hind_i__alshbanat_afd083dd, deepjyoti_roy_f246a341, shaina_raza_02fc35a5}. CF leverages collective user behavior, assuming similar users share preferences  \parencite{wilson_c__hsieh_33aa6434}. CBF matches items to user profiles based on feature similarities  \parencite{deepjyoti_roy_f246a341}. Hybrid systems combine both to address individual limitations, improving accuracy and diversity  \parencite[]{hind_i__alshbanat_afd083dd, fu_jie_tey_0aad3c4f}.
 
 Algorithms and Primary Approaches: Differences
 
 Traditional algorithms include:
-\end{sloppypar}
+
 \begin{table}[h!]
 \centering
-\begin{tabularx}{\textwidth}{|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|}
-\hline
-Recommendation Technique & Advantages & Disadvantages \\ \hline
-Collaborative Filtering  \cite[]{wilson_c__hsieh_33aa6434, hind_i__alshbanat_afd083dd} & No content analysis needed; discovers serendipitous items & Cold start problem; sparsity; scalability issues  \cite{shaina_raza_02fc35a5} \\ \hline
-Content-Based Filtering  \cite[]{fu_jie_tey_0aad3c4f, deepjyoti_roy_f246a341} & Handles new users; explainable & Limited to similar items; new item problem \\ \hline
-Hybrid  \cite[]{pijitra_jomsri_14dad661, hind_i__alshbanat_afd083dd} & Balances strengths; higher accuracy & Increased complexity \\ \hline
-\end{tabularx}
+\caption{Comparison of Traditional Recommender System Techniques}
+\label{tab:rs_techniques_comparison}
+\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}p{0.24\textwidth}p{0.36\textwidth}p{0.34\textwidth}@{}}
+\toprule
+\textbf{Recommendation Technique} & \textbf{Advantages} & \textbf{Disadvantages} \\
+\midrule
+Collaborative Filtering \parencite[]{wilson_c__hsieh_33aa6434, hind_i__alshbanat_afd083dd} & No content analysis needed; discovers serendipitous items & Cold start problem; sparsity; scalability issues \parencite{shaina_raza_02fc35a5} \\
+\addlinespace
+Content-Based Filtering \parencite[]{fu_jie_tey_0aad3c4f, deepjyoti_roy_f246a341} & Handles new users; explainable recommendations & Limited to similar items; new item problem \\
+\addlinespace
+Hybrid Systems \parencite[]{pijitra_jomsri_14dad661, hind_i__alshbanat_afd083dd} & Balances strengths; higher accuracy & Increased complexity \\
+\bottomrule
+\end{tabular}
 \end{table}
 
-CF is divided into user-based, item-based, memory-based, and model-based  \cite[]{hind_i__alshbanat_afd083dd, fu_jie_tey_0aad3c4f}. CBF uses techniques like TF-IDF and cosine similarity on item features  \cite{shaina_raza_02fc35a5}. Hybrids weight or switch methods for optimal results  \cite{wilson_c__hsieh_33aa6434}.
+CF is divided into user-based, item-based, memory-based, and model-based  \parencite[]{hind_i__alshbanat_afd083dd, fu_jie_tey_0aad3c4f}. CBF uses techniques like TF-IDF and cosine similarity on item features  \parencite{shaina_raza_02fc35a5}. Hybrids weight or switch methods for optimal results  \parencite{wilson_c__hsieh_33aa6434}.
 
 Application Domains Beyond IDPs
 
-Beyond individual development plans, RS power e-commerce, entertainment  \cite[]{shaina_raza_02fc35a5, carlos_alberto_gomez_uribe_29d4be40}, healthcare  \cite{shaina_raza_02fc35a5}, news, and social media  \cite[]{berke_akkaya_a91dda76, mona_taghavi_2bc400a0}. They drive sales, engagement, and retention in these areas  \cite[]{shaina_raza_02fc35a5, kuan_zou_609e787f}.
+Beyond individual development plans, RS power e-commerce, entertainment  \parencite[]{shaina_raza_02fc35a5, carlos_alberto_gomez_uribe_29d4be40}, healthcare  \parencite{shaina_raza_02fc35a5}, news, and social media  \parencite[]{berke_akkaya_a91dda76, mona_taghavi_2bc400a0}. They drive sales, engagement, and retention in these areas  \parencite[]{shaina_raza_02fc35a5, kuan_zou_609e787f}.
 
 Suitability for Educational and Professional Development Contexts
 
-Hybrid RS are most suitable for educational and professional development, combining CF for peer/learning similarities with CBF for skill gaps and career goals  \cite[]{felipe_leite_da_silva_a897795e, nisha_s__raj_6036e336, yvonne_m__hemmler_2515f35f}. In education, they personalize learning paths, courses, and content  \cite[]{several_studies, felipe_leite_da_silva_a897795e}; in professional contexts, they recommend training and IDPs based on performance and aspirations  \cite[]{rajiv_srivastava_c97faa40, christine_lahoud_4a3acc51, summiya_iqbal_jangda_b1f8c30a}.
+Hybrid RS are most suitable for educational and professional development, combining CF for peer/learning similarities with CBF for skill gaps and career goals  \parencite[]{felipe_leite_da_silva_a897795e, nisha_s__raj_6036e336, yvonne_m__hemmler_2515f35f}. In education, they personalize learning paths, courses, and content  \parencite[]{______________________3143876c, felipe_leite_da_silva_a897795e}; in professional contexts, they recommend training and IDPs based on performance and aspirations  \parencite[]{rajiv_srivastava_c97faa40, christine_lahoud_4a3acc51, summiya_iqbal_jangda_b1f8c30a}.
 
 Impact on User Experiences
 
-RS significantly boost engagement, satisfaction, retention, and outcomes: 60\\% higher content consumption in edtech  \cite{keshav_agrawal_3ee15d9e}, improved motivation/learning in education  \cite{several_studies}, sales/user stickiness in e-commerce/entertainment  \cite[]{shaina_raza_02fc35a5, kuan_zou_609e787f}, and career alignment in professional settings  \cite{yvonne_m__hemmler_2515f35f}. Challenges like bias persist, but hybrids mitigate them  \cite{shaina_raza_02fc35a5}.
+RS significantly boost engagement, satisfaction, retention, and outcomes: 60\% higher content consumption in edtech  \parencite{keshav_agrawal_3ee15d9e}, improved motivation/learning in education  \parencite{______________________3143876c}, sales/user stickiness in e-commerce/entertainment  \parencite[]{shaina_raza_02fc35a5, kuan_zou_609e787f}, and career alignment in professional settings  \parencite{yvonne_m__hemmler_2515f35f}. Challenges like bias persist, but hybrids mitigate them  \parencite{shaina_raza_02fc35a5}.
 
-% Figures removed per user request; layout-focused edits only.
-
-\subsection{Deep Learning}
+\section{Deep Learning}
 
 Fundamentals of Deep Learning
 
-Deep learning represents a powerful subset of machine learning, utilizing multi-layered neural networks to learn intricate patterns from vast datasets, which makes it particularly adept at overcoming the aforementioned limitations of traditional recommender systems, such as scalability and sparsity challenges  \cite[]{amany_sami_28c22187, wilson_c__hsieh_33aa6434}. Core concepts include neurons, layers, activation functions, backpropagation for training via gradient descent, and loss functions to measure prediction errors. DL excels with unstructured data like images, text, and sequences due to its representation learning capability.
+Deep learning represents a powerful subset of machine learning, utilizing multi-layered neural networks to learn intricate patterns from vast datasets, which makes it particularly adept at overcoming the aforementioned limitations of traditional recommender systems, such as scalability and sparsity challenges  \parencite[]{amany_sami_28c22187, wilson_c__hsieh_33aa6434}. Core concepts include neurons, layers, activation functions, backpropagation for training via gradient descent, and loss functions to measure prediction errors. DL excels with unstructured data like images, text, and sequences due to its representation learning capability.
 
 \textbf{Advantages:}
 \begin{itemize}
@@ -91,7 +106,7 @@ Automatic feature extraction, reducing manual engineering.\item
 
 Superior performance on large-scale, high-dimensional data.\item 
 
-Handles non-linearity and complex patterns effectively, improving accuracy in tasks like recommendation  \cite{amany_sami_28c22187}.
+Handles non-linearity and complex patterns effectively, improving accuracy in tasks like recommendation  \parencite{amany_sami_28c22187}.
 \end{itemize}
 
 \textbf{Limitations:}
@@ -110,40 +125,62 @@ Vulnerability to adversarial attacks and data biases.
 Key Architectures
 
 DL architectures vary by data type and task. Key ones include:
+
 \begin{table}[h!]
 \centering
-\begin{tabularx}{\textwidth}{|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|}
-\hline
-Architecture & Description & Key Components & Common Applications \\ \hline
-Feedforward Neural Networks & Basic deep networks processing data in one direction & Fully connected layers, backpropagation & Classification, regression \\ \hline
-Convolutional Neural Networks & Designed for grid-like data & Convolutional layers, pooling, filters & Image recognition, content-based recommendation \\ \hline
-Recurrent Neural Networks/LSTMs/GRUs & Handle sequential data with memory & Recurrent connections, gates & Time-series, sequential recommendations \\ \hline
-Autoencoders & Unsupervised networks for data compression/reconstruction & Encoder-decoder structure, latent space & Dimensionality reduction, denoising, collaborative filtering \\ \hline
-Transformers & Attention-based models for sequences & Self-attention, positional encoding, multi-head attention & NLP, sequential recommendation \\ \hline
-Graph Neural Networks & Operate on graph-structured data & Message passing, node embeddings & Social networks, knowledge graphs in RS  \cite{wilson_c__hsieh_33aa6434} \\ \hline
-\end{tabularx}
+\caption{Key Deep Learning Architectures and Their Applications}
+\label{tab:dl_architectures}
+\footnotesize
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{@{}p{0.17\textwidth}p{0.24\textwidth}p{0.26\textwidth}p{0.23\textwidth}@{}}
+\toprule
+\textbf{Architecture} & \textbf{Description} & \textbf{Key Components} & \textbf{Applications} \\
+\midrule
+Feedforward Neural Networks & Basic deep networks with unidirectional data flow & Fully connected layers, backpropagation & Classification, regression \\
+\addlinespace
+Convolutional Neural Networks (CNNs) & Designed for grid-like data structures & Convolutional layers, pooling, filters & Image recognition, content-based RS \\
+\addlinespace
+Recurrent Neural Networks (RNNs/LSTMs/GRUs) & Handle sequential data with memory & Recurrent connections, gates & Time-series, sequential RS \\
+\addlinespace
+Autoencoders & Unsupervised compression and reconstruction networks & Encoder-decoder, latent space & Dimensionality reduction, collaborative filtering \\
+\addlinespace
+Transformers & Attention-based sequence models & Self-attention, positional encoding & NLP, sequential RS \\
+\addlinespace
+Graph Neural Networks (GNNs) & Operate on graph-structured data & Message passing, node embeddings & Social networks, knowledge graphs \parencite{wilson_c__hsieh_33aa6434} \\
+\bottomrule
+\end{tabular}
 \end{table}
 
 Deep Learning vs. Traditional Machine Learning Techniques
 
-Traditional ML relies on hand-crafted features and shallower models, while DL automates feature learning through deep hierarchies. Traditional methods scale poorly with data volume/complexity; DL thrives on "big data" via end-to-end learning  \cite{wilson_c__hsieh_33aa6434}.
-\begin{table}[h!]
+Traditional ML relies on hand-crafted features and shallower models, while DL automates feature learning through deep hierarchies. Traditional methods scale poorly with data volume/complexity; DL thrives on "big data" via end-to-end learning  \parencite{wilson_c__hsieh_33aa6434}.
+
+\begin{table}[]
 \centering
-\begin{tabularx}{\textwidth}{|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|}
-\hline
-Aspect & Traditional ML & Deep Learning \\ \hline
-Feature Engineering & Manual & Automatic  \cite{ssvr_kumar_addagarla_b0d9e4cf} \\ \hline
-Data Requirements & Smaller datasets suffice & Large datasets essential \\ \hline
-Model Complexity & Simpler, interpretable & Complex, high capacity \\ \hline
-Performance & Good for tabular/small data & State-of-the-art for unstructured/large-scale data  \cite{amany_sami_28c22187} \\ \hline
-\end{tabularx}
+\caption{Comparison of Traditional Machine Learning and Deep Learning}
+\label{tab:ml_vs_dl}
+\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}p{0.24\textwidth}p{0.36\textwidth}p{0.34\textwidth}@{}}
+\toprule
+\textbf{Aspect} & \textbf{Traditional ML} & \textbf{Deep Learning} \\
+\midrule
+Feature Engineering & Manual feature design required & Automatic feature learning \parencite{ssvr_kumar_addagarla_b0d9e4cf} \\
+\midrule
+Data Requirements & Smaller datasets suffice & Large datasets essential for training \\
+\midrule
+Model Complexity & Simpler, more interpretable models & Complex, high-capacity networks \\
+\midrule
+Performance & Good for tabular/small data & State-of-the-art for unstructured/large-scale data \parencite{amany_sami_28c22187} \\
+\bottomrule
+\end{tabular}
 \end{table}
 
 Differences in Feature Extraction and Performance
 
-DL differs fundamentally in feature extraction: Traditional ML requires explicit feature design (e.g., TF-IDF for text  \cite{deepjyoti_roy_f246a341}), whereas DL learns features progressively—low-level to high-level—via convolutions, embeddings, or attention. This end-to-end approach minimizes information loss.
+DL differs fundamentally in feature extraction: Traditional ML requires explicit feature design (e.g., TF-IDF for text  \parencite{deepjyoti_roy_f246a341}), whereas DL learns features progressively�low-level to high-level�via convolutions, embeddings, or attention. This end-to-end approach minimizes information loss.
 
-In performance, DL outperforms on scalability, sparsity (embeddings capture latent factors  \cite{amany_sami_28c22187}), and accuracy (e.g., hybrids beat traditional CF  \cite[]{pijitra_jomsri_14dad661, hind_i__alshbanat_afd083dd}). However, it demands more compute/time for training.
+In performance, DL outperforms on scalability, sparsity (embeddings capture latent factors  \parencite{amany_sami_28c22187}), and accuracy (e.g., hybrids beat traditional CF  \parencite[]{pijitra_jomsri_14dad661, hind_i__alshbanat_afd083dd}). However, it demands more compute/time for training.
 
 Relevant Architectures for Recommender Systems
 
@@ -157,100 +194,107 @@ CNNs: Process textual/image content in CBF.\item
 
 RNNs/Transformers: Capture sequential user behavior.\item 
 
-GNNs: Leverage graph data for hybrid RS  \cite{amany_sami_28c22187}.\item 
+GNNs: Leverage graph data for hybrid RS  \parencite{amany_sami_28c22187}.\item 
 
-Hybrids combine these for superior personalization in IDPs  \cite{amany_sami_28c22187}.
+Hybrids combine these for superior personalization in IDPs  \parencite{amany_sami_28c22187}.
 \end{itemize}
 
-These enable dynamic, adaptive recommendations aligning with IDP evolution toward AI-integrated systems  \cite{chi_ning_chang_c0da09a0}.
-\subsection{Deep Learning in Recommender Systems}
+These enable dynamic, adaptive recommendations aligning with IDP evolution toward AI-integrated systems  \parencite{chi_ning_chang_c0da09a0}.
 
-Deep learning has emerged as a transformative paradigm in recommender systems, fundamentally altering how user preferences and item characteristics are modeled by leveraging multi-layered neural networks to discern intricate patterns in vast, complex datasets  \cite{wenhao_zhang_a1b490f2, shuai_zhang_47a1072e}.
+\section{Deep Learning in Recommender Systems}
+
+Deep learning has emerged as a transformative paradigm in recommender systems, fundamentally altering how user preferences and item characteristics are modeled by leveraging multi-layered neural networks to discern intricate patterns in vast, complex datasets  \parencite[]{wenhao_zhang_a1b490f2, shuai_zhang_47a1072e}.
 
 Integration of Deep Learning Techniques into Recommender Systems
 
-Deep learning integrates into RS through specialized architectures that address traditional limitations like sparsity, cold starts, and scalability. Neural Collaborative Filtering replaces matrix factorization's inner product with multi-layer perceptrons to capture non-linear user-item interactions  \cite[]{ssvr_kumar_addagarla_b0d9e4cf, mohamed_grida_279a8709}. Autoencoders enable unsupervised learning of latent representations for collaborative filtering, while CNNs process multimodal content in content-based filtering  \cite{wenhao_zhang_a1b490f2}. RNNs, LSTMs, GRUs, and Transformers model sequential user behaviors for next-item prediction  \cite[]{gourav_bathla_4b0f5bec, vaios_stergiopoulos_eed71846}. Graph Neural Networks exploit relational data in social or knowledge graphs  \cite{wenhao_zhang_a1b490f2}. Hybrid deep models combine these with traditional methods for enhanced accuracy  \cite{mohamed_grida_279a8709}.
+Deep learning integrates into RS through specialized architectures that address traditional limitations like sparsity, cold starts, and scalability. Neural Collaborative Filtering replaces matrix factorization's inner product with multi-layer perceptrons to capture non-linear user-item interactions  \parencite[]{ssvr_kumar_addagarla_b0d9e4cf, mohamed_grida_279a8709}. Autoencoders enable unsupervised learning of latent representations for collaborative filtering, while CNNs process multimodal content in content-based filtering  \parencite{wenhao_zhang_a1b490f2}. RNNs, LSTMs, GRUs, and Transformers model sequential user behaviors for next-item prediction  \parencite[]{gourav_bathla_4b0f5bec, vaios_stergiopoulos_eed71846}. Graph Neural Networks exploit relational data in social or knowledge graphs  \parencite{wenhao_zhang_a1b490f2}. Hybrid deep models combine these with traditional methods for enhanced accuracy  \parencite{mohamed_grida_279a8709}.
 
 Comparative Analysis with Traditional Recommender Methods
 
-Deep learning outperforms traditional methods on large-scale, unstructured data by automating feature extraction and handling non-linearity, but requires more data and compute  \cite[]{shivangi_gheewala_86d36cab, berke_akkaya_a91dda76}.
+Deep learning outperforms traditional methods on large-scale, unstructured data by automating feature extraction and handling non-linearity, but requires more data and compute  \parencite[]{shivangi_gheewala_86d36cab, berke_akkaya_a91dda76}.
 \begin{table}[h!]
 \centering
-{\small
-\setlength{\extrarowheight}{3pt}
-\begin{tabularx}{\textwidth}{|>{\raggedright\arraybackslash}p{3.2cm}|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|}
-\hline
-Aspect & Traditional Methods & Deep Learning Methods \\
-\hline
-Feature Engineering & Manual & Automatic  \cite{ssvr_kumar_addagarla_b0d9e4cf} \\
-\hline
-Data Requirements & Smaller, structured & Large-scale, unstructured  \cite{gourav_bathla_4b0f5bec} \\
-\hline
-Handling Sparsity/Cold Start & Poor & Strong  \cite{wenhao_zhang_a1b490f2} \\
-\hline
-Scalability & Limited & High  \cite{mohamed_grida_279a8709} \\
-\hline
-Performance on Complex Patterns & Linear assumptions & Superior accuracy  \cite[]{shuai_zhang_47a1072e, shivangi_gheewala_86d36cab} \\
-\hline
-\end{tabularx}
-}
+\small
+\begin{tabular}{@{}p{3.5cm}p{4.5cm}p{5.5cm}@{}}
+\toprule
+\textbf{Aspect} & \textbf{Traditional Methods} & \textbf{Deep Learning Methods} \\
+\midrule
+Feature Engineering & Manual & Automatic \parencite{ssvr_kumar_addagarla_b0d9e4cf} \\
+\midrule
+Data Requirements & Smaller, structured & Large-scale, unstructured \parencite{gourav_bathla_4b0f5bec} \\
+\midrule
+Handling Sparsity/Cold Start & Poor & Strong \parencite{wenhao_zhang_a1b490f2} \\
+\midrule
+Scalability & Limited & High \parencite{mohamed_grida_279a8709} \\
+\midrule
+Performance on Complex Patterns & Linear assumptions & Superior accuracy \parencite[]{shuai_zhang_47a1072e, shivangi_gheewala_86d36cab} \\
+\bottomrule
+\end{tabular}
 \end{table}
 
-Traditional methods like memory-based CF excel on small datasets but falter on sparsity; DL hybrids mitigate this  \cite[]{aditya_verma_c6c19534, yushun_dong_3ea7bd9d}.
+Traditional methods like memory-based CF excel on small datasets but falter on sparsity; DL hybrids mitigate this  \parencite[]{aditya_verma_c6c19534, yushun_dong_3ea7bd9d}.
 
 Successful Examples and Case Studies
 
 Prominent real-world implementations demonstrate DL's impact:
+
 \begin{table}[h!]
 \centering
-\begin{tabularx}{\textwidth}{|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|}
-\hline
-Platform & DL Techniques & Key Outcomes  \cite[]{shuai_zhang_47a1072e, harald_steck_a8ae8ca4, kapilya_gangadharan_bdb6ce99} \\
-\hline
-Netflix & Various DNNs & 80\% of views from recommendations; outperforms baselines across tasks  \cite{harald_steck_a8ae8ca4} \\
-\hline
-YouTube & DNN candidate generation + ranking & 60\%+ video clicks from recs  \cite{shuai_zhang_de9240d8} \\
-\hline
-Google Play & Wide \& Deep model & Significant gains over traditional  \cite{shuai_zhang_07cd1aec} \\
-\hline
-Yahoo News & RNN-based & Improved online performance  \cite{shuai_zhang_47a1072e} \\
-\hline
-Facebook & DLRM & Handles categorical features at scale  \cite{maxim_naumov_7948e028} \\
-\hline
-Pinterest & TransAct & Real-time sequential modeling  \cite{xue_xia_7ee9019a} \\
-\hline
-\end{tabularx}
+\caption{Successful Deep Learning Implementations in Recommender Systems}
+\label{tab:dl_rs_case_studies}
+\small
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{@{}p{0.14\textwidth}p{0.32\textwidth}p{0.48\textwidth}@{}}
+\toprule
+\textbf{Platform} & \textbf{DL Techniques} & \textbf{Key Outcomes} \\
+\midrule
+\textbf{Netflix} & Various deep neural networks & 80\% of views from recommendations; outperforms baselines across tasks \parencite{harald_steck_a8ae8ca4} \\
+\addlinespace
+\textbf{YouTube} & DNN candidate generation + ranking & 60\%+ video clicks from recommendations \parencite{shuai_zhang_de9240d8} \\
+\addlinespace
+\textbf{Google Play} & Wide \& Deep model & Significant gains over traditional methods \parencite{shuai_zhang_07cd1aec} \\
+\addlinespace
+\textbf{Yahoo News} & RNN-based architecture & Improved online performance \parencite{shuai_zhang_47a1072e} \\
+\addlinespace
+\textbf{Facebook} & Deep Learning Recommendation Model (DLRM) & Handles categorical features at scale \parencite{maxim_naumov_7948e028} \\
+\addlinespace
+\textbf{Pinterest} & TransAct transformer model & Real-time sequential modeling \parencite{xue_xia_7ee9019a} \\
+\bottomrule
+\end{tabular}
 \end{table}
 
-These cases highlight DL's deployment in production, with A/B tests showing 5-30\% lifts in metrics like precision/recall  \cite[]{shivangi_gheewala_86d36cab, bhawna_tewari_8a11f572}.
+These cases highlight DL's deployment in production, with A/B tests showing 5-30\% lifts in metrics like precision/recall  \parencite[]{shivangi_gheewala_86d36cab, bhawna_tewari_8a11f572}.
 
 Performance Improvements in Real-World Applications
 
-DL enhances RS by 4-47\% in precision/recall/NDCG over baselines, boosting engagement, personalization, and handling multimodal/sequential data  \cite[]{shivangi_gheewala_86d36cab, kamal_taha_58a97c6e}. It mitigates biases via better representations, increases sales/stickiness, and supports real-time adaptation  \cite[]{jayesh_rane_63a9914c, wenhao_zhang_a1b490f2}.
-\subsection{Data Collection Methods}
+DL enhances RS by 4-47\% in precision/recall/NDCG over baselines, boosting engagement, personalization, and handling multimodal/sequential data  \parencite[]{shivangi_gheewala_86d36cab, kamal_taha_58a97c6e}. It mitigates biases via better representations, increases sales/stickiness, and supports real-time adaptation  \parencite[]{jayesh_rane_63a9914c, wenhao_zhang_a1b490f2}.
+
+\section{Data Collection and Preprocessing}
 
 Effective data collection is paramount for training robust deep learning models in recommender systems, involving the systematic acquisition and preprocessing of diverse data types such as explicit user ratings, implicit behavioral signals, and rich contextual information.
+
 \subsection{Data Preprocessing}
 
-This foundational step ensures data quality, consistency, and suitability for complex deep learning architectures in recommender systems, directly impacting model accuracy, convergence, and the reliability of individual development plan recommendations  \cite{alhassan_mumuni_5099c236}.
+This foundational step ensures data quality, consistency, and suitability for complex deep learning architectures in recommender systems, directly impacting model accuracy, convergence, and the reliability of individual development plan recommendations  \parencite{alhassan_mumuni_5099c236}.
 
-Data preprocessing is critical for deep learning models because neural networks are highly sensitive to input scales, noise, and sparsity—common in RS datasets with implicit feedback, cold starts, and heterogeneous features. Poor preprocessing leads to unstable gradients, slow convergence, vanishing/exploding gradients, and suboptimal performance on large-scale, unstructured data  \cite[]{yu_zhu_913210e1, tomislav__uri_i__66bdffa6, jianghao_lin_300db0e3}. Proper techniques mitigate these by standardizing inputs, enabling effective feature learning, and addressing RS challenges like data sparsity  \cite{mohamed_grida_279a8709}.
+Data preprocessing is critical for deep learning models because neural networks are highly sensitive to input scales, noise, and sparsity�common in RS datasets with implicit feedback, cold starts, and heterogeneous features. Poor preprocessing leads to unstable gradients, slow convergence, vanishing/exploding gradients, and suboptimal performance on large-scale, unstructured data  \parencite[]{yu_zhu_913210e1, tomislav__uri_i__66bdffa6, jianghao_lin_300db0e3}. Proper techniques mitigate these by standardizing inputs, enabling effective feature learning, and addressing RS challenges like data sparsity  \parencite{mohamed_grida_279a8709}.
 
 Key Preprocessing Techniques
 \begin{itemize}
 \item 
 
-\textbf{Cleaning:} Removing duplicates, outliers, noise – Ensures data integrity, prevents model bias from anomalies  \cite{yu_zhu_913210e1}.\item 
+\textbf{Cleaning:} Removing duplicates, outliers, noise � Ensures data integrity, prevents model bias from anomalies  \parencite{yu_zhu_913210e1}.\item 
 
-\textbf{Normalization/Scaling:} Min-max or z-score for dense features – Facilitates stable gradient descent, faster convergence in neural networks  \cite{yu_zhu_913210e1}.\item 
+\textbf{Normalization/Scaling:} Min-max or z-score for dense features � Facilitates stable gradient descent, faster convergence in neural networks  \parencite{yu_zhu_913210e1}.\item 
 
-\textbf{Missing Data Imputation:} Mean/median fill, advanced methods like KNN or model-based – Handles sparsity/cold starts in user-item matrices  \cite{yu_zhu_913210e1}.\item 
+\textbf{Missing Data Imputation:} Mean/median fill, advanced methods like KNN or model-based � Handles sparsity/cold starts in user-item matrices  \parencite{yu_zhu_913210e1}.\item 
 
-\textbf{Categorical Encoding:} One-hot, label encoding, or low-dim embeddings for IDs, text, and other nominal features  \cite{yu_zhu_913210e1}.
+\textbf{Categorical Encoding:} One-hot, label encoding, or low-dim embeddings for IDs, text, and other nominal features  \parencite{yu_zhu_913210e1}.
 \end{itemize}
-\subsection{Model Evaluation Methods}
 
-Effective evaluation of recommender systems is crucial for ensuring their utility and performance, particularly in specialized domains like Individual Development Plans. Various metrics are employed to assess different aspects of a recommender system's effectiveness, from prediction accuracy to the relevance and ranking quality of recommendations  \cite[]{aryan_jadon_0d8634f5, aryan_jadon_d08575f7}.
+\section{Model Evaluation Methods}
+
+Effective evaluation of recommender systems is crucial for ensuring their utility and performance, particularly in specialized domains like Individual Development Plans. Various metrics are employed to assess different aspects of a recommender system's effectiveness, from prediction accuracy to the relevance and ranking quality of recommendations  \parencite[]{aryan_jadon_0d8634f5, aryan_jadon_d08575f7}.
 
 Common Evaluation Metrics for Recommender Systems
 
@@ -258,112 +302,143 @@ Commonly used evaluation metrics for recommender systems can be broadly categori
 \begin{itemize}
 \item 
 
-\textbf{Mean Absolute Error}: Quantifies the average absolute difference between predicted ratings and actual user ratings. Lower MAE values indicate better prediction accuracy  \cite[]{c_k_raghavendra_29a7009e, mustafa_payandenick_4b41e063, rim_fakhfakh_5a2a658b}.\item 
+\textbf{Mean Absolute Error}: Quantifies the average absolute difference between predicted ratings and actual user ratings. Lower MAE values indicate better prediction accuracy  \parencite[]{c_k_raghavendra_29a7009e, mustafa_payandenick_4b41e063, rim_fakhfakh_5a2a658b}.\item 
 
-\textbf{Root Mean Squared Error}: Similar to MAE, RMSE measures the square root of the mean of the squared differences between predicted and actual ratings. RMSE places a greater emphasis on larger errors, and lower values signify better prediction accuracy  \cite[]{rosmamalmi_mat_nawi_342b4243, nurul_aida_osman_c621c258, mustafa_payandenick_4b41e063, antoni_s_papaleonidas_f24ddfdb, shivangi_gheewala_86d36cab}.\item 
+\textbf{Root Mean Squared Error}: Similar to MAE, RMSE measures the square root of the mean of the squared differences between predicted and actual ratings. RMSE places a greater emphasis on larger errors, and lower values signify better prediction accuracy  \parencite[]{rosmamalmi_mat_nawi_342b4243, nurul_aida_osman_c621c258, mustafa_payandenick_4b41e063, antoni_s_papaleonidas_f24ddfdb, shivangi_gheewala_86d36cab}.\item 
 
-\textbf{Precision}: Indicates the proportion of recommended items that are actually relevant to the user  \cite[]{c_k_raghavendra_29a7009e, nurul_aida_osman_c621c258, rim_fakhfakh_5a2a658b}. Precision@k evaluates the proportion of relevant items among the top-k recommendations, especially when the cost of false positives is high  \cite{aryan_jadon_d08575f7}.\item 
+\textbf{Precision}: Indicates the proportion of recommended items that are actually relevant to the user  \parencite[]{c_k_raghavendra_29a7009e, nurul_aida_osman_c621c258, rim_fakhfakh_5a2a658b}. Precision@k evaluates the proportion of relevant items among the top-k recommendations, especially when the cost of false positives is high  \parencite{aryan_jadon_d08575f7}.\item 
 
-\textbf{Recall}: Measures the proportion of relevant items that were successfully recommended by the system out of all relevant items  \cite[]{c_k_raghavendra_29a7009e, nurul_aida_osman_c621c258, rim_fakhfakh_5a2a658b}. Recall@k prioritizes the model's ability to capture all relevant items within the top-k suggestions, particularly when missing a relevant recommendation is costly  \cite{aryan_jadon_d08575f7}.\item 
+\textbf{Recall}: Measures the proportion of relevant items that were successfully recommended by the system out of all relevant items  \parencite[]{c_k_raghavendra_29a7009e, nurul_aida_osman_c621c258, rim_fakhfakh_5a2a658b}. Recall@k prioritizes the model's ability to capture all relevant items within the top-k suggestions, particularly when missing a relevant recommendation is costly  \parencite{aryan_jadon_d08575f7}.\item 
 
-\textbf{F1-score}: The harmonic mean of precision and recall, providing a balanced measure of a system's accuracy  \cite[]{chuan_qin_e4dbb673, rim_fakhfakh_5a2a658b}.\item 
+\textbf{F1-score}: The harmonic mean of precision and recall, providing a balanced measure of a system's accuracy  \parencite[]{chuan_qin_e4dbb673, rim_fakhfakh_5a2a658b}.\item 
 
-\textbf{Normalized Discounted Cumulative Gain (nDCG)}: Used when the ranking relevance matters, evaluating the quality of recommendations in a list by considering the position of highly relevant items  \cite{aryan_jadon_d08575f7}.\item 
+\textbf{Normalized Discounted Cumulative Gain (nDCG)}: Used when the ranking relevance matters, evaluating the quality of recommendations in a list by considering the position of highly relevant items  \parencite{aryan_jadon_d08575f7}.\item 
 
-\textbf{Mean Reciprocal Rank}: Evaluates the effectiveness of a system in returning the first relevant item in a ranked list, emphasizing the importance of the top-most recommendation  \cite{aryan_jadon_d08575f7}.\item 
+\textbf{Mean Reciprocal Rank}: Evaluates the effectiveness of a system in returning the first relevant item in a ranked list, emphasizing the importance of the top-most recommendation  \parencite{aryan_jadon_d08575f7}.\item 
 
-\textbf{Area Under the Receiver Operating Characteristic Curve}: A metric for binary classification problems, often used in recommender systems to evaluate the ability to distinguish between relevant and irrelevant items  \cite{chuan_qin_e4dbb673}.\item 
+\textbf{Area Under the Receiver Operating Characteristic Curve}: A metric for binary classification problems, often used in recommender systems to evaluate the ability to distinguish between relevant and irrelevant items  \parencite{chuan_qin_e4dbb673}.\item 
 
-\textbf{Hit@N}: Indicates whether any of the top-N recommended items are found in the test set for a user  \cite[]{chuan_qin_e4dbb673, david_cortes_7351542e}.
+\textbf{Hit@N}: Indicates whether any of the top-N recommended items are found in the test set for a user  \parencite[]{chuan_qin_e4dbb673, david_cortes_7351542e}.
 \end{itemize}
 
 Comparative Analysis of Evaluation Metrics
 
-The choice of an appropriate evaluation metric is critical, as different metrics may favor different algorithms and capture distinct aspects of a recommender system's performance  \cite[]{aryan_jadon_d08575f7, asela_gunawardana_6ea57106, aryan_jadon_0d8634f5}. While MAE and RMSE are useful for assessing the accuracy of rating predictions, they may not truly reflect the user's experience, as users typically receive ranked lists rather than individual rating predictions  \cite[]{rosmamalmi_mat_nawi_342b4243, nurul_aida_osman_c621c258, antoni_s_papaleonidas_f24ddfdb}. Precision and Recall, on the other hand, are better indicators of the relevance and quality of the recommended items within these ranked lists  \cite[]{rosmamalmi_mat_nawi_342b4243, nurul_aida_osman_c621c258, mustafa_payandenick_4b41e063, antoni_s_papaleonidas_f24ddfdb}. Metrics such as nDCG, MRR, and ARHR@k are specifically designed to evaluate the effectiveness of the order in which recommendations are presented  \cite{aryan_jadon_d08575f7}. Beyond technical performance, business-oriented metrics like Click-Through Rate, conversion rate, and user retention are vital for aligning the recommender system's performance with organizational objectives  \cite[]{nursultan_askarbekuly_2b530676, thiago_silveira_850739e6}.
+The choice of an appropriate evaluation metric is critical, as different metrics may favor different algorithms and capture distinct aspects of a recommender system's performance  \parencite[]{aryan_jadon_d08575f7, asela_gunawardana_6ea57106, aryan_jadon_0d8634f5}. While MAE and RMSE are useful for assessing the accuracy of rating predictions, they may not truly reflect the user's experience, as users typically receive ranked lists rather than individual rating predictions  \parencite[]{rosmamalmi_mat_nawi_342b4243, nurul_aida_osman_c621c258, antoni_s_papaleonidas_f24ddfdb}. Precision and Recall, on the other hand, are better indicators of the relevance and quality of the recommended items within these ranked lists  \parencite[]{rosmamalmi_mat_nawi_342b4243, nurul_aida_osman_c621c258, mustafa_payandenick_4b41e063, antoni_s_papaleonidas_f24ddfdb}. Metrics such as nDCG, MRR, and ARHR@k are specifically designed to evaluate the effectiveness of the order in which recommendations are presented  \parencite{aryan_jadon_d08575f7}. Beyond technical performance, business-oriented metrics like Click-Through Rate, conversion rate, and user retention are vital for aligning the recommender system's performance with organizational objectives  \parencite[]{nursultan_askarbekuly_2b530676, thiago_silveira_850739e6}.
 
 Issues in Model Evaluation and Validation
 
-Offline evaluation of recommender systems presents significant challenges, making it difficult to accurately assess true progress  \cite{tobias_schnabel_885026ad}. A major issue stems from the fact that user behavior data is observational rather than experimental, leading to various biases  \cite{jiawei_chen_10ce885d}. These include:
+Offline evaluation of recommender systems presents significant challenges, making it difficult to accurately assess true progress  \parencite{tobias_schnabel_885026ad}. A major issue stems from the fact that user behavior data is observational rather than experimental, leading to various biases  \parencite{jiawei_chen_10ce885d}. These include:
 \begin{itemize}
 \item 
 
-\textbf{Selection Bias}: Occurs when data is influenced by how users self-select or how the existing recommendation system operates  \cite[]{jiawei_chen_10ce885d, tobias_schnabel_8bb34ad2}.\item 
+\textbf{Selection Bias}: Occurs when data is influenced by how users self-select or how the existing recommendation system operates  \parencite[]{jiawei_chen_10ce885d, tobias_schnabel_8bb34ad2}.\item 
 
-\textbf{Exposure Bias}: Arises because users only interact with items they are exposed to, which might not represent their full preferences  \cite[]{jiawei_chen_10ce885d, bruno_laporais_pereira_c56dca6e}.\item 
+\textbf{Exposure Bias}: Arises because users only interact with items they are exposed to, which might not represent their full preferences  \parencite[]{jiawei_chen_10ce885d, bruno_laporais_pereira_c56dca6e}.\item 
 
-\textbf{Popularity Bias}: Leads to algorithms and metrics disproportionately favoring popular items, potentially hindering the discovery of niche content and affecting diversity  \cite[]{aixin_sun_3e789bb6, elisa_mena_maldonado_6ddd1295, jiawei_chen_efd2f8ca}.
+\textbf{Popularity Bias}: Leads to algorithms and metrics disproportionately favoring popular items, potentially hindering the discovery of niche content and affecting diversity  \parencite[]{aixin_sun_3e789bb6, elisa_mena_maldonado_6ddd1295, jiawei_chen_efd2f8ca}.
 \end{itemize}
 
-These biases can distort empirical measurements, making the interpretation and comparison of results across experiments challenging and potentially leading to discrepancies between offline evaluation results and actual online metrics  \cite[]{pablo_castells_a2811511, alejandro_bellog_n_aff2730a, jiawei_chen_10ce885d}. Furthermore, the reliability of sampling strategies used in offline evaluation can also be a concern  \cite{bruno_laporais_pereira_c56dca6e}.
+These biases can distort empirical measurements, making the interpretation and comparison of results across experiments challenging and potentially leading to discrepancies between offline evaluation results and actual online metrics  \parencite[]{pablo_castells_a2811511, alejandro_bellog_n_aff2730a, jiawei_chen_10ce885d}. Furthermore, the reliability of sampling strategies used in offline evaluation can also be a concern  \parencite{bruno_laporais_pereira_c56dca6e}.
 
 Most Appropriate Evaluation Metrics for IDP Recommender Systems
 
-For IDP recommender systems, which fall under educational contexts, the evaluation should extend beyond standard technical metrics to include outcome-based measures that focus on pedagogical effectiveness  \cite{nursultan_askarbekuly_2b530676}. In addition to traditional metrics like AUC, Recall@N, Precision@N, F1@N, Hit@N, NDCG@N, and MAP@N used for course recommendation  \cite{chuan_qin_e4dbb673}, IDP recommenders should prioritize metrics that assess:
+For IDP recommender systems, which fall under educational contexts, the evaluation should extend beyond standard technical metrics to include outcome-based measures that focus on pedagogical effectiveness  \parencite{nursultan_askarbekuly_2b530676}. In addition to traditional metrics like AUC, Recall@N, Precision@N, F1@N, Hit@N, NDCG@N, and MAP@N used for course recommendation  \parencite{chuan_qin_e4dbb673}, IDP recommenders should prioritize metrics that assess:
 \begin{itemize}
 \item 
 
-\textbf{Learning Gain or Improvement}: Measures the increase in knowledge or skills after engaging with recommended educational resources, often assessed through pre-tests and post-tests  \cite{nursultan_askarbekuly_2b530676}.\item 
+\textbf{Learning Gain or Improvement}: Measures the increase in knowledge or skills after engaging with recommended educational resources, often assessed through pre-tests and post-tests  \parencite{nursultan_askarbekuly_2b530676}.\item 
 
-\textbf{Concept Mastery and Skill Acquisition}: Evaluates how well learners have mastered specific concepts or acquired particular skills recommended by the system, typically through assessments  \cite{nursultan_askarbekuly_2b530676}.
+\textbf{Concept Mastery and Skill Acquisition}: Evaluates how well learners have mastered specific concepts or acquired particular skills recommended by the system, typically through assessments  \parencite{nursultan_askarbekuly_2b530676}.
 \end{itemize}
 
-These learning-centered metrics are crucial because they directly align with the core purpose of IDPs: facilitating targeted training and addressing skill gaps for sustained career growth. While standard metrics like precision and recall assess the relevance of recommendations, outcome-based metrics directly measure the impact on employee development and organizational goals. Business metrics such as engagement and retention are also relevant, indicating the system's success in maintaining user interest and facilitating ongoing usage  \cite{nursultan_askarbekuly_2b530676}.
-\subsubsection{Explainability of Recommender Models}
+These learning-centered metrics are crucial because they directly align with the core purpose of IDPs: facilitating targeted training and addressing skill gaps for sustained career growth. While standard metrics like precision and recall assess the relevance of recommendations, outcome-based metrics directly measure the impact on employee development and organizational goals. Business metrics such as engagement and retention are also relevant, indicating the system's success in maintaining user interest and facilitating ongoing usage  \parencite{nursultan_askarbekuly_2b530676}.
 
-The increasing complexity of recommender systems, particularly those employing deep learning, has brought the concept of explainability to the forefront. Moving beyond mere accuracy, explainable AI in recommender systems aims to provide transparency and build user trust, leading to better user experience and system adoption  \cite[]{jorge_paz_ruza_ae98c034, vatesh_pasrija_8c9fefb6}.
+\section{Explainability of Recommender Models}
+
+The increasing complexity of recommender systems, particularly those employing deep learning, has brought the concept of explainability to the forefront. Moving beyond mere accuracy, explainable AI in recommender systems aims to provide transparency and build user trust, leading to better user experience and system adoption  \parencite[]{jorge_paz_ruza_ae98c034, vatesh_pasrija_8c9fefb6}.
 
 Importance and Need for Model Explainability
 
-The need for explainability in recommender systems is driven by several critical factors. Modern recommender systems often function as "black boxes," making it challenging for users to understand why specific recommendations are generated  \cite{jorge_paz_ruza_ae98c034}. This lack of transparency can lead to diminished user experience, reduced trust, and potentially harmful outcomes  \cite{jorge_paz_ruza_ae98c034}. By providing explanations, these systems become more understandable, which is vital for fostering user trust and increasing the likelihood of engagement with suggested items  \cite[]{mouadh_guesmi_912d0183, behnoush_abdollahi_fb517d12}. Explainable recommendations help users to comprehend the rationale behind suggestions, thereby improving their decision-making process  \cite{henriette_cramer_d661df37}.
+The need for explainability in recommender systems is driven by several critical factors. Modern recommender systems often function as "black boxes," making it challenging for users to understand why specific recommendations are generated  \parencite{jorge_paz_ruza_ae98c034}. This lack of transparency can lead to diminished user experience, reduced trust, and potentially harmful outcomes  \parencite{jorge_paz_ruza_ae98c034}. By providing explanations, these systems become more understandable, which is vital for fostering user trust and increasing the likelihood of engagement with suggested items  \parencite[]{mouadh_guesmi_912d0183, behnoush_abdollahi_fb517d12}. Explainable recommendations help users to comprehend the rationale behind suggestions, thereby improving their decision-making process  \parencite{henriette_cramer_d661df37}.
 
-Furthermore, explainability is crucial for system designers. Explanations facilitate better system debugging by highlighting the features or data points that most influence a recommendation, allowing developers to identify and address biases or errors within the model  \cite{yongfeng_zhang_cc5b82f7}. In sensitive applications, such as those with ethical implications, explainable recommender systems are essential for ensuring fairness and accountability  \cite{mike_guttmann_dcb7d618}.
+Furthermore, explainability is crucial for system designers. Explanations facilitate better system debugging by highlighting the features or data points that most influence a recommendation, allowing developers to identify and address biases or errors within the model  \parencite{yongfeng_zhang_cc5b82f7}. In sensitive applications, such as those with ethical implications, explainable recommender systems are essential for ensuring fairness and accountability  \parencite{mike_guttmann_dcb7d618}.
 
 Introduction to SHAP and LIME Frameworks
 
-SHAP and LIME are widely used model-agnostic frameworks that provide insights into the predictions of complex machine learning models, including those used in recommender systems  \cite[]{ahmed_salih_f629893f, alan_said_5e90bca4}
+SHAP and LIME are widely used model-agnostic frameworks that provide insights into the predictions of complex machine learning models, including those used in recommender systems  \parencite[]{ahmed_salih_f629893f, alan_said_5e90bca4}
 \begin{itemize}
 \item 
 
-\textbf{SHAP}: This method is grounded in cooperative game theory, attributing the contribution of each feature to a model's prediction  \cite{jinfeng_zhong_130b030a}. SHAP values offer a unified measure of feature importance, indicating how much each feature impacts a prediction relative to a baseline  \cite[]{ronilo_ragodos_cb23fa64, jinfeng_zhong_130b030a} SHAP ensures properties like local accuracy and consistency, meaning that if a feature's importance increases, its SHAP value will not decrease  \cite{ronilo_ragodos_cb23fa64}. It can provide both local (individual prediction) and global (overall model behavior) explanations  \cite{jinfeng_zhong_130b030a}.\item 
+\textbf{SHAP}: This method is grounded in cooperative game theory, attributing the contribution of each feature to a model's prediction  \parencite{jinfeng_zhong_130b030a}. SHAP values offer a unified measure of feature importance, indicating how much each feature impacts a prediction relative to a baseline  \parencite[]{ronilo_ragodos_cb23fa64, jinfeng_zhong_130b030a} SHAP ensures properties like local accuracy and consistency, meaning that if a feature's importance increases, its SHAP value will not decrease  \parencite{ronilo_ragodos_cb23fa64}. It can provide both local (individual prediction) and global (overall model behavior) explanations  \parencite{jinfeng_zhong_130b030a}.\item 
 
-\textbf{LIME}: LIME generates explanations for individual predictions by constructing a locally faithful, interpretable model around the specific instance being explained  \cite[]{eduardo_e_oliveira_18f6e51c, alan_said_5e90bca4} It works by perturbing the input data, observing the model's output on these perturbations, and then training a simpler, interpretable model (e.g., a linear regressor) on this locally weighted synthetic dataset  \cite[]{dieter_brughmans_2b0e7957, eduardo_e_oliveira_18f6e51c} The coefficients of this simple model then indicate the importance of each feature for that particular prediction  \cite{ronilo_ragodos_cb23fa64}.
+\textbf{LIME}: LIME generates explanations for individual predictions by constructing a locally faithful, interpretable model around the specific instance being explained  \parencite[]{eduardo_e_oliveira_18f6e51c, alan_said_5e90bca4} It works by perturbing the input data, observing the model's output on these perturbations, and then training a simpler, interpretable model (e.g., a linear regressor) on this locally weighted synthetic dataset  \parencite[]{dieter_brughmans_2b0e7957, eduardo_e_oliveira_18f6e51c} The coefficients of this simple model then indicate the importance of each feature for that particular prediction  \parencite{ronilo_ragodos_cb23fa64}.
 \end{itemize}
 
 Implementation and Effectiveness of Explainability Methods in Recommender Systems
 
-The implementation of explainability methods like SHAP and LIME in recommender systems involves integrating these frameworks to produce explanations alongside recommendations  \cite{naveen_kumar_m_e15d2675}. Their effectiveness is evaluated based on their ability to generate meaningful, actionable, and user-understandable explanations that can enhance user experience and trust  \cite[]{kathrin_wardatzky_151af267, xu_chen_a5644241}
+The implementation of explainability methods like SHAP and LIME in recommender systems involves integrating these frameworks to produce explanations alongside recommendations  \parencite{naveen_kumar_m_e15d2675}. Their effectiveness is evaluated based on their ability to generate meaningful, actionable, and user-understandable explanations that can enhance user experience and trust  \parencite[]{kathrin_wardatzky_151af267, xu_chen_a5644241}
 
-For example, by using collaborative signals and large language models, frameworks like XRec can analyze and explain model behavior after recommendations have been generated, focusing on specific decisions  \cite[]{qiyao_ma_5297c689, rasendu_mishra_86b5e0fe} This post-hoc approach aligns with efforts to provide local explanations, similar to LIME  \cite{rasendu_mishra_86b5e0fe}. While SHAP is often chosen for its theoretical guarantees, LIME was one of the earliest model-agnostic post-hoc explainers  \cite[]{ronilo_ragodos_cb23fa64, jinfeng_zhong_130b030a} Research suggests that further advancements are needed to make deep learning models more explainable for recommendations, especially in understanding "what makes something recommended versus other options"  \cite{waddah_saeed_00ea9a65}. Extracting explanations from latent factor models by training association rules on the outcomes of a matrix factorization model can balance interpretability and accuracy  \cite{qazi_mohammad_areeb_2b6f52d0}.
+For example, by using collaborative signals and large language models, frameworks like XRec can analyze and explain model behavior after recommendations have been generated, focusing on specific decisions  \parencite[]{qiyao_ma_5297c689, rasendu_mishra_86b5e0fe} This post-hoc approach aligns with efforts to provide local explanations, similar to LIME  \parencite{rasendu_mishra_86b5e0fe}. While SHAP is often chosen for its theoretical guarantees, LIME was one of the earliest model-agnostic post-hoc explainers  \parencite[]{ronilo_ragodos_cb23fa64, jinfeng_zhong_130b030a} Research suggests that further advancements are needed to make deep learning models more explainable for recommendations, especially in understanding "what makes something recommended versus other options"  \parencite{waddah_saeed_00ea9a65}. Extracting explanations from latent factor models by training association rules on the outcomes of a matrix factorization model can balance interpretability and accuracy  \parencite{qazi_mohammad_areeb_2b6f52d0}.
 
 How Do Explainability Methods Enhance User Trust and Model Transparency?
 
-Explainability methods significantly enhance user trust and model transparency by converting opaque algorithmic processes into understandable insights  \cite[]{mouadh_guesmi_b3822bc0, yongfeng_zhang_cc5b82f7} When users receive explanations for recommendations, they are better equipped to comprehend why certain items are suggested, which builds confidence in the system's capabilities  \cite[]{mouadh_guesmi_912d0183, behnoush_abdollahi_fb517d12} Transparency, achieved through clear explanations, removes the "black box" perception of recommender systems  \cite{fatih_gedikli_2b52df45}. For instance, if an explanation highlights that a recommendation is based on a user's past purchases or ratings of similar items, the user is more likely to accept and trust the suggestion  \cite{henriette_cramer_d661df37}.
+Explainability methods significantly enhance user trust and model transparency by converting opaque algorithmic processes into understandable insights  \parencite[]{mouadh_guesmi_b3822bc0, yongfeng_zhang_cc5b82f7} When users receive explanations for recommendations, they are better equipped to comprehend why certain items are suggested, which builds confidence in the system's capabilities  \parencite[]{mouadh_guesmi_912d0183, behnoush_abdollahi_fb517d12} Transparency, achieved through clear explanations, removes the "black box" perception of recommender systems  \parencite{fatih_gedikli_2b52df45}. For instance, if an explanation highlights that a recommendation is based on a user's past purchases or ratings of similar items, the user is more likely to accept and trust the suggestion  \parencite{henriette_cramer_d661df37}.
 
-By understanding the logic behind recommendations, users can form more accurate mental models of how the system operates  \cite{mouadh_guesmi_b3822bc0}. This allows users to identify potential "filter bubbles" and understand whether a recommendation is personalized or random  \cite{qazi_mohammad_areeb_2b6f52d0}. Research consistently shows that providing explanations increases user trust and satisfaction  \cite[]{ingrid_nunes_7700f890, pearl_pu_77a2c4ae}
+By understanding the logic behind recommendations, users can form more accurate mental models of how the system operates  \parencite{mouadh_guesmi_b3822bc0}. This allows users to identify potential "filter bubbles" and understand whether a recommendation is personalized or random  \parencite{qazi_mohammad_areeb_2b6f52d0}. Research consistently shows that providing explanations increases user trust and satisfaction  \parencite[]{ingrid_nunes_7700f890, pearl_pu_77a2c4ae}
 
 What Are the Specific Benefits and Limitations of LIME and SHAP Methods?
-\begin{table}[h!]
+
+\begin{table}[p]
 \centering
-{\small
-\setlength{\extrarowheight}{3pt}
-\begin{tabularx}{\textwidth}{@{}p{3cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
-	oprule
-~ & \textbf{Benefits} & \textbf{Limitations} \\
+\caption{Comparison of LIME and SHAP Explainability Methods}
+\label{tab:lime_shap_comparison}
+\footnotesize
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{@{}p{0.13\textwidth}p{0.41\textwidth}p{0.41\textwidth}@{}}
+\toprule
+\textbf{Method} & \textbf{Benefits} & \textbf{Limitations} \\
 \midrule
-	extbf{LIME} & \textbf{Model-agnostic}: Can be applied to any black-box model  \cite[]{alan_said_5e90bca4, eduardo_e_oliveira_18f6e51c}. \textbf{Local explanations}: Provides insights for individual predictions, which is crucial for user understanding  \cite{eduardo_e_oliveira_18f6e51c}. \textbf{Speed}: Often faster than computing exact Shapley values  \cite{eduardo_e_oliveira_18f6e51c}. \textbf{Versatility}: Works with various data types (tables, images, text) and can use different features than the model's training features  \cite{eduardo_e_oliveira_18f6e51c}. & \textbf{Stability issues}: Explanations can be unstable and vary depending on the samples used for perturbation, making them manipulable  \cite[]{dieter_brughmans_2b0e7957, eduardo_e_oliveira_18f6e51c}. \textbf{Parameter dependence}: Poor choices in parameters can lead to missing important features  \cite{eduardo_e_oliveira_18f6e51c}. \textbf{Neighborhood definition}: Defining the local neighborhood and sampling process remains an open problem  \cite{eduardo_e_oliveira_18f6e51c}. \textbf{Lack of local accuracy}: Unlike SHAP, LIME does not guarantee that feature contributions sum to the model prediction difference  \cite{ronilo_ragodos_cb23fa64}. \\
+\textbf{LIME} & 
+\begin{itemize}[leftmargin=*, nosep, after=\strut]
+\item \textbf{Model-agnostic}: Works with any black-box model \parencite{alan_said_5e90bca4, eduardo_e_oliveira_18f6e51c}
+\item \textbf{Local explanations}: Provides insights for individual predictions \parencite{eduardo_e_oliveira_18f6e51c}
+\item \textbf{Speed}: Faster than exact Shapley value computation \parencite{eduardo_e_oliveira_18f6e51c}
+\item \textbf{Versatility}: Works with various data types (tables, images, text) \parencite{eduardo_e_oliveira_18f6e51c}
+\end{itemize}
+& 
+\begin{itemize}[leftmargin=*, nosep, after=\strut]
+\item \textbf{Stability issues}: Explanations can be unstable and vary with perturbation samples \parencite{dieter_brughmans_2b0e7957, eduardo_e_oliveira_18f6e51c}
+\item \textbf{Parameter dependence}: Poor parameter choices can miss important features \parencite{eduardo_e_oliveira_18f6e51c}
+\item \textbf{Neighborhood definition}: Defining local neighborhood remains challenging \parencite{eduardo_e_oliveira_18f6e51c}
+\item \textbf{No local accuracy}: Unlike SHAP, feature contributions may not sum correctly \parencite{ronilo_ragodos_cb23fa64}
+\end{itemize}
+\\
 \midrule
-	extbf{SHAP} & \textbf{Model-agnostic}: Applicable to a wide range of models  \cite[]{alan_said_5e90bca4, ronilo_ragodos_cb23fa64}. \textbf{Theoretical soundness}: Based on game theory, ensuring fair calculation of each feature's contribution  \cite[]{eduardo_e_oliveira_18f6e51c, jinfeng_zhong_130b030a, mirka_henninger_a59e6e11}. \textbf{Consistency and local accuracy}: Guarantees that if a model changes to increase a feature's importance, its SHAP value will not decrease; contributions sum to the prediction difference  \cite{ronilo_ragodos_cb23fa64}. \textbf{Local and global explanations}: Can provide both detailed individual and overall explanations  \cite{alan_said_5e90bca4}. & \textbf{High computational cost}: Exact Shapley values are often intractable and require approximations  \cite[]{ronilo_ragodos_cb23fa64, eduardo_e_oliveira_18f6e51c}. \textbf{Requires representative data}: Often needs training data or representative samples for accuracy  \cite{jinfeng_zhong_130b030a}. \textbf{Interpretation complexity}: Outputs can be complex for non-experts  \cite{eduardo_e_oliveira_18f6e51c}. \\
+\textbf{SHAP} & 
+\begin{itemize}[leftmargin=*, nosep, after=\strut]
+\item \textbf{Model-agnostic}: Applicable to wide range of ML models \parencite{alan_said_5e90bca4, ronilo_ragodos_cb23fa64}
+\item \textbf{Theoretical soundness}: Based on game theory for fair attribution \parencite{eduardo_e_oliveira_18f6e51c, jinfeng_zhong_130b030a}
+\item \textbf{Consistency}: Feature importance increases monotonically \parencite{ronilo_ragodos_cb23fa64}
+\item \textbf{Local \& global}: Provides both individual and model-level explanations \parencite{alan_said_5e90bca4}
+\end{itemize}
+& 
+\begin{itemize}[leftmargin=*, nosep, after=\strut]
+\item \textbf{High computational cost}: Exact computation often intractable \parencite{ronilo_ragodos_cb23fa64, eduardo_e_oliveira_18f6e51c}
+\item \textbf{Data requirements}: Needs access to representative training data \parencite{jinfeng_zhong_130b030a}
+\item \textbf{Complex interpretation}: SHAP values can be difficult for non-experts \parencite{eduardo_e_oliveira_18f6e51c}
+\end{itemize}
+\\
 \bottomrule
-\end{tabularx}
-}
+\end{tabular}
 \end{table}
 
 How Have Explainability Techniques Improved User Engagement and Acceptance in Recommender Systems?
 
-Explainability techniques have a significant impact on user engagement and acceptance by making recommender systems more transparent and trustworthy \parencite[]{vatesh_pasrija_8c9fefb6, yongfeng_zhang_cc5b82f7} When explanations accompany recommendations, users are more likely to interact with the suggested items, leading to improved user activity and reduced decline in engagement due to poor recommendations  \cite{vatesh_pasrija_8c9fefb6}. Studies indicate that providing appropriate explanations can increase user perception of recommendation quality by a notable margin  \cite{vatesh_pasrija_8c9fefb6}.
+Explainability techniques have a significant impact on user engagement and acceptance by making recommender systems more transparent and trustworthy \parencite[]{vatesh_pasrija_8c9fefb6, yongfeng_zhang_cc5b82f7} When explanations accompany recommendations, users are more likely to interact with the suggested items, leading to improved user activity and reduced decline in engagement due to poor recommendations  \parencite{vatesh_pasrija_8c9fefb6}. Studies indicate that providing appropriate explanations can increase user perception of recommendation quality by a notable margin  \parencite{vatesh_pasrija_8c9fefb6}.
 
-Moreover, explainable recommender systems contribute to increased user satisfaction and user retention  \cite{pearl_pu_77a2c4ae}. Users who understand the "why" behind recommendations feel more in control and less manipulated by the system  \cite{behnoush_abdollahi_fb517d12}. This enhanced understanding empowers users to make better decisions and even provide more targeted feedback, which can further improve the system's performance  \cite{kathrin_wardatzky_151af267}. Ultimately, by fostering trust and comprehension, explainability techniques transform passive users into engaged participants, leading to greater acceptance and a more positive overall experience with the recommender system  \cite{henriette_cramer_d661df37}.
-\subsubsection{Future Research Directions}
+Moreover, explainable recommender systems contribute to increased user satisfaction and user retention  \parencite{pearl_pu_77a2c4ae}. Users who understand the "why" behind recommendations feel more in control and less manipulated by the system  \parencite{behnoush_abdollahi_fb517d12}. This enhanced understanding empowers users to make better decisions and even provide more targeted feedback, which can further improve the system's performance  \parencite{kathrin_wardatzky_151af267}. Ultimately, by fostering trust and comprehension, explainability techniques transform passive users into engaged participants, leading to greater acceptance and a more positive overall experience with the recommender system  \parencite{henriette_cramer_d661df37}.
+
+\section{Future Research Directions}
 
 The field of Individual Development Plan recommender systems, particularly those leveraging deep learning, offers numerous avenues for future research and improvement. Addressing existing gaps and integrating emerging technologies can significantly enhance their effectiveness, personalization, and ethical considerations.
 
@@ -373,19 +448,19 @@ Current research highlights several areas for improvement and critical gaps in I
 \begin{itemize}
 \item 
 
-\textbf{Multidimensional Evaluation Frameworks}: A significant gap exists in the evaluation of educational recommender systems, which primarily focuses on accuracy rather than pedagogical effectiveness. Future research should develop multidimensional evaluation frameworks that assess the actual impact of recommendations on teaching and learning processes, going beyond traditional accuracy metrics  \cite{felipe_leite_da_silva_a897795e}.\item 
+\textbf{Multidimensional Evaluation Frameworks}: A significant gap exists in the evaluation of educational recommender systems, which primarily focuses on accuracy rather than pedagogical effectiveness. Future research should develop multidimensional evaluation frameworks that assess the actual impact of recommendations on teaching and learning processes, going beyond traditional accuracy metrics  \parencite{felipe_leite_da_silva_a897795e}.\item 
 
-\textbf{Reliable Data Utilization}: Most studies rely on learners' explicit data and evaluations. Future work should investigate more reliable data types, such as implicit actions performed by learners, to generate recommendations that align better with individual learning paces and motivations  \cite{sonia_souabi_5ee71548}.\item 
+\textbf{Reliable Data Utilization}: Most studies rely on learners' explicit data and evaluations. Future work should investigate more reliable data types, such as implicit actions performed by learners, to generate recommendations that align better with individual learning paces and motivations  \parencite{sonia_souabi_5ee71548}.\item 
 
-\textbf{Social Learning Integration}: There is a noticeable lack of studies on recommender systems adapted for social learning networks. Research into incorporating community detection within recommender systems could lead to more tailored recommendations for groups of learners with shared interests or characteristics  \cite{sonia_souabi_5ee71548}.\item 
+\textbf{Social Learning Integration}: There is a noticeable lack of studies on recommender systems adapted for social learning networks. Research into incorporating community detection within recommender systems could lead to more tailored recommendations for groups of learners with shared interests or characteristics  \parencite{sonia_souabi_5ee71548}.\item 
 
-\textbf{Organizational Perspective in Workplace Learning}: Studies often overlook the organizational perspective in workplace learning. Future research should focus on how IDP recommender systems can align with organizational goals by examining input from supervisors and managers, and evaluating systems based on categorized workplace learning goals  \cite{yvonne_m__hemmler_2515f35f}.\item 
+\textbf{Organizational Perspective in Workplace Learning}: Studies often overlook the organizational perspective in workplace learning. Future research should focus on how IDP recommender systems can align with organizational goals by examining input from supervisors and managers, and evaluating systems based on categorized workplace learning goals  \parencite{yvonne_m__hemmler_2515f35f}.\item 
 
 \textbf{Dynamic Job Market Alignment}: Existing course recommender systems frequently neglect the rapidly changing demands of the job market. Research is needed on unsupervised skill extraction from job listings, course descriptions, and resumes, and on developing metrics to align recommendations with evolving job market requirements and user career goals \parencite[]{jibril_frej_bc661ba0, jibril_frej_4770e3ae}\item 
 
-\textbf{Privacy and Ethical Considerations}: The balance between personalization and data protection presents a fundamental tension. The centralized collection of sensitive educational data raises ethical concerns and compliance challenges. Future research must focus on privacy-preserving techniques and ethical frameworks  \cite{rodrigo_tertulino_fce6cc8c}.\item 
+\textbf{Privacy and Ethical Considerations}: The balance between personalization and data protection presents a fundamental tension. The centralized collection of sensitive educational data raises ethical concerns and compliance challenges. Future research must focus on privacy-preserving techniques and ethical frameworks  \parencite{rodrigo_tertulino_fce6cc8c}.\item 
 
-\textbf{User Personalization in Federated Settings}: While federated learning offers privacy benefits, personalized recommendation models that capture heterogeneous user preferences in decentralized and non-IID (non-independently and identically distributed) data settings remain underexplored  \cite{chunxu_zhang_243a08ee}.
+\textbf{User Personalization in Federated Settings}: While federated learning offers privacy benefits, personalized recommendation models that capture heterogeneous user preferences in decentralized and non-IID (non-independently and identically distributed) data settings remain underexplored  \parencite{chunxu_zhang_243a08ee}.
 \end{itemize}
 
 Emerging Trends and Technologies
@@ -398,40 +473,40 @@ Several emerging trends and technologies are poised to significantly impact the 
 \begin{itemize}
 \item 
 
-There is growing interest in using generative language models for crafting personalized learning paths  \cite{k__bayly_castaneda_78029596}.\item 
+There is growing interest in using generative language models for crafting personalized learning paths  \parencite{k__bayly_castaneda_78029596}.\item 
 
-LLMs can be utilized for advanced skill extraction from diverse textual sources like job listings and resumes, facilitating better matching and recommendations  \cite{jibril_frej_4770e3ae}.\item 
+LLMs can be utilized for advanced skill extraction from diverse textual sources like job listings and resumes, facilitating better matching and recommendations  \parencite{jibril_frej_4770e3ae}.\item 
 
-Generative job recommendation systems powered by LLMs can create suitable job descriptions and offer personalized job-seeking experiences  \cite{chuan_qin_e4dbb673}. These systems can also leverage graph information to understand behavioral semantics for personalized job recommendations  \cite{chuan_qin_e4dbb673}.\item 
+Generative job recommendation systems powered by LLMs can create suitable job descriptions and offer personalized job-seeking experiences  \parencite{chuan_qin_e4dbb673}. These systems can also leverage graph information to understand behavioral semantics for personalized job recommendations  \parencite{chuan_qin_e4dbb673}.\item 
 
-LLMs are also proving transformative in personalized career guidance systems within vocational education  \cite{jingyi_duan_3a44ace8}.
+LLMs are also proving transformative in personalized career guidance systems within vocational education  \parencite{jingyi_duan_3a44ace8}.
 \end{itemize}\item 
 
 \textbf{Federated Learning}:
 \begin{itemize}
 \item 
 
-FL is emerging as a critical solution for user privacy in recommender systems by enabling model training on local devices without centralizing raw data \cite[]{marko_harasic_b2ab4a9c, kirandeep_kaur_d02e7934} This addresses the privacy paradox inherent in personalized education  \cite{rodrigo_tertulino_fce6cc8c}.\item 
+FL is emerging as a critical solution for user privacy in recommender systems by enabling model training on local devices without centralizing raw data \parencite[]{marko_harasic_b2ab4a9c, kirandeep_kaur_d02e7934} This addresses the privacy paradox inherent in personalized education  \parencite{rodrigo_tertulino_fce6cc8c}.\item 
 
-FL can be applied to generate personalized, context-aware, and sequential recommendations while preserving data privacy  \cite{kirandeep_kaur_d02e7934}.
+FL can be applied to generate personalized, context-aware, and sequential recommendations while preserving data privacy  \parencite{kirandeep_kaur_d02e7934}.
 \end{itemize}\item 
 
 \textbf{Ethical AI}:
 \begin{itemize}
 \item 
 
-Future research and practice should prioritize the development of ethical frameworks, guidelines, and policies to ensure recommender systems operate responsibly, respect learner privacy, and promote equitable access to educational opportunities  \cite{radia_oussouaddi_9ea13490}.\item 
+Future research and practice should prioritize the development of ethical frameworks, guidelines, and policies to ensure recommender systems operate responsibly, respect learner privacy, and promote equitable access to educational opportunities  \parencite{radia_oussouaddi_9ea13490}.\item 
 
-Ethically aligned personalization, which integrates fairness checks, cultural diversity, and governance structures into the system architecture, is gaining importance  \cite{tharun_damera_0d422fd9}.\item 
+Ethically aligned personalization, which integrates fairness checks, cultural diversity, and governance structures into the system architecture, is gaining importance  \parencite{tharun_damera_0d422fd9}.\item 
 
-Fair federated recommendation learning is essential to characterize and mitigate the impact of system and data heterogeneity on fairness  \cite{kiwan_maeng_845dd640}.
+Fair federated recommendation learning is essential to characterize and mitigate the impact of system and data heterogeneity on fairness  \parencite{kiwan_maeng_845dd640}.
 \end{itemize}\item 
 
-\textbf{Combination of Symbolic and Machine Learning Techniques}: Advancements in systems that combine symbolic reasoning with machine learning, particularly semantic-based recommender systems, are expected to enhance explainability and robustness  \cite{julien_broisin_c4d8795d}.\item 
+\textbf{Combination of Symbolic and Machine Learning Techniques}: Advancements in systems that combine symbolic reasoning with machine learning, particularly semantic-based recommender systems, are expected to enhance explainability and robustness  \parencite{julien_broisin_c4d8795d}.\item 
 
-\textbf{Context-aware and Deep Learning-based Recommendations}: These advanced techniques are considered more efficient than traditional methods for future e-learning applications  \cite{latifat_salau_0dd1bb89}.\item 
+\textbf{Context-aware and Deep Learning-based Recommendations}: These advanced techniques are considered more efficient than traditional methods for future e-learning applications  \parencite{latifat_salau_0dd1bb89}.\item 
 
-\textbf{Multimodal Recommendation}: Integrating diverse data types, such as text, images, and video, into recommendations is a promising direction for federated recommender systems  \cite{zhiwei_li_ff002fbe}.
+\textbf{Multimodal Recommendation}: Integrating diverse data types, such as text, images, and video, into recommendations is a promising direction for federated recommender systems  \parencite{zhiwei_li_ff002fbe}.
 \end{itemize}
 
 How Emerging Trends Could Further Enhance IDP Recommender Systems
@@ -455,65 +530,278 @@ Critical research gaps that currently exist in this field and how future researc
 \begin{itemize}
 \item 
 
-\textbf{Bridging the Evaluation Gap}: Future research should focus on developing and validating new evaluation metrics and methodologies that specifically measure the \textit{pedagogical effectiveness} and \textit{learning outcomes} of IDP recommendations, rather than just predictive accuracy. This could involve longitudinal studies tracking skill acquisition and career progression  \cite{felipe_leite_da_silva_a897795e}.\item 
+\textbf{Bridging the Evaluation Gap}: Future research should focus on developing and validating new evaluation metrics and methodologies that specifically measure the \textit{pedagogical effectiveness} and \textit{learning outcomes} of IDP recommendations, rather than just predictive accuracy. This could involve longitudinal studies tracking skill acquisition and career progression  \parencite{felipe_leite_da_silva_a897795e}.\item 
 
 \textbf{Robust Data Strategies for Dynamic Environments}: Research needs to explore advanced techniques for incorporating implicit behavioral data and real-time feedback into IDP recommender systems. This would address data sparsity challenges and allow systems to adapt more quickly to dynamic individual and organizational needs \parencite[]{deepjyoti_roy_f246a341, sonia_souabi_5ee71548}\item 
 
-\textbf{Contextual Understanding in Recommendations}: More research is required to integrate a deeper understanding of social learning contexts and organizational dynamics into recommender algorithms. This includes developing models that account for peer influence, team-based learning, and specific corporate culture or policy objectives  \cite{yvonne_m__hemmler_2515f35f}.\item 
+\textbf{Contextual Understanding in Recommendations}: More research is required to integrate a deeper understanding of social learning contexts and organizational dynamics into recommender algorithms. This includes developing models that account for peer influence, team-based learning, and specific corporate culture or policy objectives  \parencite{yvonne_m__hemmler_2515f35f}.\item 
 
 \textbf{Proactive Skill Development for Future Job Markets}: A key gap is the ability of IDP recommenders to proactively identify and recommend skills for future job markets. Future research should leverage advanced LLMs and natural language processing to continuously analyze job market trends and skill requirements, translating these into actionable, forward-looking IDP suggestions \parencite[]{jibril_frej_bc661ba0, jibril_frej_4770e3ae}\item 
 
 \textbf{Ethical AI Implementation and Governance}: Research is crucial in developing practical, implementable ethical AI frameworks for IDP systems, focusing on bias detection and mitigation, transparency in decision-making, and user control over data and recommendations. This also extends to developing governance models for AI in HR technologies \parencite[]{tharun_damera_0d422fd9, radia_oussouaddi_9ea13490}\item 
 
-\textbf{Personalization in Decentralized Data Settings}: Further investigation into personalized recommendation models within federated learning environments is needed, especially concerning how to effectively handle heterogeneous user preferences and non-IID data distribution while maintaining privacy  \cite{chunxu_zhang_243a08ee}.\item 
+\textbf{Personalization in Decentralized Data Settings}: Further investigation into personalized recommendation models within federated learning environments is needed, especially concerning how to effectively handle heterogeneous user preferences and non-IID data distribution while maintaining privacy  \parencite{chunxu_zhang_243a08ee}.\item 
 
 \textbf{Explainability of Complex Deep Learning Models}: While progress has been made with methods like SHAP and LIME, research needs to develop more intuitive and user-friendly explainability techniques for the increasingly complex deep learning architectures used in IDP recommenders. The goal is to provide explanations that are both accurate and easily understood by employees and managers, fostering trust and enabling informed decision-making.
 \end{itemize}
 
+\section{Summary of Cited Works}
+The literature review synthesizes findings from over 50 scholarly works spanning recommender systems, deep learning architectures, individual development plans, and talent management. Key themes include the evolution from traditional content-based and collaborative filtering approaches to modern deep learning methods that capture complex, non-linear user-item interactions. Notable contributions discuss Neural Collaborative Filtering, Graph Neural Networks for knowledge graph reasoning, Transformers for sequential recommendation, and hybrid architectures that combine multiple approaches for improved accuracy and diversity.
 
-\newpage
-\begin{leveldown}
+Research on Individual Development Plans highlights the transition from static, paper-based documents to AI-integrated systems offering real-time feedback and personalized career pathways. Studies emphasize the importance of preprocessing techniques, appropriate evaluation metrics (Precision@k, Recall@k, nDCG, MRR), and explainability methods (SHAP, LIME) for building trustworthy recommendation systems in professional development contexts.
 
-\begin{table}[ht]
-  \centering
-  \caption{Summary of Related Works for the IDP Recommender System Study}
-  \label{tab:lit_review}
-  {\small
-  \setlength{\extrarowheight}{3pt}
-  \begin{tabularx}{\textwidth}{@{}p{3cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}X@{}}
-  	oprule
-  	extbf{Author(s) \& Year} & \textbf{Title} & \textbf{Methodology} & \textbf{Key Findings and Relevance} \\
-  \midrule
-  Vanderford et al. (2018) & Use of IDPs for doctoral trainees & Survey study & IDPs improve self-assessment and career planning; foundational to this study. \\
-  \midrule
-  Sahoo et al. (2019) & Deep learning in health recommender systems & Deep collaborative filtering (RBMs) & Deep learning improves recommendation accuracy; supports choice of deep learning. \\
-  \midrule
-  Mu (2018) & Survey of deep learning recommender systems & Literature review & Validates deep learning as superior for complex recommendation tasks. \\
-  \midrule
-  Li et al. (2024) & Knowledge graph-enhanced recommender systems & Attention and residual networks & Knowledge graphs improve personalization; important for IDP mappings. \\
-  \midrule
-  Chen \& Zhong (2024) & GCN-based course recommendation system & Graph Convolutional Networks (GCNs) & GCNs model complex relationships; informs modelling employee competencies. \\
-  \midrule
-  Ertürkman et al. (2019) & Personalized health management platforms & Collaborative platform development & Personalized plans outperform generic; supports personalizing IDPs. \\
-  \midrule
-  Gulzar et al. (2018) & Personalized course recommender systems & Hybrid recommendation methods & Combining methods improves engagement; supports multi-input IDP systems. \\
-  \midrule
-  Dabak et al. (2022) & Career development for Gen Y and Z & Developmental cycle framework & Adaptive planning needed for evolving careers; supports dynamic IDP updates. \\
-  \midrule
-  Ghaffar et al. (2022) & Impact of personality traits on planning & Empirical study in finance & Personality traits influence decision-making; suggests incorporating traits into IDPs. \\
-  \midrule
-  Wang et al. (2020) & Employee training course recommendations & Bayesian variational network modeling & Career goals improve recommendations; aligns with dynamic IDP needs. \\
-  \midrule
-  Bui et al. (2016) & Text classification from PDFs & Multi-pass sieve technique & Text extraction improves preprocessing; useful for automating employee documents. \\
-  \midrule
-  Viani et al. (2019) & Clinical event extraction with RNNs & Supervised learning & RNNs extract structured info from text; supports skill extraction automation. \\
-  \midrule
-  Lin et al. (2018) & Sparse linear method for recommendation & L0 regularization technique & Improved recommendation precision; useful for refining IDP suggestions. \\
-  \bottomrule
-  \end{tabularx}
-  }
-\end{table}
+\Cref{tab:literature_summary} presents a comprehensive summary of all cited works.
 
-\end{leveldown}
-
-\end{sloppypar}
+\begin{landscape}
+\begingroup
+\small
+\setlength{\tabcolsep}{4pt}
+\setlength{\LTcapwidth}{24cm}
+\setlength{\LTleft}{\fill}
+\setlength{\LTright}{\fill}
+\begin{longtable}{@{}p{6cm}p{4cm}p{1cm}p{12cm}@{}}
+\caption{Summary of Cited Works in Literature Review} \label{tab:literature_summary} \\
+\toprule
+\textbf{Paper Title} & \textbf{Authors} & \textbf{Year} & \textbf{Summary/Contribution} \\
+\midrule
+\endfirsthead
+\multicolumn{4}{c}{\tablename\ \thetable{} -- \textit{Continued from previous page}} \\
+\toprule
+\textbf{Paper Title} & \textbf{Authors} & \textbf{Year} & \textbf{Summary/Contribution} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r}{\textit{Continued on next page}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+Developing AI-powered Training Programs for Employee Upskilling and Reskilling & N/A & 2024 & Highlights AI's crucial role in upskilling, reskilling, and personalizing employee training programs. \\
+\midrule
+Personalized Employee Training Course Recommendation with Career Development Awareness & Chao Wang, Hengshu Zhu, et al. & 2020 & Argues that personalized training recommendations are vital for improving individual and organizational performance. \\
+\midrule
+AI-Powered Personalization in Employee Training and Development Programs & Sunday Oladele, Micheal Anector, et al. & 2025 & Notes that AI-powered solutions adapt training based on individual needs, skill gaps, and performance metrics. \\
+\midrule
+Artificial Intelligence Models and Employee Lifecycle Management & Saeed Nosratabadi, Roya Khayer Zahed, et al. & 2022 & Suggests that AI models can forecast necessary competencies for software development teams. \\
+\midrule
+Technological Disruption in Human Resource Management & Kadar Nurjaman & 2025 & Underlines how strategic alignment ensures learning initiatives proactively address skill shortages. \\
+\midrule
+Explaining the Human Resources Training and Improvement Paradigm & Amirhadi Azizi, K Fathi Vajargha, et al. & 2020 & Refers to IDPs as structured documents outlining personal and professional goals. \\
+\midrule
+Careers: workers' perceptions of organizations' support & Júlio Fernando da Silva, et al. & 2019 & Mentions IDPs as structured documents typically co-developed by employees and managers. \\
+\midrule
+Individual development plans — experiences in graduate student training & Amar H. Flood, Sara E. Skrabalak, Yan Yu & 2021 & Describes IDPs' primary purpose in facilitating targeted training and self-assessment. \\
+\midrule
+Navigating STEM careers with AI mentors: a new IDP journey & Chi-Ning Chang, John C.K. Hui, et al. & 2024 & Highlights the shift of IDPs towards AI-integrated systems offering real-time feedback. \\
+\midrule
+How talent management execution impacts career experiences & Marna van der Merwe, Petrus Nel, Crystal Hoole & 2024 & Indicates that IDPs boost employee engagement, retention, and leadership skills. \\
+\midrule
+Manajemen Talenta dan Implementasinya di Industri & Sumartik Sumartik, Rita Ambarwati & 2023 & Reinforces that IDPs lead to increased motivation, productivity, and talent retention. \\
+\midrule
+Customized Career Development Platform for researchers & Doris M. Rubio, Colleen A. Mayowski, et al. & 2023 & Points out challenges like lack of interactivity and limited mentor access. \\
+\midrule
+Personal Development Planning and Vertical Leadership Development & Kyle Coopersmith & 2021 & Mentions IDPs' role in enhancing self-awareness and goal clarity. \\
+\midrule
+The Impact of Leadership Development Programs & Muhammad Zafar & 2025 & Identifies organizational gains from effective IDP implementation. \\
+\midrule
+Maximizing the Impact and ROI of Leadership Development & Jaason M. Geerts & 2024 & Reinforces benefits through enhanced leadership pipelines and strategic workforce planning. \\
+\midrule
+Integrating word embeddings and document topics with deep learning & Zenun Kastrati, Ali Shariq Imran, Arianit Kurti & 2019 & Suggests traditional IDPs struggle with dynamic adaptation. \\
+\midrule
+Individual Development Plans: An Underutilized Advising Tool & Deborah E. Eason, B. C. Bruno, et al. & 2020 & Highlights transition from paper-based tools to digital platforms. \\
+\midrule
+A systematic review and research perspective on recommender systems & Deepjyoti Roy, Mala Dutta & 2022 & Defines recommender systems as algorithms to filter and suggest relevant items. \\
+\midrule
+A Comprehensive Review of Recommender Systems & Shaina Raza, Mizanur Rahman, et al. & 2024 & Categorizes systems into collaborative, content-based, and hybrid filtering. \\
+\midrule
+Deep Learning, Machine Learning, Advancing Big Data Analytics & Wilson C. Hsieh, Ziqian Bi, et al. & 2024 & Discusses how Collaborative Filtering leverages collective user behavior. \\
+\midrule
+A survey of latent factor models in recommender systems & Hind I. Alshbanat, Hafida Benhidour, et al. & 2024 & Discusses latent factor models used in collaborative filtering. \\
+\midrule
+Accuracy Improvements for Cold-Start Recommendation Problem & Fu Jie Tey, Tin-Yu Wu, et al. & 2020 & Points out hybrid systems address cold-start problems. \\
+\midrule
+Hybrid recommender system model for digital library & Pijitra Jomsri, Dulyawit Prangchumpol, et al. & 2023 & Exemplifies how hybrid systems leverage combined strengths. \\
+\midrule
+The Netflix Recommender System & Carlos Alberto Gomez-Uribe, Neil T. Hunt & 2015 & Classic example where recommender systems drive sales and engagement. \\
+\midrule
+Current Trends in Recommender Systems & Berke Akkaya & 2025 & Mentions widespread use across e-commerce, entertainment, and social media. \\
+\midrule
+New Insights Towards Developing Recommender Systems & Mona Taghavi, Jamal Bentahar, et al. & 2017 & Lists significant application domains for recommender systems. \\
+\midrule
+Hesitation and Tolerance in Recommender Systems & Kuan Zou, Aixin Sun, X. W. Jiang, et al. & 2024 & Highlights contributions to driving sales, engagement, and retention. \\
+\midrule
+A systematic literature review on adaptive content recommenders & Nisha S. Raj, V. G. Renumol & 2021 & Suggests hybrid systems are well-suited for educational contexts. \\
+\midrule
+A systematic literature review on educational recommender systems & Felipe Leite da Silva, et al. & 2022 & Identifies gap in evaluation metrics for educational recommender systems. \\
+\midrule
+Recommender systems in education: A literature review & Georgios Lampropoulos & 2023 & Notes recommender systems improve motivation and learning outcomes. \\
+\midrule
+A comparative analysis of recommender systems for career guidance & Christine Lahoud, Sherin Moussa, et al. & 2022 & Indicates use for recommending training and IDPs based on performance. \\
+\midrule
+What's Next? A Recommendation System for Industrial Training & Rajiv Srivastava, Girish Keshav Palshikar, et al. & 2018 & Corroborates professional contexts benefit from recommender systems. \\
+\midrule
+Recommender System for Educational and Professional Growth & Summiya Iqbal Jangda, et al. & 2024 & Reinforces value of recommender systems for professional growth. \\
+\midrule
+Personalized Recommendations in EdTech & Keshav Agrawal, Susan Athey, et al. & 2022 & Provides evidence of significantly boosted engagement in edtech platforms. \\
+\midrule
+A deep learning based hybrid recommendation model & Amany Sami, Waleed El Adrousy, et al. & 2024 & Highlights deep learning excels at overcoming traditional RS limitations. \\
+\midrule
+Fundamentals of Deep Learning & N/A & 2024 & Presents deep learning as adept at learning intricate patterns from data. \\
+\midrule
+A SURVEY ON COMPREHENSIVE TRENDS IN RECOMMENDATION SYSTEMS & Ssvr Kumar Addagarla & 2019 & Discusses Neural Collaborative Filtering using MLPs. \\
+\midrule
+Automated data processing and feature engineering for deep learning & Alhassan Mumuni, Fuseini Mumuni & 2024 & Emphasizes preprocessing is critical for deep learning models. \\
+\midrule
+Beyond-accuracy: diversity, serendipity, and fairness in RS & Tomislav Duricic, Dominik Kowald, et al. & 2023 & Points out poor preprocessing leads to suboptimal performance. \\
+\midrule
+Efficient Tabular Data Preprocessing of ML Pipelines & Yu Zhu, Wenqi Jiang, Gustavo Alonso & 2024 & Underscores preprocessing role for data quality and consistency. \\
+\midrule
+A Survey on Diffusion Models for Recommender Systems & Jianghao Lin, Jiaqi Liu, et al. & 2024 & Reinforces proper preprocessing mitigates sparsity challenges. \\
+\midrule
+A Comprehensive Survey of Evaluation Techniques for RS & Aryan Jadon, Avinash Patil & 2023 & Lists metrics like Precision@k, Recall@k, nDCG, and MRR. \\
+\midrule
+ResNetMF: Improving Recommendation Accuracy and Speed & Mustafa Payandenick, Y. D. Wang, et al. & 2025 & Mentions MAE and RMSE as metrics for prediction accuracy. \\
+\midrule
+Personalized Recommendation Systems: A Comprehensive Study & C K Raghavendra, Srikantaiah K.C, et al. & 2018 & Lists MAE, RMSE, Precision, and Recall for RS evaluation. \\
+\midrule
+Deep Learning-Based Recommendation: Issues and Challenges & Rim Fakhfakh, et al. & 2017 & Includes MAE, RMSE, F1-score as common evaluation metrics. \\
+\midrule
+Integrating contextual sentiment analysis in collaborative RS & Nurul Aida Osman, et al. & 2021 & Notes MAE/RMSE may not truly reflect user experience. \\
+\midrule
+Evaluation of Group Modelling Strategy in CF Recommendation & Rosmamalmi Mat Nawi, et al. & 2020 & Acknowledges MAE/RMSE limitations in some evaluations. \\
+\midrule
+Hybrid Data Set Optimization in RS Using Fuzzy T-Norms & Antonios Papaleonidas, Elias Pimenidis, et al. & 2019 & Suggests Precision/Recall are better for ranked recommendations. \\
+\midrule
+In-depth survey: deep learning in recommender systems & Shivangi Gheewala, Shuxiang Xu, Soonja Yeom & 2025 & Includes RMSE as prediction accuracy metric for DL-based RS. \\
+\midrule
+recometrics: Evaluation Metrics for Implicit-Feedback RS & David Cortes & 2021 & Mentions Hit@N for implicit-feedback recommender systems. \\
+\midrule
+A Survey of Accuracy Evaluation Metrics of Recommendation Tasks & Asela Gunawardana, Guy Shani & 2009 & Points out choice of metric is critical for evaluation. \\
+\midrule
+How good your recommender system is? A survey on evaluations & Thiago Silveira, Min Zhang, et al. & 2017 & Suggests business metrics like CTR are vital for alignment. \\
+\midrule
+Learning Outcomes in Educational Recommender Systems & Nursultan Askarbekuly, Ivan Lukovic & 2024 & Emphasizes outcome-based measures for pedagogical effectiveness. \\
+\midrule
+Where Do We Go From Here? Guidelines For Offline RS Evaluation & Tobias Schnabel & 2022 & Highlights challenges in offline evaluation of RS. \\
+\midrule
+Bias and Debias in Recommender System: A Survey & Jiawei Chen, Hande Dong, et al. & 2020 & Discusses selection bias, exposure bias, and popularity bias. \\
+\midrule
+Recommendations as Treatments: Debiasing Learning and Evaluation & Tobias Schnabel, Adith Swaminathan, et al. & 2016 & Explains selection bias in recommendation data. \\
+\midrule
+On the Reliability of Sampling Strategies in Offline RS Evaluation & Bruno Laporais Pereira, Alan Said, et al. & 2025 & Discusses exposure bias and sampling strategy concerns. \\
+\midrule
+Agreement and Disagreement between Metrics in RS Evaluation & Elisa Mena-Maldonado, et al. & 2020 & Discusses popularity bias favoring popular items. \\
+\midrule
+Take a Fresh Look at Recommender Systems from Evaluation Standpoint & Aixin Sun & 2023 & Suggests popularity bias hinders discovery of niche content. \\
+\midrule
+Statistical biases in Information Retrieval metrics for RS & Alejandro Bellogin, Pablo Castells, et al. & 2017 & Notes biases can distort empirical measurements. \\
+\midrule
+Offline recommender system evaluation: Challenges and directions & Pablo Castells, Alistair Moffat & 2022 & Mentions discrepancies between offline and online metrics. \\
+\midrule
+Demystifying Recommendations: Transparency and Explainability & Vatesh Pasrija, Supriya Pasrija & 2024 & Highlights explainability aims to build user trust. \\
+\midrule
+Sustainable Transparency in Recommender Systems & Jorge Paz-Ruza, et al. & 2023 & Points out RS function as ``black boxes'' reducing trust. \\
+\midrule
+Accurate and justifiable: algorithms for explainable recommendations & Behnoush Abdollahi & 2017 & States explanations foster confidence in system capabilities. \\
+\midrule
+Interactive Explanation in Explainable Scientific Literature RS & Mouadh Guesmi, Mohamed Amine Chatti, et al. & 2023 & Emphasizes explanations improve decision-making. \\
+\midrule
+The effects of transparency on trust in content-based art recommender & Henriette Cramer, Vanessa Evers, et al. & 2008 & Explains transparency removes ``black box'' perception. \\
+\midrule
+Explainable Recommendation: A Survey and New Perspectives & Yongfeng Zhang, Xu Chen & 2020 & Notes explainability enhances trust and model transparency. \\
+\midrule
+Research Agenda of Ethical Recommender Systems based on XAI & Mike Guttmann, Mouzhi Ge & 2024 & Argues explainable RS are essential for fairness and accountability. \\
+\midrule
+A Review of LLM-based Explanations in Recommender Systems & Alan Said & 2024 & Introduces SHAP and LIME as model-agnostic frameworks. \\
+\midrule
+A Perspective on Explainable AI Methods: SHAP and LIME & Ahmed Salih, et al. & 2023 & Also introduces SHAP and LIME for explaining ML models. \\
+\midrule
+Counterfactual explanations for recommendations using SHAP & Jinfeng Zhong, Elsa Negre & 2022 & States SHAP is grounded in cooperative game theory. \\
+\midrule
+From Model Explanation to Data Misinterpretation & Ronilo Ragodos, Tong Wang, et al. & 2024 & Notes SHAP values indicate feature impact on predictions. \\
+\midrule
+Unlabeled learning algorithms: overview and future trends & Eduardo e Oliveira, et al. & 2024 & Describes LIME generating locally faithful explanations. \\
+\midrule
+Disagreement amongst counterfactual explanations & Dieter Brughmans, Lissa Melis, David Martens & 2024 & Discusses LIME's process of perturbing data. \\
+\midrule
+A hybrid explainability framework for RS using SHAP & Naveen Kumar M, Mohamed Basheer & 2025 & Focuses on integrating SHAP and LIME for explanations. \\
+\midrule
+Measuring ``Why'' in Recommender Systems: Survey on Explainable RS & Xu Chen, Yongfeng Zhang, Ji-Rong Wen & 2022 & Evaluates effectiveness of explainability methods. \\
+\midrule
+Whom do Explanations Serve? User Characteristics in Explainable RS & Kathrin Wardatzky, Oana Inel, et al. & 2025 & Notes evaluations based on user experience enhancement. \\
+\midrule
+Reproducibility Study of XRec: LLMs for Explainable Recommendation & Rasendu Mishra, Julian I. Bibo, et al. & 2025 & Explains XRec using LLMs to analyze model behavior. \\
+\midrule
+XRec: Large Language Models for Explainable Recommendation & Qiyao Ma, Xubin Ren, Chao Huang & 2024 & Describes XRec's approach using LLMs for explanations. \\
+\midrule
+Explainable AI: Meta-Survey of Challenges and Opportunities & Waddah Saeed, Christian W. Omlin & 2022 & Suggests advancements needed for DL model explainability. \\
+\midrule
+Filter bubbles in recommender systems: Fact or fallacy & Qazi Mohammad Areeb, et al. & 2023 & Explains understanding logic helps identify filter bubbles. \\
+\midrule
+Justification vs. Transparency: Visual Explanations in Scientific RS & Mouadh Guesmi, Mohamed Amine Chatti, et al. & 2023 & Claims understanding logic helps form accurate mental models. \\
+\midrule
+How should I explain? Comparison of explanation types for RS & Fatih Gedikli, Dietmar Jannach, Mouzhi Ge & 2014 & States appropriate explanations increase trust and satisfaction. \\
+\midrule
+Trust-inspiring explanation interfaces for recommender systems & Pearl Pu, Li Chen & 2007 & Reinforces explanations increase user trust. \\
+\midrule
+A systematic review and taxonomy of explanations in RS & Ingrid Nunes, Dietmar Jannach & 2017 & Supports explanations leading to increased trust. \\
+\midrule
+Interpreting ML predictions with LIME and Shapley values & Mirka Henninger, Carolin Strobl & 2024 & Discusses theoretical soundness of SHAP based on game theory. \\
+\midrule
+Recommendation Systems on E-Learning and Social Learning & Sonia Souabi, et al. & 2021 & Points out need for implicit actions to align with learning paces. \\
+\midrule
+A Categorization of Workplace Learning Goals for RS & Yvonne M. Hemmler, Julian Rasch, et al. & 2022 & Suggests aligning IDP RS with organizational goals. \\
+\midrule
+Course Recommender Systems Need to Consider the Job Market & Jibril Frej, Anna Dai, et al. & 2024 & Highlights need for skill extraction aligned with job market. \\
+\midrule
+Privacy-Preserving Personalization in Education: Federated RS & Rodrigo Tertulino & 2025 & Advocates federated learning for privacy in RS. \\
+\midrule
+Personalized Recommendation Models in Federated Settings & Chunxu Zhang, Guodong Long, et al. & 2025 & Notes heterogeneous preferences in federated settings underexplored. \\
+\midrule
+Crafting personalized learning paths with AI for lifelong learning & K. Bayly-Castaneda, et al. & 2024 & Discusses growing interest in generative LLMs for learning paths. \\
+\midrule
+Beyond Traditional Pathways: Generative AI for Dynamic Career Planning & Jingyi Duan, Suhan Wu & 2024 & Indicates LLMs are transformative in personalized career guidance. \\
+\midrule
+Towards Fairness in Federated Recommender Systems & Kirandeep Kaur, Sujit Gujar, Shweta Jain & 2024 & Solidifies federated learning as privacy solution. \\
+\midrule
+Recent advances and future challenges in federated RS & Marko Harasic, et al. & 2023 & Mentions federated learning for training on local devices. \\
+\midrule
+Advance in online education RS during and after Covid-19 & Radia Oussouaddi, et al. & 2023 & Emphasizes need for ethical frameworks in RS. \\
+\midrule
+Ethically Aligned Personalization: Reimagining Large-Scale AI & Tharun Damera & 2025 & Advocates integrating fairness checks and governance. \\
+\midrule
+Towards Fair Federated Recommendation Learning & Kiwan Maeng, Haiyu Lu, et al. & 2022 & Explains fair federated learning mitigates heterogeneity impact. \\
+\midrule
+Towards intelligent technology-enhanced learning solutions & Julien Broisin & 2020 & Anticipates systems combining symbolic reasoning with ML. \\
+\midrule
+State-of-the-Art Survey on Deep Learning RS for E-Learning & Latifat Salau, Mohamed Hamada, et al. & 2022 & Considers context-aware DL recommendations more efficient. \\
+\midrule
+Navigating the Future of Federated RS with Foundation Models & Zhiwei Li, Guodong Long, et al. & 2024 & Suggests multimodal recommendation as promising direction. \\
+\midrule
+Recommender systems and reinforcement learning for building control & Wenhao Zhang, Matias Quintana, Clayton Miller & 2024 & Discusses DL architectures addressing traditional RS limitations. \\
+\midrule
+ConvSVD++: A Hybrid Deep CF Recommender Model & Mohamed Grida, Lamiaa Fayed, Mohamed Hassan & 2020 & Illustrates NCF using MLPs for non-linear interactions. \\
+\midrule
+An academic recommender system on large citation data & Vaios Stergiopoulos, et al. & 2024 & Mentions RNNs, LSTMs, GRUs, Transformers for sequential prediction. \\
+\midrule
+Improving Recommendation Techniques by Deep Learning & Gourav Bathla, Rinkle Rani, Himanshu Aggarwal & 2018 & Refers to sequential models for user behavior modeling. \\
+\midrule
+Deep Learning Based Recommender System: Survey and Perspectives & Shuai Zhang, Lina Yao, Aixin Sun, et al. & 2019 & States DL outperforms traditional methods on large-scale data. \\
+\midrule
+When Newer is Not Better: Does DL Benefit Recommendation? & Yushun Dong, Jundong Li, Tobias Schnabel & 2023 & Suggests DL hybrids mitigate sparsity issues. \\
+\midrule
+A Comparative Study of AI-based Recommender Systems & Aditya Verma & 2020 & Notes DL hybrids help mitigate sparsity. \\
+\midrule
+Deep learning for recommender systems: A Netflix case study & Harald Steck, Linas Baltrunas, et al. & 2021 & Highlights Netflix's successful use of DNNs. \\
+\midrule
+From Data to Decisions: ML in Business Recommendations & Kapilya Gangadharan, et al. & 2024 & Emphasizes DL enhances RS performance metrics. \\
+\midrule
+Deep Learning Recommendation Model for Personalization & Maxim Naumov, Dheevatsa Mudigere, et al. & 2019 & Mentions Facebook's DLRM handling categorical features at scale. \\
+\midrule
+Revolutionizing recommendations: Recent trends in deep learning & Bhawna Tewari, Mani Rautela, et al. & 2024 & Refers to A/B tests showing performance lifts with DL. \\
+\midrule
+Empirical Perspectives on Big Data in Recommendation Systems & Kamal Taha, Paul D. Yoo, Aya Taha & 2024 & Notes DL enhances engagement and personalization. \\
+\midrule
+Enhancing customer satisfaction through AI, ML, and IoT & Jayesh Rane, Omer Kaya, et al. & 2024 & Discusses DL mitigating biases and increasing user stickiness. \\
+\end{longtable}
+\endgroup
+\end{landscape}

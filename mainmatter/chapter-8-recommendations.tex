@@ -1,8 +1,114 @@
 \chapter{Recommendations}
 \label{chapter:rec}
 
-This chapter provides a brief overview of the primary recommendations for the future continuation of this research project.
+% Use full justification for chapter text
+\justifying
 
-\subsubsection*{Rec 1}
+This chapter provides recommendations for the future continuation and enhancement of the IDP recommender system, as well as broader recommendations for organizations seeking to implement AI-driven employee development solutions.
 
-\subsubsection*{Rec 2}
+\section{Recommendations for System Enhancement}
+
+\subsection{Expanding Data Sources}
+
+\subsubsection*{Rec 1: Integrate Performance Review Data}
+The current system primarily relies on skill assessments and course completion records. Integrating quantitative performance review data (e.g., KPIs, project outcomes, 360-degree feedback scores) could significantly enhance recommendation accuracy. Performance trends over time would enable the system to identify high-potential employees for accelerated development paths and those requiring additional support.
+
+\subsubsection*{Rec 2: Incorporate External Learning Platforms}
+Expand the course catalog beyond internal training to include external platforms such as LinkedIn Learning, Coursera, and industry certifications. This would provide employees with a broader range of development options and enable the system to recommend the most relevant learning resources regardless of source.
+
+\subsubsection*{Rec 3: Add Behavioral and Engagement Data}
+Track employee engagement metrics such as time spent on learning activities, completion rates, and interaction patterns with the IDP dashboard. These behavioral signals could improve recommendation quality by identifying employee preferences and learning styles.
+
+\subsection{Improving Mentor Matching}
+
+The mentor matching component achieved the lowest performance (Accuracy = 0.473, F1 = 0.38) among all IDP components. The following recommendations target this specific challenge.
+
+\subsubsection*{Rec 4: Implement Explicit Compatibility Assessment}
+Develop a structured questionnaire for both mentors and mentees covering communication preferences, availability, career interests, and development focus areas. The current model relies on proxy signals such as meeting frequency and department overlap; using explicit compatibility signals could significantly improve matching accuracy beyond the current skill-based approach.
+
+\subsubsection*{Rec 5: Analyze Historical Mentoring Relationships}
+Collect systematic feedback on past mentoring relationships to identify patterns that predict successful matches. This data could train a specialized mentor matching model that learns from organizational experience rather than relying solely on profile similarity. The 61.3\% user approval rate for mentor matches provides a baseline for tracking improvement.
+
+\subsubsection*{Rec 6: Support Multiple Mentoring Modes}
+Extend the system to recommend different types of mentoring relationships (peer mentoring, reverse mentoring, group mentoring) based on employee needs and mentor availability. This flexibility would increase mentoring program participation and effectiveness, particularly for junior employees facing cold-start challenges.
+
+\subsubsection*{Rec 7: Address Data Sparsity}
+The limited mentor pool (300 employees) constrains training examples. Consider expanding the dataset through cross-organizational collaboration or federated learning approaches that pool mentor-mentee patterns from multiple organizations without sharing sensitive employee data.
+
+\subsection{Enhancing Model Performance}
+
+\subsubsection*{Rec 8: Implement Continuous Learning}
+Develop an online learning pipeline that updates models incrementally as new interaction data becomes available. This would ensure recommendations remain current without requiring full model retraining, reducing computational costs (currently under 30 minutes per model) and improving responsiveness to changing organizational needs.
+
+\subsubsection*{Rec 9: Explore Hybrid Architectures}
+The results demonstrated that task-specific architecture selection is crucial: GNNs excel at career path prediction (NDCG@5 = 0.849) while Skill-Course NCF dominates course recommendation (NDCG@10 = 0.881). Investigate combining these strengths---for example, using GNN-extracted relational features as inputs to NCF models, or ensemble methods that aggregate predictions from multiple architectures for improved robustness.
+
+\subsubsection*{Rec 10: Address Transformer Overfitting}
+The Transformer model showed overfitting tendencies after epoch 20, limiting its effectiveness on the current dataset sizes. For future deployments with larger datasets, implement additional regularization techniques (increased dropout, layer normalization, label smoothing) and consider pre-training on external course catalogs before fine-tuning on organizational data.
+
+\subsubsection*{Rec 11: Improve Development Action Classification}
+For development actions where the NCF achieved moderate performance (Accuracy = 0.647), implement sampling strategies (oversampling minority action categories, undersampling majority categories) or cost-sensitive learning to improve prediction balance across all 70-20-10 model categories.
+
+\section{Recommendations for Organizational Implementation}
+
+\subsection{Change Management}
+
+\subsubsection*{Rec 12: Ensure Stakeholder Buy-In}
+Before deploying AI-driven IDP recommendations, secure commitment from HR leadership, line managers, and employee representatives. The 70.2\% overall approval rate demonstrates system value, but clear communication about capabilities and limitations will reduce resistance and increase adoption.
+
+\subsubsection*{Rec 13: Provide Training and Support}
+Develop comprehensive training materials for employees and managers on how to interpret and act on recommendations. The varying approval rates across components (78.2\% for courses vs. 61.3\% for mentors) suggest different levels of user confidence; targeted support for mentor matching could improve acceptance.
+
+\subsubsection*{Rec 14: Maintain Human Oversight}
+Position the recommender system as a decision support tool rather than an automated decision-maker. Recommendations should inform conversations between employees and supervisors, not replace them. The 12.7\% rejection rate indicates contexts where human judgment correctly overrides algorithmic suggestions.
+
+\subsection{Ethical Considerations}
+
+\subsubsection*{Rec 15: Ensure Transparency and Explainability}
+Provide clear explanations for all recommendations, enabling employees to understand why specific courses, career paths, or mentors are suggested. The Skill-Course NCF architecture's inherent explainability---tracing recommendations to specific skill gaps---should be surfaced through the user interface. For GNN-based career predictions, develop subgraph visualization techniques.
+
+\subsubsection*{Rec 16: Monitor for Bias}
+Regularly audit recommendations for demographic bias (gender, age, department, tenure). If systematic disparities are detected, investigate root causes and implement corrective measures such as fairness constraints in model training. This was identified as a limitation in the current evaluation.
+
+\subsubsection*{Rec 17: Protect Employee Privacy}
+Establish clear data governance policies specifying what employee data is collected, how it is used, and who has access. Ensure compliance with applicable data protection regulations and provide employees with visibility into their own data.
+
+\section{Recommendations for Future Research}
+
+\subsection{Technical Directions}
+
+\subsubsection*{Rec 18: Investigate Large Language Models}
+Explore the use of Large Language Models (LLMs) for extracting skills from unstructured text (resumes, project descriptions, performance narratives) and for generating natural language explanations of recommendations. The current TF-IDF and PCA-based feature engineering could be enhanced with LLM embeddings, potentially improving the Skill-Course NCF's already strong performance.
+
+\subsubsection*{Rec 19: Explore Reinforcement Learning}
+Formulate IDP recommendation as a sequential decision problem where the goal is to maximize long-term career outcomes rather than immediate recommendation acceptance. Reinforcement learning approaches could optimize for career progression metrics, addressing the limitation that current evaluation focused on immediate feedback rather than longitudinal outcomes.
+
+\subsubsection*{Rec 20: Develop Cross-Organizational Models}
+Investigate federated learning approaches that enable multiple organizations to collaboratively train recommendation models without sharing sensitive employee data. The current 300-employee dataset limits model capacity; federated approaches could yield more robust models trained on larger, more diverse datasets while preserving privacy.
+
+\subsubsection*{Rec 21: Extend GNN Architectures}
+Given the GNN's strong performance on career path prediction (NDCG@5 = 0.849), explore applying graph-based approaches to other IDP components. Mentor matching, in particular, could benefit from modeling the social network structure of successful mentoring relationships.
+
+\subsection{Evaluation Directions}
+
+\subsubsection*{Rec 22: Conduct Longitudinal Outcome Studies}
+Track employees who follow system recommendations over multiple years to measure actual career progression, skill development, and job satisfaction outcomes. This would address the current limitation of relying on immediate user feedback (70.2\% approval) rather than demonstrating long-term impact.
+
+\subsubsection*{Rec 23: Compare Against Human Expert Recommendations}
+Conduct controlled studies comparing AI-generated IDPs against those created by experienced HR professionals. Such comparisons would clarify the relative strengths of automated and human-driven approaches, potentially informing optimal human-AI collaboration strategies.
+
+\subsubsection*{Rec 24: Evaluate Recommendation Diversity}
+Develop and apply diversity metrics to ensure career path recommendations do not create ``filter bubbles'' that limit employees to narrow career trajectories. Balancing accuracy with diversity is particularly important in professional development contexts.
+
+\section{Conclusion}
+
+The IDP recommender system developed in this research provides a foundation for intelligent, personalized employee development at Telecom Namibia. The system achieved strong performance across its four components: Skill-Course NCF for course recommendations (NDCG@10 = 0.881), GNN for career path prediction (NDCG@5 = 0.849), NCF for development actions (Accuracy = 0.647), and NCF for mentor matching (Accuracy = 0.473). User validation through 431 feedback records demonstrated a 70.2\% overall approval rate, confirming practical system value.
+
+The 24 recommendations outlined in this chapter provide a comprehensive roadmap for:
+\begin{itemize}
+    \item \textbf{System enhancement}: Expanding data sources, improving mentor matching through explicit compatibility assessments, and implementing continuous learning pipelines
+    \item \textbf{Organizational implementation}: Ensuring stakeholder buy-in, maintaining human oversight, and establishing ethical AI governance
+    \item \textbf{Future research}: Investigating LLMs and reinforcement learning, developing cross-organizational federated models, and conducting longitudinal outcome studies
+\end{itemize}
+
+By systematically addressing these recommendations, organizations can realize the full potential of AI-driven professional development while ensuring ethical, transparent, and human-centered deployment. The architecture-specific insights from this research---particularly the effectiveness of skill-based NCF for course recommendation and GNNs for career path prediction---provide actionable guidance for practitioners implementing similar systems in other organizational contexts.

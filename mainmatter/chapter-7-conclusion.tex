@@ -1,14 +1,102 @@
 \chapter{Conclusion}
 \label{chapter:conc}
 
+% Use full justification for chapter text
+\justifying
+
+This chapter summarizes the research findings, contributions, and limitations of the IDP recommender system developed in this study. The chapter revisits the research questions posed in \Cref{chapter:intro} and reflects on how each has been addressed through the research process.
+
+\section{Summary of Findings}
+\label{section:conc-summary}
+
+This research developed a deep learning-based Individual Development Plan (IDP) recommender system for Telecom Namibia, addressing the organization's need for automated, personalized employee development planning. The system comprises four interconnected recommendation components: course recommendations, career path predictions, development action suggestions, and mentor matching.
+
+The key findings from this research are:
+
+\begin{enumerate}
+    \item \textbf{Skill-Course NCF achieves superior course recommendation performance}: The novel Skill-Course NCF model, which directly maps employee skill profiles to course content, achieved an NDCG@10 of 0.881, Precision@10 of 0.856, Recall@10 of 0.823, and AUC-ROC of 0.912---representing a 33.5\% improvement in NDCG@10 over the standard NCF baseline. This approach effectively addresses the cold-start problem by leveraging skill assessments rather than historical course completions.
+    
+    \item \textbf{Graph Neural Networks excel at career path prediction}: The GNN architecture achieved the highest performance for career path prediction (NDCG@5 = 0.849, Accuracy = 0.801, AUC-ROC = 0.867), demonstrating that modeling the relational structure of skills, roles, and career transitions through a two-layer Graph Convolutional Network with 128-dimensional hidden representations provides meaningful advantages over sequential or collaborative approaches.
+    
+    \item \textbf{NCF provides robust performance for development actions}: For development action recommendations, the NCF model achieved Accuracy of 0.647 and Precision of 0.623, outperforming Content-Based (Accuracy = 0.589) and Hybrid (Accuracy = 0.612) approaches. The recommender successfully adhered to the 70-20-10 development model, generating 68.3\% experiential, 21.2\% exposure, and 10.5\% education actions.
+    
+    \item \textbf{Mentor matching remains challenging but exceeds baselines}: The mentor matching component achieved Accuracy of 0.473 and F1-score of 0.38, significantly exceeding random baseline performance (20\% accuracy for a 5-class problem) but indicating room for improvement. Data sparsity and the subjective nature of mentoring relationships contribute to this lower performance.
+    
+    \item \textbf{Deep learning outperforms traditional methods}: Across all IDP components, deep learning models demonstrated superior performance compared to traditional recommendation approaches, validating the research hypothesis that neural architectures can capture the complex, non-linear relationships inherent in professional development contexts.
+    
+    \item \textbf{User acceptance validates practical utility}: User feedback analysis from 431 feedback records showed approval rates of 78.2\% (course recommendations), 72.5\% (career paths), 68.9\% (development actions), and 61.3\% (mentor matching), with an overall approval rate of 70.2\%, confirming that the system generates recommendations perceived as valuable and actionable by end users.
+\end{enumerate}
+
+\section{Research Questions Revisited}
+\label{section:conc-research-questions}
+
+The research questions posed in \Cref{chapter:intro} are revisited below, with a summary of how each has been addressed.
+
+\RestateResearchQuestion{1}{Which employee data types, e.g., skills, evaluations, performance reviews, etc., are most crucial to the construction of a well-performing deep learning model that generates recommendations for individual development plans?}
+
+The research found that \textbf{skill assessments} are the most critical data type for IDP recommendations. The Skill-Course NCF model's exceptional performance (NDCG@10 = 0.881) demonstrates that directly encoding skill profiles yields superior recommendations compared to implicit preference signals. Additionally, \textbf{career history data} (current role, previous transitions) proved essential for career path prediction, while \textbf{learning histories} (completed courses, training records) provided valuable signals for sequential models. The datasets used---job posts (23,000 records), online courses (8,000 records), career paths (9,000 records), and ESCO skills taxonomy (2,500 skills)---provided comprehensive coverage of the professional development domain.
+
+\RestateResearchQuestion{2}{How can employee characteristics and past performance data be used to refine deep learning algorithms to produce precise and customized recommendations for development plans?}
+
+Employee characteristics were incorporated through multiple feature engineering techniques. \textbf{TF-IDF vectorization} converted textual skill descriptions and job requirements into numerical embeddings. \textbf{PCA dimensionality reduction} compressed high-dimensional skill vectors to 50 dimensions while preserving essential information. \textbf{ESCO skill normalization} standardized extracted skills to a common taxonomy, enabling meaningful comparisons across employees and roles. The deep learning models then learned to map these engineered features to recommendation scores through embedding layers and non-linear transformations.
+
+\RestateResearchQuestion{3}{In what ways can the use of real-time performance data and feedback enhance the individual growth plan recommendations' adaptability and relevance?}
+
+The system architecture supports real-time adaptation through several mechanisms. The REST API design enables immediate recommendation updates when employee profiles change. The modular model architecture allows individual components to be retrained without system-wide redeployment. User feedback is collected through the TrainEase LMS interface, enabling future model refinement based on recommendation acceptance/rejection patterns. The 5-fold cross-validation approach used during development ensures models generalize well to new employees and scenarios.
+
+\RestateResearchQuestion{4}{What is the difference between the accuracy, employee skill development, and organizational productivity of the deep learning-based recommender system for individual development plans and the conventional approaches?}
+
+The deep learning-based system demonstrated substantial improvements over traditional approaches:
+\begin{itemize}
+    \item \textbf{Accuracy}: The Skill-Course NCF (NDCG@10 = 0.881) significantly outperformed traditional content-based filtering baselines (typical NDCG@10 = 0.4--0.5)
+    \item \textbf{Efficiency}: Automated recommendations replace manual Excel-based processes, reducing IDP creation time from hours to seconds
+    \item \textbf{Scalability}: The centralized platform can serve all 300+ employees simultaneously, compared to the previous one-at-a-time manual process
+    \item \textbf{Consistency}: Model-based recommendations ensure consistent application of development criteria across the organization
+\end{itemize}
+
+\section{Research Contributions}
+\label{section:conc-contributions}
+
+This research makes several contributions to the fields of recommender systems, deep learning, and human resource development:
+
+\begin{enumerate}
+    \item \textbf{Novel Skill-Course NCF Architecture}: The development of a skill-to-course recommendation model that directly addresses the cold-start problem by leveraging skill assessments rather than interaction history. This two-stage pipeline approach---identifying skill gaps followed by course ranking---achieved state-of-the-art performance (NDCG@10 = 0.881, AUC-ROC = 0.912) on the IDP course recommendation task and provides inherent explainability as recommendations can be traced to specific skill gaps.
+    
+    \item \textbf{Multi-Component IDP Framework}: A comprehensive framework that addresses the holistic nature of professional development through four interconnected recommendation components following the 70-20-10 model, moving beyond single-purpose recommendation systems to provide balanced experiential (68.3\%), exposure (21.2\%), and education (10.5\%) recommendations.
+    
+    \item \textbf{Practical Implementation}: A fully functional system integrated with an existing LMS (TrainEase), demonstrating the practical applicability of deep learning-based recommendation systems in corporate HR contexts with training times under 30 minutes and inference latencies under 100ms.
+    
+    \item \textbf{Comparative Architecture Analysis}: A systematic comparison of NCF, LSTM, Transformer, and GNN architectures for IDP recommendation tasks, revealing that task-specific architecture selection is crucial---GNNs excel at relational tasks (career paths) while skill-aware NCF variants excel at matching tasks (course recommendations).
+    
+    \item \textbf{Julia/Flux.jl Implementation}: A reference implementation using Julia and Flux.jl, demonstrating that modern machine learning frameworks beyond Python/PyTorch can effectively support production recommendation systems.
+\end{enumerate}
+
+\section{Limitations}
+\label{section:conc-limitations}
+
+Despite the positive results, this research has several limitations:
+
+\begin{enumerate}
+    \item \textbf{Dataset Size}: The employee dataset (300 records) is relatively small, limiting the ability to train more complex architectures and potentially affecting generalization to larger organizations. The Transformer model, in particular, showed overfitting tendencies after epoch 20, requiring early stopping intervention.
+    
+    \item \textbf{Single Organization}: The system was developed and evaluated within Telecom Namibia, and results may not directly transfer to organizations with different structures, industries, or cultures.
+    
+    \item \textbf{Limited Longitudinal Evaluation}: While the system was deployed and collected 431 feedback records with a 70.2\% approval rate, long-term evaluation of career progression outcomes (e.g., promotion rates, skill improvement over years) was beyond the scope of this study.
+    
+    \item \textbf{Mentor Matching Performance}: The mentor matching component achieved the lowest performance (Accuracy = 0.473, F1 = 0.38), reflecting challenges including data sparsity (only 300 employees in the mentor pool), reliance on proxy signals rather than explicit compatibility indicators, and cold-start issues for new employees.
+    
+    \item \textbf{Explainability}: While the Skill-Course NCF provides inherent explainability through skill-gap tracing, providing truly intuitive explanations for GNN-based career path predictions and Transformer recommendations remains challenging and was not fully addressed.
+    
+    \item \textbf{Diversity and Fairness Evaluation}: The evaluation focused primarily on accuracy metrics. Assessment of recommendation diversity (avoiding filter bubbles in career paths) and fairness (ensuring equitable recommendations across demographic groups) was not systematically addressed.
+\end{enumerate}
+
 \section{Closing Remarks}
 \label{section:conc-closing-remarks}
 
-\section{Research Questions}
-\label{section:conc-research-questions}
+This research demonstrates that deep learning-based recommender systems can effectively support Individual Development Plan creation in corporate settings. The Skill-Course NCF architecture provides a particularly strong foundation for course recommendation (NDCG@10 = 0.881), while the GNN excels at career path prediction (NDCG@5 = 0.849) by leveraging graph structure to capture complex career transition patterns. The NCF architecture offers the best balance of performance and efficiency for development actions and mentor matching, though mentor matching remains an area for future improvement.
 
-The research questions posed in \cref{chapter:intro} are repeated below for convenience.
+The evaluation results establish clear architectural preferences: problem formulation matters significantly, as demonstrated by the 33.5\% performance improvement when reframing course recommendation as skill-to-course matching. No single architecture dominates across all tasks, supporting the implemented hybrid approach that selects optimal models for each recommendation component.
 
-\RestateResearchQuestion{1}{What state-of-the-art methods are most suitable for XXX?}
+The successful integration with the TrainEase LMS confirms that such systems can be deployed in practice, replacing inefficient manual processes with scalable, consistent, and personalized recommendations. The 70.2\% overall user approval rate from 431 feedback records validates practical system effectiveness.
 
-Reflect on research questions.
+The IDP recommender system developed in this research represents a significant step toward intelligent, AI-driven human resource development. By automating the identification of skill gaps, relevant training, career opportunities, and suitable mentors, organizations can better support employee growth while aligning individual development with organizational objectives. As deep learning techniques continue to advance and organizations collect richer employee data, the potential for personalized professional development will only grow.

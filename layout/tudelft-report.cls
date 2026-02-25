@@ -9,6 +9,7 @@
 \RequirePackage[table]{xcolor}          % Using colours in documents
 \RequirePackage{tabularx}               % Additional functions to tables
 \RequirePackage{booktabs}               % Adds more line functionality to tables
+\RequirePackage{siunitx}                % SI units and number formatting in tables
 \RequirePackage{epigraph}               % Allow comments on the Part page
 \RequirePackage{multirow}               % Counterpart of multi columns
 \RequirePackage{enumitem}               % Customise the list spacing
@@ -40,9 +41,21 @@
 \RequirePackage{bbm}
 \RequirePackage{multicol}
 \RequirePackage{tkz-euclide}
+
+% List of Equations support - must load before subfig to avoid counter conflicts
+\RequirePackage[titles]{tocloft}
+\newcommand{\listequationsname}{List of Equations}
+\newlistof{myequations}{equ}{\listequationsname}
+\newcommand{\myequations}[1]{%
+    \addcontentsline{equ}{myequations}{\protect\numberline{\theequation}#1}%
+}
+\setlength{\cftmyequationsnumwidth}{2.5em}
+
 \RequirePackage{subfig}
 \RequirePackage{pgfplots}
 \RequirePackage{mathrsfs}
+\RequirePackage{amsmath}
+
 
 % SVG package (transparent warning is harmless and can be ignored)
 \RequirePackage{svg}
@@ -51,21 +64,42 @@
 \RequirePackage{fontspec}               % Custom fonts
 \RequirePackage{tcolorbox}
 
+% Multi-page tables and landscape orientation
+\RequirePackage{longtable}
+\RequirePackage{pdflscape}
+
 % Packages with options
-\RequirePackage[labelfont=bf,justification=centering]{caption}
+\RequirePackage[
+    labelfont={bf,small},
+    textfont={small},
+    justification=centering,
+    singlelinecheck=false,
+    skip=8pt,
+    format=hang
+]{caption}
 \RequirePackage[hidelinks]{hyperref}    % Improved referencing/links
 \RequirePackage[capitalise]{cleveref}
 \RequirePackage[ruled]{algorithm2e}
-\RequirePackage[style=apa6,sortcites=true,sorting=nyt,backend=bibtex]{biblatex}
+\RequirePackage{ragged2e}
 
-% APA 6th edition style is applied via the style=apa6 option above
+% Professional table styling
+\newcommand{\tablemark}[1]{\textsuperscript{#1}}
+\renewcommand{\arraystretch}{1.2}  % More spacing in tables
 
-% Highlight citations with a colored background using biblatex hooks
-\definecolor{citehighlight}{RGB}{255, 255, 180}  % Light yellow highlight
+% Use apacite for APA 6th edition style citations
+\RequirePackage[natbibapa]{apacite}
 
-% Use biblatex's built-in hooks for citation highlighting
-\renewcommand{\mkbibnamefamily}[1]{\colorbox{citehighlight}{#1}}
-\renewcommand{\mkbibnamegiven}[1]{\colorbox{citehighlight}{#1}}
+% Provide aliases for common biblatex citation commands so older chapter files
+% using \parencite / \textcite continue to work with natbib/BibTeX.
+\providecommand{\parencite}{\citep}
+\providecommand{\textcite}{\citet}
+
+% The project previously attempted to use biblatex-specific name highlighting;
+% these macros rely on biblatex internals and are commented out to keep the
+% BibTeX workflow clean.
+% \definecolor{citehighlight}{RGB}{255, 255, 180}  % Light yellow highlight
+% \renewcommand{\mkbibnamefamily}[1]{\colorbox{citehighlight}{#1}}
+% \renewcommand{\mkbibnamegiven}[1]{\colorbox{citehighlight}{#1}}
 
 
 
@@ -96,6 +130,20 @@
     hscale=0.77,
     vscale=0.8
 }
+
+%% Better typography and justification settings
+% Improve line breaking and hyphenation
+\tolerance=1000
+\emergencystretch=3em
+\hbadness=2000
+\vbadness=2000
+
+% Better spacing
+\setlength{\parindent}{1.5em}
+\setlength{\parskip}{0pt plus 0.5pt}
+
+% Improve justification with ragged2e
+\RaggedRightParindent=1.5em
 
 % Colors and tikz styles
 \input{styling.tex}
@@ -344,8 +392,10 @@
 % Avoid hbox overfull in the bibliography:
 \emergencystretch=1em
 
-% Set bibliography step size
-\setlength\bibitemsep{6pt}
+% Set bibliography step size (biblatex provided \bibitemsep; comment out for
+% classical BibTeX/natbib workflow. If you want extra spacing, enable the
+% setspace or use \setlength{\bibsep}{6pt} when using natbib with natbib.cfg.)
+% \setlength\bibitemsep{6pt}
 
 % Set white space in lists
 \setlist{itemsep=-2pt}

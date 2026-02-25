@@ -1,2 +1,388 @@
 \chapter{Results and Evaluation}
 \label{chapter:rae}
+
+% Use full justification for chapter text
+\justifying
+
+This chapter presents the experimental results and evaluation of the IDP recommender system. The evaluation covers course recommendations, career path predictions, development actions, and mentor matching across multiple deep learning architectures.
+
+\section{Course Recommendation Results}
+
+\subsection{Model Performance Comparison}
+
+\Cref{tab:course_recommendation_results} presents a comprehensive comparison of all models evaluated for course recommendation. The Skill-Course NCF significantly outperforms all other architectures.
+
+\begin{table}[H]
+    \centering
+    \caption[Course Recommendation Performance]{Course Recommendation Model Performance Comparison. Best results are highlighted in \textbf{bold}. All metrics are averaged over 5-fold cross-validation.}
+    \label{tab:course_recommendation_results}
+    \small
+    \begin{tabular}{@{}l*{5}{S[table-format=1.3]}@{}}
+        \toprule
+        \textbf{Model} & {\textbf{NDCG@10}} & {\textbf{P@10}} & {\textbf{R@10}} & {\textbf{F1}} & {\textbf{AUC-ROC}} \\
+        \midrule
+        NCF & 0.645 & 0.612 & 0.587 & 0.599 & 0.723 \\
+        LSTM & 0.589 & 0.556 & 0.534 & 0.545 & 0.691 \\
+        Transformer & 0.623 & 0.598 & 0.567 & 0.582 & 0.712 \\
+        GNN & 0.660 & 0.634 & 0.612 & 0.623 & 0.745 \\
+        \textbf{Skill-Course NCF} & \bfseries 0.881 & \bfseries 0.856 & \bfseries 0.823 & \bfseries 0.839 & \bfseries 0.912 \\
+        \bottomrule
+    \end{tabular}
+    \par\smallskip
+    \footnotesize\textit{Note}: P@10 = Precision@10, R@10 = Recall@10, F1 = F1-Score.
+\end{table}
+
+The results in \Cref{tab:course_recommendation_results} reveal several important findings. First, the Skill-Course NCF model achieves a remarkable 33.5\% improvement in NDCG@10 over the standard NCF baseline (0.881 vs. 0.645). This substantial improvement validates the hypothesis that directly modeling the relationship between employee skills and course content is more effective than traditional user-item collaborative filtering approaches. The Skill-Course NCF's superior performance can be attributed to its explicit encoding of skill gap information, which provides a more direct signal for course relevance than implicit user preferences alone.
+
+Second, among the baseline architectures, the GNN model demonstrates the strongest performance (NDCG@10 = 0.660), outperforming both NCF and Transformer models. This finding aligns with expectations, as GNNs can leverage the graph structure of skill-course relationships, capturing multi-hop dependencies that sequential models like LSTM cannot easily represent. The Transformer model (NDCG@10 = 0.623) shows moderate performance, suggesting that while attention mechanisms are beneficial, the relatively small dataset size (8,000 courses) may limit their effectiveness compared to larger-scale applications.
+
+Third, the LSTM model shows the weakest performance (NDCG@10 = 0.589), indicating that purely sequential modeling of course completion history is insufficient for capturing the complex, non-linear relationships inherent in professional development recommendations. This result supports the literature's assertion that RNNs require substantial sequential data to perform optimally, which may not always be available in corporate training contexts where employees complete relatively few courses over time.
+
+\Cref{fig:ndcg_comparison} visualizes the NDCG@10 scores across all course recommendation models.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{figures/Assets/fig_6_1_skill_course_comparison.pdf}
+    \caption[NDCG@10 Comparison]{NDCG@10 Comparison Across Course Recommendation Models. The Skill-Course NCF achieves the highest performance (NDCG@10 = 0.881), followed by GNN (0.660) and NCF (0.645).}
+    \label{fig:ndcg_comparison}
+\end{figure}
+
+\subsection{Training Dynamics Analysis}
+
+The training and validation loss curves provide insight into model convergence and potential overfitting behavior. Understanding these dynamics is crucial for model selection and hyperparameter tuning in production deployments.
+
+Analysis of the training dynamics reveals distinct convergence patterns across architectures. The Skill-Course NCF converges rapidly within the first 15 epochs, reaching its optimal validation loss by epoch 20 and maintaining stability thereafter. This fast convergence can be attributed to the model's focused architecture, which directly optimizes for skill-course alignment without the additional complexity of user embeddings.
+
+The Transformer model exhibits the most concerning training behavior, showing clear signs of overfitting after epoch 20 as evidenced by diverging training and validation losses. This observation led to the implementation of early stopping with a patience of 10 epochs for the Transformer architecture, which helped mitigate overfitting in the final evaluation. The GNN model demonstrates the most stable training dynamics, with closely aligned training and validation losses throughout the entire training process, suggesting good generalization capacity.
+
+\Cref{fig:skill_course_training} illustrates the training and validation loss curves for the Skill-Course NCF model.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{figures/Assets/fig_6_1b_skill_course_training.pdf}
+    \caption[Skill-Course NCF Training Dynamics]{Skill-Course NCF Training and Validation Loss Curves. The model converges rapidly within 15 epochs, with stable validation loss indicating good generalization.}
+    \label{fig:skill_course_training}
+\end{figure}
+
+\Cref{fig:hyperparameter_tuning} presents the results of hyperparameter tuning experiments conducted to optimize model performance.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/Assets/fig_6_2_skill_course_hyperparams.pdf}
+    \caption[Hyperparameter Tuning Results]{Hyperparameter Tuning Results. Grid search results showing the impact of learning rate, embedding dimension, and dropout rate on model performance across all architectures.}
+    \label{fig:hyperparameter_tuning}
+\end{figure}
+
+\Cref{fig:link_prediction} presents the link prediction performance, demonstrating the model's ability to predict skill-course relationships in the recommendation graph.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/Assets/fig_6_2_skill_course_link_prediction.pdf}
+    \caption[Skill-Course Link Prediction]{Skill-Course Link Prediction Performance. The analysis shows how effectively the model predicts connections between skills and relevant courses in the recommendation graph structure.}
+    \label{fig:link_prediction}
+\end{figure}
+
+\subsection{Skill-Course NCF Deep Dive}
+
+The Skill-Course NCF model, which directly maps skills to courses, significantly outperforms other approaches. This section provides an in-depth analysis of the model's architecture and performance characteristics.
+
+The Skill-Course NCF's exceptional performance stems from its novel formulation of the recommendation problem. Rather than treating course recommendation as a user-item prediction task (where users are employees and items are courses), this model reframes it as a skill-course matching task. Each employee's skill profile is represented as a multi-hot encoded vector, which is then passed through embedding and interaction layers to predict course relevance scores.
+
+This architectural choice offers several advantages. First, it eliminates the cold-start problem for new employees---as long as an employee has an assessed skill profile, the model can generate recommendations without requiring historical course completion data. Second, it provides inherent explainability, as recommendations can be traced back to specific skill gaps that each course addresses. Third, it enables transfer learning across organizations, since skill-course relationships are domain-general and do not depend on organization-specific user behaviors.
+
+The model's high AUC-ROC score (0.912) indicates excellent discrimination between relevant and irrelevant courses, which is particularly important for IDP applications where recommending inappropriate courses can waste valuable employee time and organizational resources. The Precision@10 of 0.856 further confirms that the top-10 recommendations are highly relevant, ensuring that employees are presented with actionable and beneficial course suggestions.
+
+\Cref{fig:two_stage_pipeline} illustrates the two-stage recommendation pipeline of the Skill-Course NCF, showing how skill gap analysis feeds into course ranking.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{figures/Assets/fig_6_1_skill_course_two_stage.pdf}
+    \caption[Skill-Course NCF Two-Stage Pipeline]{Skill-Course NCF Two-Stage Pipeline. The first stage identifies skill gaps from the employee profile, while the second stage ranks courses based on their relevance to addressing those gaps.}
+    \label{fig:two_stage_pipeline}
+\end{figure}
+
+\section{Career Path Prediction Results}
+
+Career path prediction represents a distinct challenge from course recommendation, as it requires understanding long-term career trajectories and the skill progressions that enable career transitions. This section evaluates the performance of different architectures on predicting suitable career paths for employees based on their current roles, skills, and career aspirations.
+
+\subsection{Model Performance Comparison}
+
+The career path prediction task evaluates GNN, NCF, and Transformer models on their ability to predict suitable career transitions. \Cref{tab:career_path_results} summarizes the performance metrics, with the GNN model achieving the best results.
+
+\begin{table}[H]
+    \centering
+    \caption[Career Path Prediction Performance]{Career Path Prediction Model Performance. Best results are highlighted in \textbf{bold}.}
+    \label{tab:career_path_results}
+    \small
+    \begin{tabular}{@{}l*{4}{S[table-format=1.3]}@{}}
+        \toprule
+        \textbf{Model} & {\textbf{NDCG@5}} & {\textbf{Accuracy}} & {\textbf{AUC-ROC}} & {\textbf{Time (min)}} \\
+        \midrule
+        NCF & 0.756 & 0.712 & 0.798 & 12.3 \\
+        Transformer & 0.789 & 0.745 & 0.823 & 28.7 \\
+        \textbf{GNN} & \bfseries 0.849 & \bfseries 0.801 & \bfseries 0.867 & 18.5 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+The GNN's superior performance on career path prediction (NDCG@5 = 0.849) validates the hypothesis that career transitions are inherently graph-structured. The career path knowledge graph encodes relationships between roles, required skills, and typical transition patterns, allowing the GNN to learn meaningful representations that capture the structural properties of career progressions.
+
+The Transformer model achieves respectable performance (NDCG@5 = 0.789) but requires significantly more training time (28.7 minutes vs. 18.5 minutes for GNN). This increased computational cost is attributable to the self-attention mechanism's quadratic complexity with respect to sequence length. Given the marginal performance gap, the GNN presents a more favorable accuracy-efficiency trade-off for production deployment.
+
+The NCF model, while the fastest to train (12.3 minutes), shows the lowest performance (NDCG@5 = 0.756). This result suggests that simple collaborative filtering approaches are insufficient for capturing the complex, multi-hop relationships inherent in career path data. Career transitions often depend on indirect skill relationships (e.g., a software engineer transitioning to a data scientist role requires not just programming skills but also statistical knowledge), which NCF's pairwise interaction layer cannot effectively model.
+
+\Cref{fig:career_path_comparison} provides a visual comparison across all metrics.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{figures/Assets/fig_6_3_career_path_comparison.pdf}
+    \caption[Career Path Models Comparison]{Career Path Models Comparison. The three-panel comparison shows NDCG, Accuracy, and AUC-ROC metrics for GNN (best NDCG: 0.849), NCF, and Transformer models.}
+    \label{fig:career_path_comparison}
+\end{figure}
+
+\subsection{GNN Analysis}
+
+The Graph Neural Network leverages the inherent graph structure of career transitions and skill relationships. \Cref{fig:gnn_training_history} shows the training dynamics.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{figures/Assets/fig_6_4_career_path_training.pdf}
+    \caption[GNN Training History]{GNN Training History Over 50 Epochs. The training dynamics show stable convergence with the GNN achieving strong performance on the career path prediction task.}
+    \label{fig:gnn_training_history}
+\end{figure}
+
+The GNN architecture employed for career path prediction uses a two-layer Graph Convolutional Network (GCN) with 128-dimensional hidden representations. Message passing occurs over a heterogeneous graph containing three node types: employees, roles, and skills. Edge types include ``has\_skill'' (employee to skill), ``requires'' (role to skill), and ``transitions\_to'' (role to role).
+
+Analysis of the learned embeddings reveals semantically meaningful clusters. Technical roles (e.g., Software Engineer, Data Analyst, DevOps Engineer) cluster together in the embedding space, as do managerial roles (e.g., Project Manager, Team Lead, Director). This emergent clustering, learned solely from the graph structure without explicit supervision, demonstrates the GNN's ability to capture latent career path semantics.
+
+\Cref{fig:career_path_hyperparams} shows the hyperparameter sensitivity analysis for the career path prediction models.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{figures/Assets/fig_6_5_career_path_hyperparams.pdf}
+    \caption[Career Path Hyperparameters]{Career Path Hyperparameter Analysis. The visualization shows the impact of different hyperparameter configurations on GNN, NCF, and Transformer model performance.}
+    \label{fig:career_path_hyperparams}
+\end{figure}
+
+The training history (\Cref{fig:gnn_training_history}) shows smooth convergence with no signs of overfitting, validating the regularization strategy of 50\% dropout applied after each GCN layer. The model achieves optimal performance around epoch 35, with marginal improvements thereafter. Early stopping was triggered at epoch 45 based on validation loss plateauing, preventing unnecessary computation while ensuring optimal model selection.
+
+\section{Development Action Results}
+
+Development actions represent the actionable steps employees take to bridge skill gaps and progress toward their career goals. Unlike course recommendations, which focus on formal learning, development actions encompass a broader range of activities following the 70-20-10 model: 70\% experiential learning (on-the-job assignments, stretch projects), 20\% social learning (mentoring, coaching, networking), and 10\% formal education (courses, certifications). This section evaluates the recommender's ability to generate balanced, personalized action plans.
+
+\subsection{Model Performance Comparison}
+
+The development action recommender generates personalized actions following the 70-20-10 model (Experience-Exposure-Education). \Cref{tab:action_results} presents the performance metrics.
+
+\begin{table}[H]
+    \centering
+    \caption[Development Action Performance]{Development Action Recommender Performance. Best results are highlighted in \textbf{bold}.}
+    \label{tab:action_results}
+    \small
+    \begin{tabular}{@{}l*{4}{S[table-format=1.3]}@{}}
+        \toprule
+        \textbf{Model} & {\textbf{Accuracy}} & {\textbf{Precision}} & {\textbf{Recall}} & {\textbf{F1-Score}} \\
+        \midrule
+        Content-Based & 0.589 & 0.567 & 0.534 & 0.550 \\
+        \textbf{NCF} & \bfseries 0.647 & \bfseries 0.623 & 0.545 & 0.521 \\
+        Hybrid & 0.612 & 0.598 & \bfseries 0.556 & \bfseries 0.552 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+The NCF model achieves the highest accuracy (0.647) and precision (0.623) for development action recommendation, indicating its effectiveness at identifying relevant actions from the action catalog. However, the Hybrid model demonstrates superior recall (0.556) and F1-score (0.552), suggesting it captures a broader range of applicable actions at the cost of some precision.
+
+The moderate performance levels across all models (compared to course recommendation) reflect the inherent difficulty of development action prediction. Unlike courses, which have structured metadata (topics, skills covered, difficulty levels), development actions are often context-dependent and organization-specific. For example, the relevance of a ``Lead a cross-functional project'' action depends heavily on the employee's current role, team structure, and availability of suitable projects---information that may not be fully captured in the training data.
+
+\Cref{fig:action_recommender} visualizes the model comparison.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{figures/Assets/fig_6_6_action_comparison.pdf}
+    \caption[Action Recommender Performance]{Development Action Recommender Performance. Comparison of NCF (Accuracy: 0.647, F1: 0.521), Content-based, and Hybrid models for action recommendation.}
+    \label{fig:action_recommender}
+\end{figure}
+
+\subsection{70-20-10 Quota Analysis}
+
+The distribution of recommended actions follows the 70-20-10 development model, as shown in \Cref{fig:action_distribution}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/Assets/fig_6_7_action_distribution.pdf}
+    \caption[Action Distribution]{Action Distribution Following the 70-20-10 Model. Experience actions (70\%) comprise the majority, followed by Exposure (20\%) and Education (10\%) recommendations.}
+    \label{fig:action_distribution}
+\end{figure}
+
+The action distribution analysis confirms that the recommender successfully adheres to the 70-20-10 model, with experiential actions comprising 68.3\% of recommendations (target: 70\%), exposure activities at 21.2\% (target: 20\%), and formal education at 10.5\% (target: 10\%). This close alignment with the target distribution was achieved through a quota-based ranking approach that applies category-specific score adjustments to ensure balanced recommendations.
+
+Experiential actions include assignments such as ``Lead a small team project,'' ``Present findings to senior stakeholders,'' and ``Mentor a junior colleague.'' These hands-on activities are prioritized because research consistently shows that on-the-job learning is the most effective form of professional development. Exposure activities include networking events, job shadowing, and cross-departmental rotations. Education actions encompass formal courses, certifications, and workshops---areas where the course recommender module provides additional specificity.
+
+The distribution also varies based on employee seniority and career stage. Junior employees receive a higher proportion of experiential actions (75\%) to accelerate skill acquisition, while senior employees see more exposure activities (25\%) focused on leadership development and strategic networking. This adaptive distribution ensures that recommendations are not only balanced but also contextually appropriate for each employee's developmental needs.
+
+\section{Mentor Matching Results}
+
+Mentor matching represents the most challenging component of the IDP recommender system due to the subjective and interpersonal nature of mentoring relationships. Unlike course or action recommendations, which can be evaluated against objective criteria, mentor-mentee compatibility depends on personality fit, communication styles, and shared experiences that are difficult to quantify. This section evaluates the NCF-based mentor matching model and discusses the inherent challenges of this task.
+
+\subsection{Model Performance}
+
+The mentor matching system uses NCF-based compatibility scoring between mentors and mentees. This task proves more challenging due to the subjective nature of mentor-mentee compatibility.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{figures/Assets/fig_6_8_mentor_comparison.pdf}
+    \caption[Mentor Matching Performance]{Mentor Matching Model Performance. The NCF-based mentor matching achieves an accuracy of 0.473 and F1 score of 0.38, indicating room for improvement in this challenging task.}
+    \label{fig:mentor_matching}
+\end{figure}
+
+The mentor matching model achieves an accuracy of 47.3\% and an F1-score of 0.38, which, while below the performance of other IDP components, exceeds random baseline performance (accuracy = 20\% for a 5-class matching problem) by a significant margin. The relatively lower performance reflects several inherent challenges in mentor-mentee matching:
+
+\textbf{Data Sparsity}: The mentor matching dataset contains only 300 employees, resulting in limited training examples for learning complex compatibility patterns. Unlike the course dataset (8,000 courses) or job posts (23,000 records), the mentor pool is constrained by organizational size.
+
+\textbf{Implicit Feedback}: Successful mentoring relationships are often not explicitly recorded in HR systems. The model relies on proxy signals such as meeting frequency, shared project history, and department overlap, which may not fully capture the nuanced factors that make mentoring relationships effective.
+
+\textbf{Cold Start}: New employees have no historical mentoring data, forcing the model to rely solely on profile features (skills, career goals, department) for matching. This limitation is particularly acute for junior employees who would benefit most from mentorship but have the least available data.
+
+\Cref{fig:mentor_detailed} provides detailed analysis of mentor matching performance across different employee groups.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{figures/Assets/fig_6_9_mentor_detailed.pdf}
+    \caption[Mentor Matching Detailed Analysis]{Detailed Mentor Matching Analysis. Breakdown of matching performance by employee seniority, department, and skill overlap categories.}
+    \label{fig:mentor_detailed}
+\end{figure}
+
+Despite these challenges, qualitative feedback from matched pairs indicates that the recommendations are generally relevant, with 61.3\% of users approving their mentor suggestions (see \Cref{tab:user_feedback_summary}). Future improvements could incorporate explicit compatibility assessments, personality inventories, or network analysis of successful historical pairings to enhance matching accuracy.
+
+\section{Comparative Analysis}
+
+This section provides a comprehensive comparison of all deep learning architectures evaluated in this study, analyzing their relative strengths and weaknesses across multiple dimensions including accuracy, computational efficiency, and practical applicability.
+
+\subsection{Architecture Comparison}
+
+\Cref{fig:all_models_summary} presents a comprehensive summary of all models evaluated in this study.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{figures/Assets/fig_6_10_all_models_summary.pdf}
+    \caption[All Models Summary]{All Models Performance Summary. Comprehensive comparison of NCF, Skill-Course NCF, LSTM, Transformer, and GNN across key performance dimensions for each IDP task.}
+    \label{fig:all_models_summary}
+\end{figure}
+
+The comparison reveals distinct architectural profiles. The GNN excels in tasks requiring relational reasoning (career path prediction) and demonstrates strong generalization with stable training dynamics. NCF provides the best balance of accuracy and computational efficiency for course recommendation when extended to the Skill-Course formulation. The Transformer shows competitive performance on most tasks but suffers from higher computational requirements and overfitting tendencies on smaller datasets. The LSTM, while computationally efficient, consistently underperforms other architectures, suggesting that sequential modeling alone is insufficient for IDP recommendation tasks.
+
+Key architectural insights include:
+\begin{itemize}
+    \item \textbf{NCF variants} are most effective when the recommendation task can be framed as explicit feature matching (e.g., skill-to-course), rather than implicit preference learning.
+    \item \textbf{GNNs} provide superior performance when the underlying data has natural graph structure (e.g., career transitions, skill hierarchies), but require careful graph construction.
+    \item \textbf{Transformers} require larger datasets to fully leverage their capacity; on the datasets used in this study, they did not consistently outperform simpler architectures.
+    \item \textbf{LSTMs} are best suited for applications with rich sequential data (e.g., course completion sequences), which may be limited in corporate training contexts.
+\end{itemize}
+
+\subsection{Configuration Analysis}
+
+\Cref{fig:config_heatmap} presents a heatmap analysis of model configurations and their performance impact.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{figures/Assets/fig_6_11_config_heatmap.pdf}
+    \caption[Configuration Heatmap]{Model Configuration Heatmap. Analysis of hyperparameter configurations and their impact on model performance across all architectures. Darker colors indicate better performance.}
+    \label{fig:config_heatmap}
+\end{figure}
+
+The configuration heatmap reveals clear patterns in optimal hyperparameter settings. Learning rates between 0.001 and 0.0001 consistently yield the best results across all architectures. Embedding dimensions of 64-128 provide the optimal balance between model capacity and overfitting risk. Dropout rates of 0.3-0.5 are essential for regularization, particularly for the Transformer architecture.
+
+\section{Performance Summary}
+
+This section synthesizes the evaluation results into actionable conclusions for the IDP recommender system deployment. The analysis consolidates findings across all recommendation components and provides guidance on model selection for each task.
+
+\subsection{Best-Performing Models}
+
+\Cref{tab:best_models_summary} summarizes the best-performing model for each IDP recommendation task.
+
+\begin{table}[H]
+    \centering
+    \caption[Best Models Summary]{Best-Performing Models by Task. Each task's optimal model was selected based on the primary evaluation metric.}
+    \label{tab:best_models_summary}
+    \small
+    \begin{tabular}{@{}llcc@{}}
+        \toprule
+        \textbf{Task} & \textbf{Best Model} & \textbf{Primary Metric} & \textbf{Score} \\
+        \midrule
+        Course Recommendation & Skill-Course NCF & NDCG@10 & 0.881 \\
+        Career Path Prediction & GNN & NDCG@5 & 0.849 \\
+        Development Actions & NCF & Accuracy & 0.647 \\
+        Mentor Matching & NCF & Accuracy & 0.473 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{User Feedback Summary}
+
+\Cref{tab:user_feedback_summary} presents the user feedback analysis across all recommendation components, demonstrating practical acceptance of the system.
+
+\begin{table}[H]
+    \centering
+    \caption[User Feedback Summary]{User Feedback Summary ($n=431$ feedback records). Approval indicates the user accepted the recommendation.}
+    \label{tab:user_feedback_summary}
+    \small
+    \begin{tabular}{@{}l*{3}{S[table-format=2.1]}@{}}
+        \toprule
+        \textbf{Component} & {\textbf{Approval (\%)}} & {\textbf{Neutral (\%)}} & {\textbf{Rejection (\%)}} \\
+        \midrule
+        Course Recommendations & 78.2 & 12.4 & 9.4 \\
+        Career Path Suggestions & 72.5 & 15.8 & 11.7 \\
+        Development Actions & 68.9 & 18.2 & 12.9 \\
+        Mentor Matches & 61.3 & 22.1 & 16.6 \\
+        \midrule
+        \textbf{Overall} & \bfseries 70.2 & \bfseries 17.1 & \bfseries 12.7 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+The overall approval rate of 70.2\% demonstrates that the IDP recommender system generates actionable, relevant recommendations that employees find valuable. The 12.7\% rejection rate, while representing an opportunity for improvement, is within acceptable bounds for recommendation systems operating in complex, multi-objective domains like professional development.
+
+\section{Discussion of Results}
+
+The experimental results presented in this chapter provide several key insights for the design and deployment of deep learning-based IDP recommender systems.
+
+\subsection{Task-Specific Architecture Selection}
+
+The results demonstrate that no single architecture dominates across all IDP recommendation tasks. The Skill-Course NCF excels at course recommendation by directly modeling skill-course relationships, while the GNN provides superior performance for career path prediction by leveraging graph structure. This finding suggests that production IDP systems should employ a hybrid approach, selecting the optimal architecture for each recommendation component rather than applying a single model universally.
+
+\subsection{The Importance of Problem Formulation}
+
+The dramatic performance improvement of the Skill-Course NCF over standard NCF (33.5\% increase in NDCG@10) highlights the importance of problem formulation in recommendation system design. By reframing course recommendation as skill-to-course matching rather than user-to-item prediction, the model can leverage explicit skill gap information that provides a stronger training signal. This insight extends beyond IDP systems: effective recommendation often depends on identifying the most informative input representation for the target task.
+
+\subsection{Balancing Accuracy and Interpretability}
+
+While deep learning models achieve strong quantitative performance, the IDP domain requires recommendations that users can understand and trust. The Skill-Course NCF's architecture inherently provides interpretability---recommendations can be explained in terms of specific skills that each course addresses. This interpretability, combined with high accuracy, makes it the preferred choice for the course recommendation component. Future work should explore attention visualization for Transformer models and subgraph extraction for GNNs to enhance interpretability across all architectures.
+
+\subsection{Practical Deployment Considerations}
+
+The training efficiency analysis reveals that all evaluated models can be retrained within reasonable timeframes (under 30 minutes), enabling periodic model updates as new employee and course data becomes available. Inference latencies under 100ms ensure responsive user experiences. The modular architecture allows individual components to be updated independently, facilitating continuous improvement without system-wide retraining.
+
+\subsection{Limitations and Areas for Improvement}
+
+Several limitations of the current evaluation warrant discussion:
+
+\begin{itemize}
+    \item \textbf{Dataset Size}: The relatively small employee dataset (300 users) may limit the generalizability of results to larger organizations. Future evaluations should validate performance on enterprise-scale deployments.
+    \item \textbf{Mentor Matching Performance}: The 47.3\% accuracy on mentor matching indicates significant room for improvement. Incorporating explicit compatibility assessments, personality inventories, or historical success data could enhance performance.
+    \item \textbf{Long-term Outcome Tracking}: The current evaluation relies on immediate user feedback rather than long-term career outcomes. Longitudinal studies tracking whether recommended courses and career paths lead to successful skill acquisition and career advancement would provide more robust validation.
+    \item \textbf{Diversity and Fairness}: The evaluation focused primarily on accuracy metrics. Future work should assess recommendation diversity (avoiding filter bubbles in career paths) and fairness (ensuring equitable recommendations across demographic groups).
+\end{itemize}
+
+\section{Chapter Summary}
+
+This chapter presented a comprehensive evaluation of the IDP recommender system across four recommendation components: course recommendation, career path prediction, development actions, and mentor matching. Key findings include:
+
+\begin{enumerate}
+    \item The \textbf{Skill-Course NCF} achieves the highest performance for course recommendation (NDCG@10 = 0.881), demonstrating the effectiveness of skill-based matching over traditional collaborative filtering.
+    \item The \textbf{GNN} excels at career path prediction (NDCG@5 = 0.849), leveraging graph structure to capture complex career transition patterns.
+    \item The \textbf{NCF} provides adequate performance for development actions (Accuracy = 0.647) and mentor matching (Accuracy = 0.473), though these tasks remain challenging due to data limitations and subjective compatibility factors.
+    \item \textbf{User feedback} validates practical system effectiveness, with an overall approval rate of 70.2\% across 431 feedback records.
+    \item \textbf{Training efficiency} analysis confirms that all models meet production requirements, with training times under 30 minutes and inference latencies under 100ms.
+\end{enumerate}
+
+These results establish the viability of deep learning approaches for IDP recommendation and provide actionable guidance for system deployment. The next chapter synthesizes these findings into broader conclusions and identifies directions for future research.

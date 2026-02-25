@@ -1,0 +1,630 @@
+\chapter{Implementation}
+\label{chapter:implementation}
+
+% Use full justification for chapter text
+\justifying
+
+This chapter presents the implementation of the IDP recommender system, covering the system architecture, data collection and preprocessing, model implementations, and API integration. The chapter is organized into six sections: (1) system architecture and technology stack, (2) data collection and datasets, (3) data preprocessing pipeline, (4) model architectures and training, (5) API implementation, and (6) system integration with the TrainEase LMS platform.
+
+%======================================================================
+%  SECTION 5.1: SYSTEM ARCHITECTURE
+%======================================================================
+
+\section{System Architecture}
+\label{sec:system_architecture}
+
+The IDP recommender system follows a three-tier architecture consisting of a Data Layer, Model Layer, and API Layer. \Cref{fig:system_architecture} illustrates the complete system architecture.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/Assets/tikz/fig_5_1_system_architecture.pdf}
+    \caption[System Architecture]{System Architecture Diagram. The three-tier architecture shows the Julia ML backend, REST API layer, and Laravel/Livewire frontend integration.}
+    \label{fig:system_architecture}
+\end{figure}
+
+\subsection{Technology Stack}
+
+The implementation leverages Julia 1.11 with Flux.jl for deep learning, providing a balance between development speed and computational performance. \Cref{tab:tech_stack} summarizes the technology stack.
+
+\begin{table}[H]
+    \centering
+    \caption[Technology Stack]{Technology Stack for the IDP Recommender System.}
+    \label{tab:tech_stack}
+    \small
+    \begin{tabular}{@{}ll@{}}
+        \toprule
+        \textbf{Component} & \textbf{Technology} \\
+        \midrule
+        Programming Language & Julia 1.11 \\
+        Deep Learning Framework & Flux.jl \\
+        Data Processing & DataFrames.jl, CSV.jl \\
+        Visualization & Plots.jl, StatsPlots.jl \\
+        Model Serialization & BSON.jl \\
+        API Framework & HTTP.jl, JSON3.jl \\
+        Frontend Integration & Laravel, Livewire \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{Hardware Environment}
+
+All experiments were conducted on a standard workstation environment with the following specifications:
+
+\begin{table}[H]
+    \centering
+    \caption[Hardware Environment]{Hardware Environment for Model Training and Evaluation.}
+    \label{tab:hardware}
+    \small
+    \begin{tabular}{@{}ll@{}}
+        \toprule
+        \textbf{Component} & \textbf{Specification} \\
+        \midrule
+        Processor & Intel Core i7 (8 cores) \\
+        Memory & 16GB RAM \\
+        Storage & 512GB SSD \\
+        Training Mode & CPU-based \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+%======================================================================
+%  SECTION 5.2: DATA COLLECTION
+%======================================================================
+
+\section{Data Collection}
+\label{sec:data_collection}
+
+\subsection{Dataset Overview}
+
+The IDP recommender system utilizes multiple heterogeneous datasets organized within the \texttt{Data/} directory structure. \Cref{fig:dataset_overview} provides a visual overview of the primary datasets, and \Cref{tab:dataset_overview} summarizes their characteristics and model associations.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.75\textwidth]{figures/Assets/fig_5_1_dataset_overview.pdf}
+    \caption[Dataset Overview]{Dataset Overview. The four primary datasets and their record counts serving the 4-Model IDP architecture.}
+    \label{fig:dataset_overview}
+\end{figure}
+
+\begin{table}[H]
+    \centering
+    \caption[Dataset Summary]{Dataset Summary and Model Usage. Each dataset serves specific models within the 4-Model IDP architecture.}
+    \label{tab:dataset_overview}
+    \small
+    \begin{tabular}{@{}llrl@{}}
+        \toprule
+        \textbf{Dataset File} & \textbf{Purpose} & \textbf{Records} & \textbf{Used By} \\
+        \midrule
+        \texttt{Online\_Courses.csv} & Skill-Course mapping & 8,092 & Model 1 \\
+        \texttt{all\_job\_post.csv} & Job-skill relationships & $\sim$14,000 & Model 1 \\
+        \texttt{usa\_job\_posting\_dataset.csv} & Additional job-skills & $\sim$9,000 & Model 1 \\
+        \texttt{jobstreet\_all\_job\_dataset.csv} & Job market insights & 13,834 & Integration \\
+        \texttt{career\_path\_in\_all\_field.csv} & Career transitions & 9,000 & Model 2 \\
+        \texttt{employee\_data.csv} & Employee profiles & 300 & Models 3 \& 4 \\
+        \texttt{user\_feedback.csv} & System feedback & 431 & Evaluation \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+The datasets are organized with supporting subdirectories:
+
+\begin{itemize}
+    \item \texttt{development\_actions/} --- 70-20-10 action catalog data for Model 3
+    \item \texttt{mentoring/} --- Mentor-mentee relationship data (136 mentors, 151 mentees, 268 pairs)
+    \item \texttt{extracted/} --- Processed and extracted feature representations
+    \item \texttt{integrated/} --- Integrated data views combining courses with employee profiles
+    \item \texttt{processed/} --- Preprocessed datasets ready for model training
+\end{itemize}
+
+%----------------------------------------------------------------------
+\subsubsection{Online Courses Dataset}
+%----------------------------------------------------------------------
+
+The Online Courses dataset aggregates learning content from multiple online learning platforms, providing the foundation for skill-to-course recommendations in Model 1. The dataset contains 8,092 course records with the schema presented in \Cref{tab:courses_schema}.
+
+\begin{table}[H]
+    \centering
+    \caption[Online Courses Schema]{Online Courses Dataset Schema (8,092 records).}
+    \label{tab:courses_schema}
+    \small
+    \begin{tabular}{@{}llp{7cm}@{}}
+        \toprule
+        \textbf{Column} & \textbf{Type} & \textbf{Description} \\
+        \midrule
+        Course Name & String & Title of the course \\
+        Skills & String & Comma-separated list of skills taught \\
+        Category & String & Course category (Technology, Business, etc.) \\
+        Difficulty & String & Beginner, Intermediate, or Advanced \\
+        Duration & Numeric & Course length in hours \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\Cref{fig:course_distribution} presents the distribution of courses across categories.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/Assets/fig_5_2_course_distribution.pdf}
+    \caption[Course Distribution by Category]{Course Distribution by Category. The dataset spans multiple professional domains with Technology and Business representing the largest categories.}
+    \label{fig:course_distribution}
+\end{figure}
+
+%----------------------------------------------------------------------
+\subsubsection{Job Postings Datasets}
+%----------------------------------------------------------------------
+
+Three job posting datasets provide comprehensive job-skill relationship data. The primary dataset (\texttt{all\_job\_post.csv}) contains approximately 14,000 records, supplemented by the USA Job Posting Dataset ($\sim$9,000 records) and JobStreet Dataset (13,834 records).
+
+For Model 1 (Skill-Course), \texttt{all\_job\_post.csv} and \texttt{usa\_job\_posting\_dataset.csv} are combined to create approximately 23,000 job postings for comprehensive skill-course matching. \Cref{fig:job_distribution} shows the combined distribution.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/Assets/fig_5_3_job_distribution.pdf}
+    \caption[Job Posting Distribution]{Job Posting Distribution by Industry. The combined dataset covers diverse industry sectors enabling broad skill coverage.}
+    \label{fig:job_distribution}
+\end{figure}
+
+%----------------------------------------------------------------------
+\subsubsection{Career Paths Dataset}
+%----------------------------------------------------------------------
+
+The Career Paths dataset (\texttt{career\_path\_in\_all\_field.csv}) contains 9,000 records spanning 15 professional fields (Technology, Finance, Healthcare, Education, Engineering, Marketing, Sales, Human Resources, Legal, Operations, Research, Design, Management, Consulting, and Other).
+
+From this dataset, the preprocessing pipeline derives:
+\begin{itemize}
+    \item \textbf{Career Transitions} (450 pairs): Career-to-career transition patterns with cosine similarity scores
+    \item \textbf{Career Skill Profiles} (90 unique careers): Average skill importance ratings per career
+\end{itemize}
+
+%----------------------------------------------------------------------
+\subsubsection{Employee and Mentoring Data}
+%----------------------------------------------------------------------
+
+The Employee dataset (\texttt{employee\_data.csv}) contains 300 organizational employee records, serving both the Development Action (Model 3) and Mentor Matching (Model 4) components. \Cref{tab:mentoring_stats} presents the mentoring statistics.
+
+\begin{table}[H]
+    \centering
+    \caption[Mentoring Statistics]{Mentoring Dataset Statistics.}
+    \label{tab:mentoring_stats}
+    \small
+    \begin{tabular}{@{}lr@{}}
+        \toprule
+        \textbf{Metric} & \textbf{Count} \\
+        \midrule
+        Unique Mentors & 136 \\
+        Unique Mentees & 151 \\
+        Mentor-Mentee Pairs & 268 \\
+        Completed Relationships & 233 \\
+        Recorded Sessions & 5,922 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+%======================================================================
+%  SECTION 5.3: DATA PREPROCESSING
+%======================================================================
+
+\section{Data Preprocessing}
+\label{sec:preprocessing}
+
+\subsection{Preprocessing Pipeline}
+
+The preprocessing pipeline transforms raw CSV data into model-ready training samples through a four-stage process. \Cref{fig:preprocessing_pipeline} illustrates the complete pipeline architecture.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/Assets/tikz/fig_5_2_data_flow.pdf}
+    \caption[Data Preprocessing Pipeline]{Data Preprocessing Pipeline. The four-stage pipeline transforms raw datasets through cleaning, normalization, feature extraction, and pair generation.}
+    \label{fig:preprocessing_pipeline}
+\end{figure}
+
+%----------------------------------------------------------------------
+\subsubsection{Stage 1: Data Cleaning}
+%----------------------------------------------------------------------
+
+The data cleaning stage ensures data quality through:
+\begin{itemize}
+    \item \textbf{CSV Loading}: Raw data ingestion with automatic type inference
+    \item \textbf{Null Removal}: Rows with missing required fields are excluded
+    \item \textbf{Duplicate Removal}: Deduplication by primary key
+    \item \textbf{Language Filtering}: Non-English content removal for NLP consistency
+\end{itemize}
+
+%----------------------------------------------------------------------
+\subsubsection{Stage 2: Text Normalization}
+%----------------------------------------------------------------------
+
+Text fields undergo standardization:
+\begin{itemize}
+    \item \textbf{Lowercase Conversion}: All text converted to lowercase
+    \item \textbf{Whitespace Trimming}: Leading and trailing whitespace removed
+    \item \textbf{Punctuation Standardization}: Special characters normalized
+    \item \textbf{Stop Word Removal}: Common words removed from descriptions
+\end{itemize}
+
+%----------------------------------------------------------------------
+\subsubsection{Stage 3: Feature Engineering}
+%----------------------------------------------------------------------
+
+Feature engineering transforms cleaned data into model inputs:
+\begin{itemize}
+    \item \textbf{Skill Parsing}: Comma-separated skill strings split into tokens
+    \item \textbf{Vocabulary Construction}: Unified skill vocabulary (1,247 unique skills)
+    \item \textbf{One-Hot Encoding}: Categorical features converted to binary vectors
+    \item \textbf{Embedding Initialization}: Learnable embeddings initialized for models
+\end{itemize}
+
+%----------------------------------------------------------------------
+\subsubsection{Stage 4: Pair Generation}
+%----------------------------------------------------------------------
+
+Training pairs are generated with negative sampling:
+\begin{itemize}
+    \item \textbf{Positive Pairs}: Create (entity1, entity2, 1) from known relationships
+    \item \textbf{Negative Sampling}: Sample non-matching pairs at 4:1 or 5:1 ratio
+    \item \textbf{Stratified Splitting}: 70\% training, 15\% validation, 15\% test
+\end{itemize}
+
+%----------------------------------------------------------------------
+\subsection{Training Data Statistics}
+%----------------------------------------------------------------------
+
+\Cref{tab:training_stats} presents the final training data statistics for each model.
+
+\begin{table}[H]
+    \centering
+    \caption[Training Data Statistics]{Training Data Statistics. All models use negative sampling to address class imbalance.}
+    \label{tab:training_stats}
+    \small
+    \begin{tabular}{@{}lrrrrrr@{}}
+        \toprule
+        \textbf{Model} & \textbf{Positive} & \textbf{Negative} & \textbf{Train} & \textbf{Val} & \textbf{Test} & \textbf{Neg:Pos} \\
+        \midrule
+        Skill-Course & 12,895 & 51,580 & 45,132 & 9,671 & 9,672 & 4:1 \\
+        Career Path & 450 & 2,250 & 1,889 & 405 & 406 & 5:1 \\
+        Dev Action & 2,100 & 8,400 & 7,350 & 1,575 & 1,575 & 4:1 \\
+        Mentor Match & 233 & 932 & 816 & 175 & 174 & 4:1 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\Cref{fig:training_stats} visualizes the training data distribution.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/Assets/fig_5_5_training_data_stats.pdf}
+    \caption[Training Data Visualization]{Training Data Statistics Visualization. Sample counts and split distributions for each model component.}
+    \label{fig:training_stats}
+\end{figure}
+
+%======================================================================
+%  SECTION 5.4: MODEL IMPLEMENTATION
+%======================================================================
+
+\section{Model Implementation}
+\label{sec:model_implementation}
+
+This section presents the deep learning architectures implemented for each IDP component. All models are implemented in Julia using Flux.jl, which provides automatic differentiation and GPU acceleration capabilities.
+
+%----------------------------------------------------------------------
+\subsection{Neural Collaborative Filtering (NCF)}
+%----------------------------------------------------------------------
+
+The NCF architecture represents the core recommendation engine, combining the strengths of matrix factorization with deep neural networks. The model learns latent representations for both users (employees) and items (courses, actions) through embedding layers, then captures complex interaction patterns through a multi-layer perceptron.
+
+\Cref{fig:ncf_architecture} illustrates the NCF architecture.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.65\textwidth]{figures/Assets/tikz/fig_5_4_ncf_architecture.pdf}
+    \caption[NCF Architecture]{NCF Architecture Diagram. The model combines a GMF branch (element-wise product) with an MLP branch (deep feature interaction) through a fusion layer.}
+    \label{fig:ncf_architecture}
+\end{figure}
+
+The architecture consists of two parallel branches:
+\begin{itemize}
+    \item \textbf{GMF Branch}: Captures linear interactions through element-wise products of user and item embeddings
+    \item \textbf{MLP Branch}: Models non-linear feature interactions through deep layers with ReLU activation and dropout
+\end{itemize}
+
+These branches are fused through concatenation and a final prediction layer with sigmoid activation to produce interaction probabilities.
+
+%----------------------------------------------------------------------
+\subsection{Graph Neural Network (GNN)}
+%----------------------------------------------------------------------
+
+The GNN architecture exploits the inherent graph structure in career and skill data. Skills, roles, and courses naturally form a graph where edges represent relationships such as ``skill required for role'' or ``career transition feasibility.''
+
+\Cref{fig:gnn_architecture} presents the GNN architecture for career path prediction.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.65\textwidth]{figures/Assets/tikz/fig_5_7_gnn_architecture.pdf}
+    \caption[GNN Architecture]{GNN Architecture for Career Path Prediction. The model uses message passing layers to aggregate neighborhood information and predict career transitions.}
+    \label{fig:gnn_architecture}
+\end{figure}
+
+The implementation uses a message-passing framework where each node aggregates information from its neighbors through learned transformations. Key architectural features:
+\begin{itemize}
+    \item \textbf{Embedding Layer}: Career $\rightarrow$ 64-dimensional representation
+    \item \textbf{Message Passing}: Two layers with 128-dimensional hidden states
+    \item \textbf{Link Prediction}: Concatenate $\rightarrow$ Dense(256 $\rightarrow$ 128) $\rightarrow$ Dropout(0.4) $\rightarrow$ Dense(1, sigmoid)
+\end{itemize}
+
+%----------------------------------------------------------------------
+\subsection{Transformer Model}
+%----------------------------------------------------------------------
+
+The Transformer architecture uses self-attention mechanisms for capturing complex dependencies in sequential recommendation tasks. \Cref{fig:transformer_architecture} presents the architecture.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.65\textwidth]{figures/Assets/tikz/fig_5_6_transformer_architecture.pdf}
+    \caption[Transformer Architecture]{Transformer Encoder Architecture. The model uses positional encoding, multi-head self-attention, feed-forward networks, and layer normalization.}
+    \label{fig:transformer_architecture}
+\end{figure}
+
+The core innovation is multi-head self-attention, which computes attention weights between all pairs of positions in the input sequence. Positional encodings provide sequence order information, and layer normalization with residual connections stabilize training.
+
+%----------------------------------------------------------------------
+\subsection{LSTM Model}
+%----------------------------------------------------------------------
+
+The LSTM architecture captures temporal patterns in employee learning behaviors and career progressions. \Cref{fig:lstm_architecture} shows the architecture.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.65\textwidth]{figures/Assets/tikz/fig_5_5_lstm_architecture.pdf}
+    \caption[LSTM Architecture]{LSTM Architecture Diagram. The sequential model uses item embeddings, LSTM layers for sequence modeling, and dense output layers.}
+    \label{fig:lstm_architecture}
+\end{figure}
+
+The LSTM cell contains three gates (forget, input, output) that control information flow, enabling the model to selectively remember relevant long-term patterns while filtering out noise.
+
+%----------------------------------------------------------------------
+\subsection{Model Hyperparameters}
+%----------------------------------------------------------------------
+
+\Cref{tab:model_hyperparameters} summarizes the hyperparameters used for training each model.
+
+\begin{table}[H]
+    \centering
+    \caption[Model Hyperparameters]{Model Hyperparameters for All Architectures.}
+    \label{tab:model_hyperparameters}
+    \small
+    \begin{tabular}{@{}lcccc@{}}
+        \toprule
+        \textbf{Hyperparameter} & \textbf{NCF} & \textbf{LSTM} & \textbf{Transformer} & \textbf{GNN} \\
+        \midrule
+        Embedding Dimension & 64 & 64 & 128 & 64 \\
+        Hidden Layers & 3 & 2 & 4 & 3 \\
+        Dropout Rate & 0.2 & 0.3 & 0.1 & 0.2 \\
+        Learning Rate & $10^{-3}$ & $10^{-3}$ & $10^{-4}$ & $10^{-2}$ \\
+        Batch Size & 64 & 32 & 64 & Full batch \\
+        Epochs & 100 & 50 & 100 & 50 \\
+        Optimizer & Adam & Adam & AdamW & Adam \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+%----------------------------------------------------------------------
+\section{IDP Component Implementation}
+\label{sec:idp_components}
+%----------------------------------------------------------------------
+
+This section describes the implementation of the four main IDP components, each leveraging the deep learning architectures described above.
+
+%----------------------------------------------------------------------
+\subsection{Model 1: Skill-Course Recommendation}
+%----------------------------------------------------------------------
+
+The Skill-Course NCF is a specialized variant designed for mapping skill gaps to relevant courses. \Cref{fig:skill_course_architecture} shows the architecture.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.65\textwidth]{figures/Assets/tikz/fig_5_8_skill_course_ncf.pdf}
+    \caption[Skill-Course Architecture]{Skill-Course Mapping Architecture. This NCF variant uses skill and course embeddings for direct relevance scoring.}
+    \label{fig:skill_course_architecture}
+\end{figure}
+
+The architecture learns separate embedding spaces for skills and courses, computing compatibility scores using both dot-product similarity and deep neural network layers. A greedy set-cover algorithm then selects courses that collectively address all identified skill gaps.
+
+%----------------------------------------------------------------------
+\subsection{Model 2: Career Path Prediction}
+%----------------------------------------------------------------------
+
+The career path predictor uses GNN to identify potential future roles based on current skills and career history. \Cref{fig:career_pipeline} illustrates the career path prediction pipeline.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.65\textwidth]{figures/Assets/tikz/fig_5_9_career_pipeline.pdf}
+    \caption[Career Path Pipeline]{Career Path Prediction Pipeline. The GNN processes the career graph to predict feasible transitions.}
+    \label{fig:career_pipeline}
+\end{figure}
+
+%----------------------------------------------------------------------
+\subsection{Model 3: Development Action Recommendation}
+%----------------------------------------------------------------------
+
+The action recommender implements the 70-20-10 learning model (70\% Experience, 20\% Exposure, 10\% Education). \Cref{fig:action_recommender_arch} shows the pipeline.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.65\textwidth]{figures/Assets/tikz/fig_5_10_action_recommender.pdf}
+    \caption[Action Recommender Pipeline]{Development Action Recommender Pipeline. The NCF-based system recommends actions following the 70-20-10 model.}
+    \label{fig:action_recommender_arch}
+\end{figure}
+
+%----------------------------------------------------------------------
+\subsection{Model 4: Mentor Matching}
+%----------------------------------------------------------------------
+
+The mentor matching component uses a Direct Matcher architecture with explicit skill overlap features. \Cref{fig:mentor_pipeline} illustrates the pipeline.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.65\textwidth]{figures/Assets/tikz/fig_5_11_mentor_pipeline.pdf}
+    \caption[Mentor Matching Pipeline]{Mentor Matching Pipeline. The Direct Matcher analyzes mentor and mentee features with skill overlap computation.}
+    \label{fig:mentor_pipeline}
+\end{figure}
+
+Key architectural innovations include:
+\begin{itemize}
+    \item \textbf{Hard Negative Sampling}: Sample similar but non-matching mentors (4:1 ratio)
+    \item \textbf{Explicit Skill Overlap Features}: Compute overlap between mentor expertise and mentee gaps
+    \item \textbf{Focal Loss}: Handle class imbalance with $\gamma = 2.0$
+\end{itemize}
+
+%======================================================================
+%  SECTION 5.5: API IMPLEMENTATION
+%======================================================================
+
+\section{API Implementation}
+\label{sec:api_implementation}
+
+The IDP recommender system exposes its functionality through a REST API implemented using Julia's HTTP.jl package.
+
+\subsection{REST API Endpoints}
+
+\Cref{tab:api_endpoints} presents the API endpoints available for integration with client applications.
+
+\begin{table}[H]
+    \centering
+    \caption[REST API Endpoints]{REST API Endpoints for the IDP Recommender System.}
+    \label{tab:api_endpoints}
+    \small
+    \begin{tabular}{@{}llll@{}}
+        \toprule
+        \textbf{Endpoint} & \textbf{Method} & \textbf{Description} & \textbf{Model} \\
+        \midrule
+        \texttt{/api/recommend/courses} & POST & Get course recommendations for skill gaps & Model 1 \\
+        \texttt{/api/predict/career} & POST & Predict next career transitions & Model 2 \\
+        \texttt{/api/recommend/actions} & POST & Get 70-20-10 development actions & Model 3 \\
+        \texttt{/api/match/mentor} & POST & Find matching mentors for employee & Model 4 \\
+        \texttt{/api/health} & GET & API health check & -- \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{Request and Response Format}
+
+All API endpoints accept JSON-formatted requests and return JSON responses. The following example demonstrates a typical course recommendation request:
+
+\textbf{Request:}
+\begin{verbatim}
+POST /api/recommend/courses
+{
+  "employee_id": 123,
+  "skill_gaps": ["python", "machine learning", "data analysis"]
+}
+\end{verbatim}
+
+\textbf{Response:}
+\begin{verbatim}
+{
+  "recommended_courses": [
+    {"course_id": 45, "name": "Python for Data Science", 
+     "coverage": ["python", "data analysis"]},
+    {"course_id": 89, "name": "ML Fundamentals", 
+     "coverage": ["machine learning"]}
+  ],
+  "total_coverage": 1.0,
+  "efficiency": 0.67
+}
+\end{verbatim}
+
+%======================================================================
+%  SECTION 5.6: SYSTEM INTEGRATION
+%======================================================================
+
+\section{System Integration}
+\label{sec:system_integration}
+
+The IDP recommender integrates with the TrainEase Learning Management System (LMS) built on Laravel and Livewire.
+
+\subsection{TrainEase LMS Integration}
+
+The integration architecture consists of three main components:
+
+\begin{enumerate}
+    \item \textbf{REST API}: HTTP endpoints for real-time recommendations
+    \item \textbf{Database Sync}: Employee data synchronization between Laravel (MySQL) and Julia
+    \item \textbf{Event Webhooks}: Course completion and feedback events trigger model updates
+\end{enumerate}
+
+\Cref{fig:integration_architecture} illustrates the integration architecture.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.75\textwidth]{figures/Assets/tikz/fig_5_12_integration_architecture.pdf}
+    \caption[Integration Architecture]{TrainEase LMS Integration Architecture. The Julia ML backend communicates with the Laravel frontend through REST APIs and database synchronization.}
+    \label{fig:integration_architecture}
+\end{figure}
+
+\subsection{Model Deployment}
+
+Trained models are serialized using BSON.jl and stored in the \texttt{models/} directory. \Cref{tab:model_files} presents the production model files.
+
+\begin{table}[H]
+    \centering
+    \caption[Production Model Files]{Production Model Files and Sizes.}
+    \label{tab:model_files}
+    \small
+    \begin{tabular}{@{}llr@{}}
+        \toprule
+        \textbf{Model File} & \textbf{Description} & \textbf{Size} \\
+        \midrule
+        \texttt{skill\_course\_ncf.bson} & Skill-Course Scorer & $\sim$2 MB \\
+        \texttt{career\_path/gnn\_enhanced.bson} & Career Path GNN & $\sim$1 MB \\
+        \texttt{action\_recommender/ncf\_production.bson} & Development Action NCF & $\sim$500 KB \\
+        \texttt{mentor\_matching/direct\_matcher\_v3.bson} & Mentor Direct Matcher & $\sim$1 MB \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+%======================================================================
+%  CHAPTER SUMMARY
+%======================================================================
+
+\section{Chapter Summary}
+\label{sec:chapter5_summary}
+
+This chapter presented the complete implementation of the IDP recommender system:
+
+\textbf{System Architecture:}
+\begin{itemize}
+    \item Three-tier architecture: Data Layer, Model Layer, API Layer
+    \item Julia 1.11 with Flux.jl for deep learning
+    \item REST API integration with TrainEase LMS (Laravel/Livewire)
+\end{itemize}
+
+\textbf{Data Collection:}
+\begin{itemize}
+    \item Online Courses (8,092 records) for skill-course mappings
+    \item Job Postings ($\sim$23,000 combined records) for skill vocabulary
+    \item Career Paths (9,000 records, 15 fields) for career transitions
+    \item Employee Data (300 records, 268 mentor pairs) for Models 3 and 4
+\end{itemize}
+
+\textbf{Data Preprocessing:}
+\begin{itemize}
+    \item Four-stage pipeline: cleaning, normalization, feature extraction, pair generation
+    \item Consistent 70/15/15 splits with 4:1 or 5:1 negative sampling
+    \item Unified skill vocabulary of 1,247 unique skills
+\end{itemize}
+
+\textbf{Model Implementation:}
+\begin{itemize}
+    \item Model 1: Two-Stage Hybrid (NCF Scorer + Coverage Optimization) for Skill-Course
+    \item Model 2: GNN for graph-structured career path prediction
+    \item Model 3: NCF for development action recommendation (70-20-10 model)
+    \item Model 4: Direct Matcher with skill overlap for mentor matching
+\end{itemize}
+
+\textbf{API and Integration:}
+\begin{itemize}
+    \item REST API with endpoints for all four model components
+    \item TrainEase LMS integration via HTTP and database synchronization
+    \item BSON-serialized models for production deployment
+\end{itemize}
+
+The implementation leverages Julia's high-performance capabilities while maintaining seamless integration with the existing Laravel-based TrainEase platform.

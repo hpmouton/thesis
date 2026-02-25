@@ -1,0 +1,69 @@
+This is BibTeX, Version 0.99e
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: main.aux
+Reallocating 'name_of_file' (item size: 1) to 8 items.
+The style file: apacite.bst
+Reallocating 'name_of_file' (item size: 1) to 24 items.
+Reallocating 'name_of_file' (item size: 1) to 35 items.
+Reallocating 'glb_str_end' (item size: 4) to 20 items.
+Reallocating 'glb_str_ptr' (item size: 4) to 20 items.
+Reallocating 'global_strs' (item size: 1) to 4000000 items.
+Reallocating 'singl_function' (item size: 4) to 100 items.
+Reallocating 'wiz_functions' (item size: 4) to 6000 items.
+Reallocating 'singl_function' (item size: 4) to 100 items.
+Reallocating 'singl_function' (item size: 4) to 100 items.
+Reallocating 'wiz_functions' (item size: 4) to 9000 items.
+Reallocating 'singl_function' (item size: 4) to 100 items.
+Reallocating 'field_info' (item size: 4) to 11480 items.
+Database file #1: bibliography/references.bib
+Warning--entry type for "david_cortes_7351542e" isn't style-file defined
+--line 3209 of file bibliography/references.bib
+Database file #2: bibliography/additional_references.bib
+apacite.bst [2013/07/21 v6.03 APA bibliography style]
+Warning--No journal in summiya_iqbal_jangda_b1f8c30a
+Warning--No journal in kiwan_maeng_845dd640
+Warning--No journal in elisa_mena_maldonado_6ddd1295
+Warning--No journal in bruno_laporais_pereira_c56dca6e
+Warning--No journal in chao_wang_f11198d9
+You've used 135 entries,
+            6951 wiz_defined-function locations,
+            2177 strings with 46257 characters,
+and the built_in function-call counts, 308061 in all, are:
+= -- 36168
+> -- 2632
+< -- 16724
++ -- 16972
+- -- 280
+* -- 21560
+:= -- 59313
+add.period$ -- 552
+call.type$ -- 135
+change.case$ -- 2573
+chr.to.int$ -- 0
+cite$ -- 275
+duplicate$ -- 8707
+empty$ -- 11578
+format.name$ -- 4724
+if$ -- 55708
+int.to.chr$ -- 0
+int.to.str$ -- 413
+missing$ -- 0
+newline$ -- 4029
+num.names$ -- 1080
+pop$ -- 4505
+preamble$ -- 1
+purify$ -- 786
+quote$ -- 0
+skip$ -- 17656
+stack$ -- 0
+substring$ -- 18151
+swap$ -- 4694
+text.length$ -- 565
+text.prefix$ -- 0
+top$ -- 1
+type$ -- 11256
+warning$ -- 5
+while$ -- 1874
+width$ -- 0
+write$ -- 5144
+(There were 6 warnings)
